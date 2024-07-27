@@ -6,15 +6,25 @@ import Workouts from "../pages/Workouts";
 import UserWorkouts from "../pages/UserWorkouts";
 import Users from "../pages/Users";
 import WorkoutVideos from "../pages/WorkoutVideos";
+import PublicRoute from "../components/PublicRoute";
+import PrivateRoute from "../components/PrivateRoute";
 
 const router = createBrowserRouter([
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
   },
   {
     path: "/",
-    element: <MainLayout />,
+    element: (
+      <PrivateRoute>
+        <MainLayout />
+      </PrivateRoute>
+    ),
     children: [
       {
         path: "workouts", // This should not start with a slash

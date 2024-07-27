@@ -1,6 +1,9 @@
 import {
+  ArrowRightStartOnRectangleIcon,
   Bars4Icon,
+  EnvelopeIcon,
   EyeIcon,
+  EyeSlashIcon,
   MagnifyingGlassIcon,
   PlusIcon,
   TrashIcon,
@@ -30,4 +33,7 @@ export const Icons = {
   UnCheckedBox: BiCheckbox,
   View: EyeIcon,
   Search: MagnifyingGlassIcon,
+  Hide: EyeSlashIcon,
+  Email: EnvelopeIcon,
+  Logout: ArrowRightStartOnRectangleIcon,
 };

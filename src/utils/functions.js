@@ -22,3 +22,16 @@ export const unlockScroll = () => {
   document.body.style.overflow = "";
   document.body.style.paddingRight = "";
 };
+
+export const formatDate = (timestamp) => {
+  const date = new Date(timestamp);
+
+  // Convert to a human-readable string format
+  const formattedDate = date.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  return formattedDate;
+};
