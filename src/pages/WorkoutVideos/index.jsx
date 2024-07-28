@@ -1,18 +1,49 @@
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { upateVideoStatus } from "../../redux/videoSlice";
+import toast from "react-hot-toast";
+
 const WorkoutVideos = () => {
+  const location = useLocation();
+  const { videos } = location.state;
+  const { loading } = useSelector((state) => state.video);
+  const dispatch = useDispatch();
+
+  const handleApprove = async () => {
+    try {
+      await dispatch(
+        upateVideoStatus({
+          videoId: videos?.id,
+          userId: videos?.userId,
+          status: "approved",
+        })
+      ).unwrap();
+      toast.success("Video approved successfully");
+    } catch (error) {
+      toast.error("Error approving video");
+    }
+  };
+  const handleDecline = async () => {
+    try {
+      await dispatch(
+        upateVideoStatus({
+          videoId: videos?.id,
+          userId: videos?.userId,
+          status: "declined",
+        })
+      ).unwrap();
+      toast.success("Video declined successfully");
+    } catch (error) {
+      toast.error("Error declining video");
+    }
+  };
+
   return (
     <>
       <div className="flex flex-col gap-20">
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-center justify-between">
             <p className="font-bold text-xl">Title</p>
-            <div className="flex flex-row gap-2">
-              <button className="bg-primary text-white hover:bg-opacity-80 cursor-pointer py-1 rounded-md w-20 text-sm">
-                Approve
-              </button>
-              <button className="bg-gray-400 text-textSecondary hover:bg-opacity-80 cursor-pointer py-1 rounded-md w-20 text-sm">
-                Decline
-              </button>
-            </div>
           </div>
 
           <div className="w-full flex flex-row items-center justify-center">
@@ -20,12 +51,7 @@ const WorkoutVideos = () => {
               className="h-96 w-auto border border-primary rounded-lg"
               controls
             >
-              <source
-                src={
-                  "https://firebasestorage.googleapis.com/v0/b/wod-pro-league.appspot.com/o/Videos%2F1719310525301.mp4?alt=media&token=45e7a8a5-c23a-414c-810d-5842dceeb94e"
-                }
-                type="video/mp4"
-              />
+              <source src={videos?.videos[0]} type="video/mp4" />
             </video>
           </div>
         </div>
@@ -33,18 +59,10 @@ const WorkoutVideos = () => {
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-center justify-between">
             <p className="font-bold text-xl">Title</p>
-            <div className="flex flex-row gap-2">
-              <button className="bg-primary text-white hover:bg-opacity-80 cursor-pointer py-1 rounded-md w-20 text-sm">
-                Approve
-              </button>
-              <button className="bg-gray-400 text-textSecondary hover:bg-opacity-80 cursor-pointer py-1 rounded-md w-20 text-sm">
-                Decline
-              </button>
-            </div>
           </div>
 
           <div>
-            <p className="text-sm font-semibold">25 minutes 20 seconds</p>
+            <p className="text-sm font-semibold">{videos?.athleteTime}</p>
           </div>
 
           <div className="w-full flex flex-row items-center justify-center">
@@ -52,14 +70,26 @@ const WorkoutVideos = () => {
               className="h-96 w-auto border border-primary rounded-lg"
               controls
             >
-              <source
-                src={
-                  "https://firebasestorage.googleapis.com/v0/b/wod-pro-league.appspot.com/o/Videos%2F1719310525301.mp4?alt=media&token=45e7a8a5-c23a-414c-810d-5842dceeb94e"
-                }
-                type="video/mp4"
-              />
+              <source src={videos?.videos[1]} type="video/mp4" />
             </video>
           </div>
+        </div>
+
+        <div className="flex flex-row gap-2 md:gap-5">
+          <button
+            onClick={handleApprove}
+            disabled={loading}
+            className="bg-primary text-white hover:bg-opacity-80 cursor-pointer py-1 rounded-md text-lg w-full"
+          >
+            Approve
+          </button>
+          <button
+            onClick={handleDecline}
+            disabled={loading}
+            className="bg-gray-400 text-textSecondary hover:bg-opacity-80 cursor-pointer py-1 rounded-md text-lg w-full"
+          >
+            Decline
+          </button>
         </div>
       </div>
     </>

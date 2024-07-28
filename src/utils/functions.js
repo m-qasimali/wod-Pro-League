@@ -2,6 +2,10 @@ export const capitalize = (str) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+export const lowercase = (str) => {
+  return str.toLowerCase();
+};
+
 export const toCamelCase = (str) => {
   return str
     .toLowerCase()
@@ -28,9 +32,9 @@ export const formatDate = (timestamp) => {
 
   // Convert to a human-readable string format
   const formattedDate = date.toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
     year: "numeric",
+    month: "numeric",
+    day: "numeric",
   });
 
   return formattedDate;

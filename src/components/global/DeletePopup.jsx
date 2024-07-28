@@ -1,7 +1,25 @@
-import React from "react";
+/* eslint-disable react/prop-types */
 import { Icons } from "./icons";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteWorkout } from "../../redux/workoutSlice";
+import Spinner from "./Spinner";
+import toast from "react-hot-toast";
 
-const DeletePopup = ({ close, title, item }) => {
+const DeletePopup = ({ close, title, item, id }) => {
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.workout);
+
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteWorkout(id)).unwrap();
+      toast.success(`${item} ${title} deleted successfully`);
+    } catch (error) {
+      toast.error(`Failed to delete ${item} ${title}`);
+    } finally {
+      close();
+    }
+  };
+
   return (
     <>
       <div
@@ -27,13 +45,15 @@ const DeletePopup = ({ close, title, item }) => {
           </p>
           <div className="flex flex-row gap-4">
             <button
-              onClick={close}
+              onClick={handleDelete}
+              disabled={loading}
               className="bg-primary hover:bg-opacity-80 p-2 rounded-lg text-white w-full"
             >
-              Yes
+              {loading ? <Spinner /> : "Yes"}
             </button>
             <button
               onClick={close}
+              disabled={loading}
               className="bg-red-400 hover:bg-opacity-80 p-2 rounded-lg text-white w-full"
             >
               No

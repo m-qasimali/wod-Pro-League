@@ -1,7 +1,7 @@
-import PropTypes from "prop-types";
+/* eslint-disable react/prop-types */
 import { toCamelCase } from "../../utils/functions";
 
-const TextArea = ({ labelValue, type, value, onChange }) => {
+const TextArea = ({ labelValue, type, value, onChange, disabled = false }) => {
   return (
     <div className="flex flex-col gap-1">
       <label className="font-semibold" htmlFor={`${toCamelCase(labelValue)}`}>
@@ -14,17 +14,11 @@ const TextArea = ({ labelValue, type, value, onChange }) => {
         onChange={onChange}
         name={`${toCamelCase(labelValue)}`}
         rows={4}
+        disabled={disabled}
         className="w-full border border-black border-opacity-10 rounded-md p-2 outline-none focus-within:border-primary"
       />
     </div>
   );
-};
-
-TextArea.propTypes = {
-  labelValue: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired,
 };
 
 export default TextArea;

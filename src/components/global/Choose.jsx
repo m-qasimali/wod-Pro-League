@@ -1,13 +1,14 @@
 /* eslint-disable react/prop-types */
 import { Icons } from "./icons";
 
-const Choose = ({ labelValue, state, onChange }) => {
+const Choose = ({ labelValue, state, onChange, disabled }) => {
   return (
     <div className="flex flex-col gap-1">
       <label className="font-semibold">{labelValue}</label>
       <div className="flex flex-row gap-4">
-        <div
+        <button
           onClick={() => onChange("active")}
+          disabled={disabled}
           className="flex flex-row gap-1 items-center cursor-pointer"
         >
           {state === "active" ? (
@@ -15,13 +16,14 @@ const Choose = ({ labelValue, state, onChange }) => {
           ) : (
             <Icons.UnCheckedBox id="active" className="text-3xl text-primary" />
           )}
-          <lable htmlFor="active" className="text-sm text-black">
+          <label htmlFor="active" className="text-sm text-black">
             Active
-          </lable>
-        </div>
+          </label>
+        </button>
 
-        <div
+        <button
           onClick={() => onChange("inactive")}
+          disabled={disabled}
           className="flex flex-row gap-1 items-center cursor-pointer"
         >
           {state === "inactive" ? (
@@ -35,7 +37,7 @@ const Choose = ({ labelValue, state, onChange }) => {
           <label htmlFor="inactive" className="text-sm text-black">
             InActive
           </label>
-        </div>
+        </button>
       </div>
     </div>
   );

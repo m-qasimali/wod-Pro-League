@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import { Icons } from "../../../components/global/icons";
 
 const excercises = new Array(10).fill(0);
 
-const ViewWorkout = ({ close }) => {
+const ViewWorkout = ({ close, workout }) => {
   return (
     <>
       <div
@@ -13,10 +14,13 @@ const ViewWorkout = ({ close }) => {
         <div className="flex flex-row items-center justify-between p-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
-              Workout ID <span className="text-primary text-sm">(Active)</span>
+              {workout?.id}{" "}
+              <span className="text-primary text-sm">
+                {workout.status === "active" ? "(Active)" : "(InActive)"}
+              </span>
             </h1>
             <div className="text-[10px]">
-              <span>26/02/2024</span> - <span>26/08/2024</span>
+              <span>{workout.startDate}</span> - <span>{workout.endDate}</span>
             </div>
           </div>
           <button onClick={close} className="hover:bg-gray-100 rounded-md p-1">
@@ -29,20 +33,13 @@ const ViewWorkout = ({ close }) => {
         <div className="p-6 flex flex-col gap-4 h-auto sm:max-h-96 overflow-auto scrollbar-hide">
           <div>
             <p className="text-lg font-semibold">Description</p>
-            <p className="text-textSecondary">
-              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Velit,
-              illum aperiam. Neque quod consectetur possimus mollitia eligendi
-              reiciendis placeat assumenda facere, accusamus rem iure minus
-              officiis impedit, odio suscipit vitae perspiciatis recusandae
-              aspernatur, cum quae. Officia quaerat nam quo omnis, quibusdam id
-              ea similique odit aspernatur molestias explicabo iusto officiis!
-            </p>
+            <p className="text-textSecondary">{workout?.description}</p>
           </div>
 
           <div>
             <p className="text-lg font-semibold">Exercises</p>
             <div className="flex flex-col gap-1.5 ps-2 mt-2">
-              {excercises.map((_, index) => (
+              {workout?.exercises.map((_, index) => (
                 <div
                   key={index}
                   className="flex flex-row items-start justify-start gap-2"

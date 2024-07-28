@@ -1,24 +1,19 @@
-import { useState } from "react";
+/* eslint-disable react/prop-types */
+import { memo, useState } from "react";
 import { Icons } from "../../../components/global/icons";
 import ManageWorkout from "./ManageWorkout";
 import { lockScroll, unlockScroll } from "../../../utils/functions";
 import ViewWorkout from "./ViewWorkout";
 import DeletePopup from "../../../components/global/DeletePopup";
 
-const existingWorkout = {
-  id: "1",
-  description: "hello",
-  startDate: new Date().toISOString().split("T")[0],
-  endDate: new Date().toISOString().split("T")[0],
-  exercises: ["exercise 1", "exercise 2", "exercise 3"],
-  status: "inactive",
-};
-
-const WorkoutCard = () => {
-  const excercises = new Array(10).fill(0);
+const WorkoutCard = ({ workout }) => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [showViewWorkout, setShowViewWorkout] = useState(false);
   const [showDeleteWorkout, setShowDeleteWorkout] = useState(false);
+  const existingWorkout = {
+    ...workout,
+    id: workout.wod,
+  };
 
   const handleEditForm = () => {
     setShowEditForm(true);
@@ -53,7 +48,7 @@ const WorkoutCard = () => {
   return (
     <div className="w-full border bg-secondary border-secondary shadow-md rounded-b-xl">
       <div className="bg-white p-2 flex flex-row items-center justify-between">
-        <p className="font-semibold text-2xl">title</p>
+        <p className="font-semibold text-2xl">{workout?.wod}</p>
         <div className="flex flex-row gap-2">
           <button
             onClick={handleDeleteWorkout}
@@ -82,7 +77,7 @@ const WorkoutCard = () => {
         <div>
           <p className="font-semibold mb-2">Exercises</p>
           <div className="h-48 overflow-hidden flex flex-col gap-1">
-            {excercises.slice(0, 7).map((_, index) => (
+            {workout?.exercises.slice(0, 7).map((item, index) => (
               <div
                 key={index}
                 className="flex flex-row items-start justify-start gap-2"
@@ -90,9 +85,7 @@ const WorkoutCard = () => {
                 <div className="w-5 flex-shrink-0">
                   <Icons.CheckCircle className="w-full text-primary" />
                 </div>
-                <p className="text-sm text-black text-opacity-65">
-                  Lorem ipsum dolor sit amet.
-                </p>
+                <p className="text-sm text-black text-opacity-65">{item}</p>
               </div>
             ))}
           </div>
@@ -105,14 +98,14 @@ const WorkoutCard = () => {
               <div className="flex flex-row gap-1">
                 <Icons.DateStart className="w-5 text-primary" />
                 <p className="text-xs text-black text-opacity-65">
-                  {"12/02/2024"}
+                  {workout.startDate}
                 </p>
               </div>
 
               <div className="flex flex-row gap-1">
                 <Icons.DateEnd className="w-5 text-primary" />
                 <p className="text-xs text-black text-opacity-65">
-                  {"12/08/2024"}
+                  {workout.endDate}
                 </p>
               </div>
             </div>
@@ -122,12 +115,20 @@ const WorkoutCard = () => {
             <p className="font-semibold mb-2">Status</p>
             <div className="flex flex-col gap-4">
               <div className="flex flex-row gap-1 items-center">
-                <Icons.CheckedBox className="text-xl text-primary" />
+                {workout?.status === "active" ? (
+                  <Icons.CheckedBox className="text-xl text-primary" />
+                ) : (
+                  <Icons.UnCheckedBox className="text-xl text-primary" />
+                )}
                 <p className="text-xs text-black text-opacity-65">Active</p>
               </div>
 
               <div className="flex flex-row gap-1 items">
-                <Icons.UnCheckedBox className="text-xl text-primary" />
+                {workout?.status === "active" ? (
+                  <Icons.UnCheckedBox className="text-xl text-primary" />
+                ) : (
+                  <Icons.CheckedBox className="text-xl text-primary" />
+                )}
                 <p className="text-xs text-black text-opacity-65">InActive</p>
               </div>
             </div>
@@ -143,17 +144,23 @@ const WorkoutCard = () => {
         />
       )}
 
-      {showViewWorkout && <ViewWorkout close={handleCloseViewWorkout} />}
+      {showViewWorkout && (
+        <ViewWorkout
+          close={handleCloseViewWorkout}
+          workout={existingWorkout}
+        />
+      )}
 
       {showDeleteWorkout && (
         <DeletePopup
           close={handleCloseDeleteWorkout}
           title="Workout"
-          item="WOD1"
+          item={workout?.wod}
+          id={workout?.docId}
         />
       )}
     </div>
   );
 };
 
-export default WorkoutCard;
+export default memo(WorkoutCard);

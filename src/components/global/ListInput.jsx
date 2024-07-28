@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import PropTypes from "prop-types";
+
 import { toCamelCase } from "../../utils/functions";
 import { Icons } from "./icons";
 import { useState } from "react";
 
-const ListInput = ({ labelValue, onChange, state }) => {
+const ListInput = ({ labelValue, onChange, state, disabled = false }) => {
   const [add, setAdd] = useState(true);
   const [value, setValue] = useState("");
   const [showInput, setShowInput] = useState(false);
@@ -46,6 +46,7 @@ const ListInput = ({ labelValue, onChange, state }) => {
               <button
                 onClick={() => handleDelete(index)}
                 className="flex-shrink-0"
+                disabled={disabled}
               >
                 <Icons.Delete className="w-5 text-primary" />
               </button>
@@ -58,6 +59,7 @@ const ListInput = ({ labelValue, onChange, state }) => {
           type={"text"}
           onKeyDown={handleSubmit}
           value={value}
+          disabled={disabled}
           onChange={(e) => setValue(e.target.value)}
           className="w-full border border-black border-opacity-10 rounded-md p-2 outline-none focus-within:border-primary"
         />
@@ -65,6 +67,7 @@ const ListInput = ({ labelValue, onChange, state }) => {
       <div className="flex flex-row justify-end">
         <button
           onClick={handleToggle}
+          disabled={disabled}
           className="bg-gradient-to-r from-primary to-transparent rounded-full text-white p-1"
         >
           {add ? (
@@ -76,11 +79,6 @@ const ListInput = ({ labelValue, onChange, state }) => {
       </div>
     </div>
   );
-};
-
-ListInput.propTypes = {
-  labelValue: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
 };
 
 export default ListInput;

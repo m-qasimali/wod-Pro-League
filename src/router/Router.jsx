@@ -8,6 +8,11 @@ import Users from "../pages/Users";
 import WorkoutVideos from "../pages/WorkoutVideos";
 import PublicRoute from "../components/PublicRoute";
 import PrivateRoute from "../components/PrivateRoute";
+import {
+  userLoader,
+  userWorkoutsLoader,
+  workoutLoader,
+} from "../redux/loaders";
 
 const router = createBrowserRouter([
   {
@@ -27,16 +32,19 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        path: "workouts", // This should not start with a slash
+        path: "workouts",
         element: <Workouts />,
+        loader: workoutLoader,
       },
       {
-        path: "users", // This should not start with a slash
+        path: "users",
         element: <Users />,
+        loader: userLoader,
       },
       {
-        path: "/users/:userId/workouts",
+        path: "/users/:userId/wods",
         element: <UserWorkouts />,
+        loader: userWorkoutsLoader,
       },
       {
         path: "/users/:userId/:workoutId/videos",
