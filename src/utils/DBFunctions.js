@@ -13,8 +13,8 @@ export const addWorkoutToDB = async (data) => {
   const docRef = doc(collection(db, "Work_outs"));
   const validData = {
     wod: data.id,
-    startDate: data.startDate,
-    endDate: data.endDate,
+    startDate: new Date(data.startDate).toISOString(),
+    endDate: new Date(data.endDate).toISOString(),
     exercises: data.exercises,
     status: data.status,
     isActive: true,
@@ -32,7 +32,13 @@ export const getWorkoutsFromDB = async () => {
   );
   const data = [];
   querySnapshot.forEach((doc) => {
-    data.push(doc.data());
+    const workout = doc.data();
+    const startDate = new Date(workout.startDate);
+    const endDate = new Date(workout.endDate);
+
+    workout.startDate = startDate.toISOString().split("T")[0];
+    workout.endDate = endDate.toISOString().split("T")[0];
+    data.push(workout);
   });
   return data;
 };
@@ -47,8 +53,8 @@ export const updateWorkoutInDB = async (data) => {
   const docRef = doc(db, "Work_outs", data.docId);
   const validData = {
     wod: data.id,
-    startDate: data.startDate,
-    endDate: data.endDate,
+    startDate: new Date(data.startDate).toISOString(),
+    endDate: new Date(data.endDate).toISOString(),
     exercises: data.exercises,
     status: data.status,
     isActive: true,
