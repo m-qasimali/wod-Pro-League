@@ -29,7 +29,7 @@ export const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (data.email === "" || data.password === "") {
-      return toast.warn("Please fill all the fields!");
+      return toast.error("Please fill all the fields!");
     }
 
     if (data.email !== "admin@gmail.com") {

@@ -43,7 +43,7 @@ const WorkoutVideos = () => {
       <div className="flex flex-col gap-20">
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-center justify-between">
-            <p className="font-bold text-xl">Title</p>
+            <p className="font-bold text-xl">Weights</p>
           </div>
 
           <div className="w-full flex flex-row items-center justify-center">
@@ -58,7 +58,7 @@ const WorkoutVideos = () => {
 
         <div className="flex flex-col gap-2">
           <div className="flex flex-row items-center justify-between">
-            <p className="font-bold text-xl">Title</p>
+            <p className="font-bold text-xl">Exercise</p>
           </div>
 
           <div>
