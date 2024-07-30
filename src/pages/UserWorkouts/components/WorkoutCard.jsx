@@ -38,7 +38,7 @@ const WorkoutCard = ({ userWorkout }) => {
           <p className="font-semibold mb-2">Exercises</p>
           <div className="h-48 overflow-hidden flex flex-col gap-1">
             {userWorkout?.workout?.exercises
-              .slice(0, 7)
+              ?.slice(0, 7)
               .map((exercise, index) => (
                 <div
                   key={index}

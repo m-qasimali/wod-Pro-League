@@ -1,14 +1,14 @@
 export const capitalize = (str) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str?.charAt(0).toUpperCase() + str?.slice(1);
 };
 
 export const lowercase = (str) => {
-  return str.toLowerCase();
+  return str?.toLowerCase();
 };
 
 export const toCamelCase = (str) => {
   return str
-    .toLowerCase()
+    ?.toLowerCase()
     .replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function (match, index) {
       if (/\s+/.test(match)) return "";
       return index === 0 ? match.toLowerCase() : match.toUpperCase();

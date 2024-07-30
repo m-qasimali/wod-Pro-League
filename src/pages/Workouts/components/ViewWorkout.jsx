@@ -1,8 +1,6 @@
 /* eslint-disable react/prop-types */
 import { Icons } from "../../../components/global/icons";
 
-const excercises = new Array(10).fill(0);
-
 const ViewWorkout = ({ close, workout }) => {
   return (
     <>
@@ -31,6 +29,11 @@ const ViewWorkout = ({ close, workout }) => {
         <div className="border"></div>
 
         <div className="p-6 flex flex-col gap-4 h-auto sm:max-h-96 overflow-auto scrollbar-hide">
+          <div>
+            <p className="text-lg font-semibold">Wod Number</p>
+            <p className="text-textSecondary">{workout?.wodNumber}</p>
+          </div>
+
           <div>
             <p className="text-lg font-semibold">Description</p>
             <p className="text-textSecondary">{workout?.description}</p>

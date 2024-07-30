@@ -17,9 +17,11 @@ const initialState = {
   endDate: "",
   exercises: [],
   status: "active",
+  wodNumber: 1,
 };
 
 const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
+  console.log(existingWorkout);
   const [data, setData] = useState(existingWorkout);
   const dispatch = useDispatch();
   const { loading, workouts } = useSelector((state) => state.workout);
@@ -77,6 +79,26 @@ const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
     return true;
   };
 
+  const validWodNumber = () => {
+    if (data.wodNumber < 1 || data.wodNumber > 11) {
+      toast.error("Workout number should be between 1 and 11");
+      return false;
+    }
+
+    for (const workout of workouts) {
+      if (data?.docId === workout?.docId) {
+        continue;
+      }
+
+      if (data.wodNumber === workout.wodNumber) {
+        toast.error("Workout number should be unique");
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSubmit = async () => {
     if (
       !data.id ||
@@ -84,13 +106,14 @@ const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
       !data.endDate ||
       !data.description ||
       data.exercises.length === 0 ||
-      !data.status
+      !data.status ||
+      !data.wodNumber
     ) {
       toast.error("Please fill all the fields");
       return;
     }
 
-    if (!checkValidSpan() || !validDuration()) {
+    if (!checkValidSpan() || !validDuration() || !validWodNumber()) {
       return;
     }
 
@@ -139,6 +162,17 @@ const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
             value={data.id}
             onChange={handleChange}
             disabled={loading}
+          />
+
+          <Input
+            labelValue="Wod Number"
+            type="number"
+            name="wodNumber"
+            value={data.wodNumber}
+            onChange={handleChange}
+            disabled={loading}
+            min={1}
+            max={11}
           />
 
           <Input

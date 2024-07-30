@@ -15,6 +15,7 @@ export const addWorkoutToDB = async (data) => {
     wod: data.id,
     startDate: new Date(data.startDate).toISOString(),
     endDate: new Date(data.endDate).toISOString(),
+    wodNumber: `WOD${data.wodNumber}`,
     exercises: data.exercises,
     status: data.status,
     isActive: true,
@@ -23,6 +24,9 @@ export const addWorkoutToDB = async (data) => {
     createdAt: new Date().toISOString(),
   };
   await setDoc(docRef, validData);
+  validData.startDate = validData.startDate.split("T")[0];
+  validData.endDate = validData.endDate.split("T")[0];
+  validData.wodNumber = +data.wodNumber;
   return validData;
 };
 
@@ -35,9 +39,11 @@ export const getWorkoutsFromDB = async () => {
     const workout = doc.data();
     const startDate = new Date(workout.startDate);
     const endDate = new Date(workout.endDate);
+    const wodNumber = +workout.wodNumber.split("WOD")[1];
 
     workout.startDate = startDate.toISOString().split("T")[0];
     workout.endDate = endDate.toISOString().split("T")[0];
+    workout.wodNumber = wodNumber;
     data.push(workout);
   });
   return data;
@@ -61,8 +67,12 @@ export const updateWorkoutInDB = async (data) => {
     docId: data.docId,
     description: data.description,
     createdAt: new Date().toISOString(),
+    wodNumber: `WOD${data.wodNumber}`,
   };
   await setDoc(docRef, validData);
+  validData.startDate = validData.startDate.split("T")[0];
+  validData.endDate = validData.endDate.split("T")[0];
+  validData.wodNumber = +data.wodNumber;
   return validData;
 };
 

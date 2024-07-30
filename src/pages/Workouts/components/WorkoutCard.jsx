@@ -77,7 +77,7 @@ const WorkoutCard = ({ workout }) => {
         <div>
           <p className="font-semibold mb-2">Exercises</p>
           <div className="h-48 overflow-hidden flex flex-col gap-1">
-            {workout?.exercises.slice(0, 7).map((item, index) => (
+            {workout?.exercises?.slice(0, 7).map((item, index) => (
               <div
                 key={index}
                 className="flex flex-row items-start justify-start gap-2"
