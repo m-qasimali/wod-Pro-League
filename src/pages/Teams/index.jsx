@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
 import SearchField from "../../components/global/SearchField";
 import { useDispatch } from "react-redux";
-import { setUserSearchQuery } from "../../redux/userSlice";
-import UsersTable from "../../components/global/UsersTable";
+import { setTeamSearchQuery } from "../../redux/teamSlice";
+import TeamsTable from "../../components/global/TeamsTable";
 
-const Users = () => {
+const Teams = () => {
   const [searchValue, setSearchValue] = useState("");
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(setUserSearchQuery(searchValue));
+    dispatch(setTeamSearchQuery(searchValue));
   }, [dispatch, searchValue]);
 
   return (
     <div className="flex flex-col h-screen">
       <div className="sticky z-10 ">
-        <p className="font-bold text-2xl">Manage Users</p>
+        <p className="font-bold text-2xl">Manage Teams</p>
         <div className="flex flex-row justify-end my-4">
           <div className="w-full sm:w-auto">
             <SearchField state={searchValue} setState={setSearchValue} />
@@ -24,10 +24,10 @@ const Users = () => {
       </div>
 
       <div className="flex-grow overflow-y-auto scrollbar-hide custom-scrollbar">
-        <UsersTable />
+        <TeamsTable />
       </div>
     </div>
   );
 };
 
-export default Users;
+export default Teams;

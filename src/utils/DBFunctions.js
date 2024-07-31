@@ -5,6 +5,7 @@ import {
   getDocs,
   query,
   where,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { formatDate } from "./functions";
@@ -86,8 +87,34 @@ export const getUsersFromDB = async () => {
       profileImage: res.profilePicture,
       email: res.email,
       name: res.firstName + " " + res.lastName,
+      teamName: res.teamName,
     });
   });
+  return data;
+};
+
+export const getTeamsFromDB = async () => {
+  const querySnapshot = await getDocs(collection(db, "test_Teams"));
+  const data = [];
+
+  for (const docSnapshot of querySnapshot.docs) {
+    const res = docSnapshot.data();
+
+    // Create a document reference and get the document
+    const teamsOwnerDocRef = doc(db, "test_users", res.teamCreatorId);
+    const teamsOwnerSnapShot = await getDoc(teamsOwnerDocRef);
+    const teamOwnerData = teamsOwnerSnapShot.exists()
+      ? teamsOwnerSnapShot.data()
+      : null;
+
+    data.push({
+      id: res.teamId,
+      teamName: res.teamName,
+      teamCategory: res.teamCategory,
+      teamOwner: teamOwnerData?.firstName + teamOwnerData?.lastName,
+    });
+  }
+
   return data;
 };
 

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { Icons } from "../../../components/global/icons";
 import Logo from "../../../assets/images/Logo.png";
@@ -40,6 +41,11 @@ const Sidebar = ({ isSidebarOpen }) => {
           <MenuItem
             icon={Icons.VideoIcon}
             menuName={"Users"}
+            activeMenu={activeMenu}
+          />
+          <MenuItem
+            icon={Icons.VideoIcon}
+            menuName={"Teams"}
             activeMenu={activeMenu}
           />
           <div className="mt-auto w-full">

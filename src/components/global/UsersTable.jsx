@@ -3,7 +3,7 @@ import Loader from "./Loader";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 
-const Table = () => {
+const UsersTable = () => {
   const { loading, users, searchQuery } = useSelector((state) => state.user);
   const [usersToDisplay, setUsersToDisplay] = useState([]);
 
@@ -37,6 +37,9 @@ const Table = () => {
                 Email
               </th>
               <th scope="col" className="px-6 py-3">
+                Team Name
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Action
               </th>
             </tr>
@@ -63,6 +66,7 @@ const Table = () => {
                     </div>
                   </td>
                   <td className="px-6 py-2">{user?.email}</td>
+                  <td className="px-6 py-2">{user?.teamName}</td>
                   <td className="px-6 py-2">
                     <Link
                       to={`/users/${user?.id}/wods`}
@@ -82,4 +86,4 @@ const Table = () => {
   );
 };
 
-export default Table;
+export default UsersTable;

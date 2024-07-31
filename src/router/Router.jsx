@@ -1,25 +1,33 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import MainLayout from "../Layouts/MainLayout";
-import { Login } from "../pages/Auth/Login";
-import Workouts from "../pages/Workouts";
-import UserWorkouts from "../pages/UserWorkouts";
-import Users from "../pages/Users";
-import WorkoutVideos from "../pages/WorkoutVideos";
 import PublicRoute from "../components/PublicRoute";
 import PrivateRoute from "../components/PrivateRoute";
 import {
+  teamLoader,
   userLoader,
   userWorkoutsLoader,
   workoutLoader,
 } from "../redux/loaders";
+import { lazy, Suspense } from "react";
+import Loader from "../components/global/Loader";
+
+// Lazy load your components
+const Login = lazy(() => import("../pages/Auth/Login"));
+const Workouts = lazy(() => import("../pages/Workouts"));
+const Teams = lazy(() => import("../pages/Teams"));
+const Users = lazy(() => import("../pages/Users"));
+const UserWorkouts = lazy(() => import("../pages/UserWorkouts"));
+const WorkoutVideos = lazy(() => import("../pages/WorkoutVideos"));
 
 const router = createBrowserRouter([
   {
     path: "/login",
     element: (
       <PublicRoute>
-        <Login />
+        <Suspense fallback={<Loader />}>
+          <Login />
+        </Suspense>
       </PublicRoute>
     ),
   },
@@ -33,22 +41,51 @@ const router = createBrowserRouter([
     children: [
       {
         path: "workouts",
-        element: <Workouts />,
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Workouts />
+          </Suspense>
+        ),
         loader: workoutLoader,
       },
       {
+        path: "teams",
+        element: (
+          <Suspense fallback={<Loader />}>
+            {" "}
+            <Teams />{" "}
+          </Suspense>
+        ),
+        loader: teamLoader,
+      },
+      {
         path: "users",
-        element: <Users />,
+        element: (
+          <Suspense fallback={<Loader />}>
+            {" "}
+            <Users />{" "}
+          </Suspense>
+        ),
         loader: userLoader,
       },
       {
         path: "/users/:userId/wods",
-        element: <UserWorkouts />,
+        element: (
+          <Suspense fallback={<Loader />}>
+            {" "}
+            <UserWorkouts />{" "}
+          </Suspense>
+        ),
         loader: userWorkoutsLoader,
       },
       {
         path: "/users/:userId/:workoutId/videos",
-        element: <WorkoutVideos />,
+        element: (
+          <Suspense fallback={<Loader />}>
+            {" "}
+            <WorkoutVideos />{" "}
+          </Suspense>
+        ),
       },
     ],
   },
