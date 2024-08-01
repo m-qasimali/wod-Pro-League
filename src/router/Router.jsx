@@ -3,12 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainLayout from "../Layouts/MainLayout";
 import PublicRoute from "../components/PublicRoute";
 import PrivateRoute from "../components/PrivateRoute";
-import {
-  teamLoader,
-  userLoader,
-  userWorkoutsLoader,
-  workoutLoader,
-} from "../redux/loaders";
+import { userWorkoutsLoader, workoutLoader } from "../redux/loaders";
 import { lazy, Suspense } from "react";
 import Loader from "../components/global/Loader";
 
@@ -52,21 +47,17 @@ const router = createBrowserRouter([
         path: "teams",
         element: (
           <Suspense fallback={<Loader />}>
-            {" "}
-            <Teams />{" "}
+            <Teams />
           </Suspense>
         ),
-        loader: teamLoader,
       },
       {
         path: "users",
         element: (
           <Suspense fallback={<Loader />}>
-            {" "}
-            <Users />{" "}
+            <Users />
           </Suspense>
         ),
-        loader: userLoader,
       },
       {
         path: "/users/:userId/wods",

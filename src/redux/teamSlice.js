@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getTeamsFromDB } from "../utils/DBFunctions";
+import { getTeamMembersFromDB, getTeamsFromDB } from "../utils/DBFunctions";
 
 export const getTeams = createAsyncThunk(
   "teams/getTeams",
@@ -13,6 +13,21 @@ export const getTeams = createAsyncThunk(
   }
 );
 
+export const getTeamMembers = createAsyncThunk(
+  "teams/getTeamMembers",
+  async (teamId, { rejectWithValue }) => {
+    try {
+      const response = await getTeamMembersFromDB(teamId);
+      return {
+        id: teamId,
+        members: response,
+      };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const teamSlice = createSlice({
   name: "teams",
   initialState: {
@@ -20,6 +35,9 @@ const teamSlice = createSlice({
     loading: false,
     error: null,
     searchQuery: "",
+    loadingMembers: false,
+    teamMembers: {},
+    teamMembersError: null,
   },
   reducers: {
     setTeamSearchQuery: (state, action) => {
@@ -38,6 +56,18 @@ const teamSlice = createSlice({
     builder.addCase(getTeams.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
+    });
+    builder.addCase(getTeamMembers.pending, (state) => {
+      state.loadingMembers = true;
+      state.teamMembersError = null;
+    });
+    builder.addCase(getTeamMembers.fulfilled, (state, action) => {
+      state.loadingMembers = false;
+      state.teamMembers[action.payload.id] = action.payload.members;
+    });
+    builder.addCase(getTeamMembers.rejected, (state, action) => {
+      state.loadingMembers = false;
+      state.teamMembersError = action.payload;
     });
   },
 });

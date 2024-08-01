@@ -1,10 +1,19 @@
 import Loader from "./Loader";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { getTeams } from "../../redux/teamSlice";
+import TeamMemberPopup from "../../pages/Teams/components/TeamMemberPopup";
 
 const TeamsTable = () => {
   const { loading, teams, searchQuery } = useSelector((state) => state.team);
   const [teamsToDisplay, setTeamsToDisplay] = useState([]);
+  const [showTeam, setShowTeam] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState(null);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getTeams());
+  }, [dispatch]);
 
   useEffect(() => {
     if (searchQuery) {
@@ -18,6 +27,15 @@ const TeamsTable = () => {
       setTeamsToDisplay(teams);
     }
   }, [searchQuery, teams]);
+
+  const handleShowTeam = (team) => {
+    setSelectedTeam(team);
+    setShowTeam(true);
+  };
+
+  const closeShowTeam = () => {
+    setShowTeam(false);
+  };
 
   if (loading) {
     return <Loader />;
@@ -39,6 +57,9 @@ const TeamsTable = () => {
                 Creator Name
               </th>
               <th scope="col" className="px-6 py-3">
+                Creator Email
+              </th>
+              <th scope="col" className="px-6 py-3">
                 Action
               </th>
             </tr>
@@ -50,28 +71,35 @@ const TeamsTable = () => {
                   key={team?.id}
                   className="bg-white border-b hover:bg-primary hover:bg-opacity-15"
                 >
-                  <td className="px-6 py-2">
+                  <td className="px-6 py-2 text-nowrap">
                     <div className="text-sm font-medium whitespace-nowrap">
                       {team?.teamName}
                     </div>
                   </td>
-                  <td className="px-6 py-2">{team?.teamCategory}</td>
-                  <td className="px-6 py-2">{team?.teamOwner}</td>
-                  {/* <td className="px-6 py-2">
-                    <Link
-                      to={`/users/${user?.id}/wods`}
-                      state={{ userName: user?.name }}
+                  <td className="px-6 py-2 text-nowrap">
+                    {team?.teamCategory}
+                  </td>
+                  <td className="px-6 py-2 text-nowrap">{team?.teamOwner}</td>
+                  <td className="px-6 py-2 text-nowrap">
+                    {team?.teamOwnerEmail}
+                  </td>
+                  <td className="px-6 py-2">
+                    <button
+                      onClick={() => handleShowTeam(team)}
                       className="whitespace-nowrap text-xs underline text-red-400"
                     >
-                      View Workouts
-                    </Link>
-                  </td> */}
+                      View Members
+                    </button>
+                  </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
       </div>
+      {showTeam && (
+        <TeamMemberPopup close={closeShowTeam} team={selectedTeam} />
+      )}
     </div>
   );
 };

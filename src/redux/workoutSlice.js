@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   addWorkoutToDB,
   deleteWorkoutFromDB,
+  getActiveWorkoutsFromDB,
   getWorkoutsFromDB,
   updateWorkoutInDB,
 } from "../utils/DBFunctions";
@@ -54,12 +55,27 @@ export const updateWorkout = createAsyncThunk(
   }
 );
 
+export const getActiveWorkouts = createAsyncThunk(
+  "workout/getActiveWorkouts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getActiveWorkoutsFromDB();
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const workoutSlice = createSlice({
   name: "workout",
   initialState: {
     workouts: [],
     loading: false,
     error: null,
+    activeWorkouts: [],
+    loadingActiveWorkouts: false,
+    activeWorkoutsError: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -111,6 +127,17 @@ const workoutSlice = createSlice({
       .addCase(updateWorkout.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(getActiveWorkouts.pending, (state) => {
+        state.loadingActiveWorkouts = true;
+      })
+      .addCase(getActiveWorkouts.fulfilled, (state, action) => {
+        state.loadingActiveWorkouts = false;
+        state.activeWorkouts = action.payload;
+      })
+      .addCase(getActiveWorkouts.rejected, (state, action) => {
+        state.loadingActiveWorkouts = false;
+        state.activeWorkoutsError = action.payload;
       });
   },
 });

@@ -88,6 +88,7 @@ export const getUsersFromDB = async () => {
       email: res.email,
       name: res.firstName + " " + res.lastName,
       teamName: res.teamName,
+      weight: res.weight,
     });
   });
   return data;
@@ -112,9 +113,28 @@ export const getTeamsFromDB = async () => {
       teamName: res.teamName,
       teamCategory: res.teamCategory,
       teamOwner: teamOwnerData?.firstName + teamOwnerData?.lastName,
+      teamOwnerEmail: teamOwnerData?.email,
     });
   }
 
+  return data;
+};
+
+export const getTeamMembersFromDB = async (teamId) => {
+  const querySnapshot = await getDocs(
+    query(collection(db, "test_users"), where("teamId", "==", teamId))
+  );
+  const data = [];
+  querySnapshot.forEach((doc) => {
+    const res = doc.data();
+    data.push({
+      id: doc.id,
+      profileImage: res.profilePicture,
+      email: res.email,
+      name: res.firstName + " " + res.lastName,
+      teamName: res.teamName,
+    });
+  });
   return data;
 };
 
@@ -142,8 +162,61 @@ export const userWorkOutsVideosFromDB = async (userId) => {
   return data;
 };
 
-export const updateVideoStatusInDB = async (videoId, userId, status) => {
+export const updateUserWeightInDB = async ({ userId, weight }) => {
+  const docRef = doc(db, "test_users", userId);
+  await setDoc(docRef, { weight }, { merge: true });
+  return { userId, weight };
+};
+
+export const getActiveWorkoutsFromDB = async () => {
+  const docsRef = await getDocs(collection(db, "ranking"));
+  const data = {};
+
+  for (const docSnapshot of docsRef.docs) {
+    const res = docSnapshot.data();
+    const workoutDocRef = doc(db, "Work_outs", docSnapshot.id);
+    const workoutSnapshot = await getDoc(workoutDocRef);
+    const workout = workoutSnapshot.data();
+    data[docSnapshot.id] = {
+      workoutNumber: workout.wodNumber,
+      users: [],
+    };
+
+    if (workoutSnapshot.exists()) {
+      for (const user in res) {
+        if (res[user]?.docId) {
+          data[docSnapshot.id].users.push(res[user].docId);
+        }
+      }
+    } else {
+      console.log(`Workout with id ${docSnapshot.id} does not exist`);
+    }
+  }
+
+  return data;
+};
+
+export const updateVideoStatusInDB = async (
+  videoId,
+  userId,
+  status,
+  judgeName,
+  videoMinutes,
+  videoSeconds
+) => {
   const docRef = doc(db, "Videos", videoId);
-  await setDoc(docRef, { status }, { merge: true });
+  if (videoMinutes === 0 || videoSeconds === 0) {
+    await setDoc(docRef, { status, judgeName }, { merge: true });
+  } else {
+    await setDoc(
+      docRef,
+      {
+        status,
+        judgeName,
+        athleteTime: `${videoMinutes} min ${videoSeconds} sec`,
+      },
+      { merge: true }
+    );
+  }
   return { videoId, userId, status };
 };

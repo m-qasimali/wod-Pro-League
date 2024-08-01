@@ -21,7 +21,6 @@ const initialState = {
 };
 
 const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
-  console.log(existingWorkout);
   const [data, setData] = useState(existingWorkout);
   const dispatch = useDispatch();
   const { loading, workouts } = useSelector((state) => state.workout);

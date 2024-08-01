@@ -21,9 +21,19 @@ export const getUserVideos = createAsyncThunk(
 
 export const upateVideoStatus = createAsyncThunk(
   "video/updateStatus",
-  async ({ videoId, userId, status }, { rejectWithValue }) => {
+  async (
+    { videoId, userId, status, judgeName, videoMinutes, videoSeconds },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await updateVideoStatusInDB(videoId, userId, status);
+      const response = await updateVideoStatusInDB(
+        videoId,
+        userId,
+        status,
+        judgeName,
+        videoMinutes,
+        videoSeconds
+      );
       return response;
     } catch (error) {
       return rejectWithValue(error.message);

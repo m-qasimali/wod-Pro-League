@@ -12,7 +12,7 @@ import {
 import Workout from "../../assets/icons/workout.svg";
 import Video from "../../assets/icons/videos.png";
 import Edit from "../../assets/icons/Edit.svg";
-import { CheckCircleIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { FaCalendarCheck } from "react-icons/fa";
 import { FaCalendarTimes } from "react-icons/fa";
 import { BiCheckboxSquare } from "react-icons/bi";
@@ -36,4 +36,5 @@ export const Icons = {
   Hide: EyeSlashIcon,
   Email: EnvelopeIcon,
   Logout: ArrowRightStartOnRectangleIcon,
+  Filter: FunnelIcon,
 };
