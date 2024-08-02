@@ -4,16 +4,16 @@ import MainLayout from "../Layouts/MainLayout";
 import PublicRoute from "../components/PublicRoute";
 import PrivateRoute from "../components/PrivateRoute";
 import { userWorkoutsLoader, workoutLoader } from "../redux/loaders";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import Loader from "../components/global/Loader";
+import { Login } from "../pages/Auth/Login";
+import Workouts from "../pages/Workouts";
+import Teams from "../pages/Teams";
+import Users from "../pages/Users";
+import UserWorkouts from "../pages/UserWorkouts";
+import WorkoutVideos from "../pages/WorkoutVideos";
 
 // Lazy load your components
-const Login = lazy(() => import("../pages/Auth/Login"));
-const Workouts = lazy(() => import("../pages/Workouts"));
-const Teams = lazy(() => import("../pages/Teams"));
-const Users = lazy(() => import("../pages/Users"));
-const UserWorkouts = lazy(() => import("../pages/UserWorkouts"));
-const WorkoutVideos = lazy(() => import("../pages/WorkoutVideos"));
 
 const router = createBrowserRouter([
   {
