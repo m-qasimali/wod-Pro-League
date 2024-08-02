@@ -10,19 +10,19 @@ import {
   XMarkIcon,
 } from "@heroicons/react/16/solid";
 import Workout from "../../assets/icons/workout.svg";
-import Video from "../../assets/icons/videos.png";
 import Edit from "../../assets/icons/Edit.svg";
 import { CheckCircleIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { FaCalendarCheck } from "react-icons/fa";
 import { FaCalendarTimes } from "react-icons/fa";
 import { BiCheckboxSquare } from "react-icons/bi";
 import { BiCheckbox } from "react-icons/bi";
+import Teams from "../../assets/icons/teams.svg";
+import Users from "../../assets/icons/users.svg";
 
 export const Icons = {
   OpenSidebarIcon: Bars4Icon,
   CloseSidebarIcon: XMarkIcon,
   WorkoutIcon: Workout,
-  VideoIcon: Video,
   AddIcon: PlusIcon,
   EditIcon: Edit,
   Delete: TrashIcon,
@@ -37,4 +37,6 @@ export const Icons = {
   Email: EnvelopeIcon,
   Logout: ArrowRightStartOnRectangleIcon,
   Filter: FunnelIcon,
+  Teams: Teams,
+  Users: Users,
 };

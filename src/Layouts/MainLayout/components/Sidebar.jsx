@@ -39,12 +39,12 @@ const Sidebar = ({ isSidebarOpen }) => {
             activeMenu={activeMenu}
           />
           <MenuItem
-            icon={Icons.VideoIcon}
+            icon={Icons.Users}
             menuName={"Users"}
             activeMenu={activeMenu}
           />
           <MenuItem
-            icon={Icons.VideoIcon}
+            icon={Icons.Teams}
             menuName={"Teams"}
             activeMenu={activeMenu}
           />
