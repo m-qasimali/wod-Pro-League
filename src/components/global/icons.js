@@ -1,6 +1,7 @@
 import {
   ArrowRightStartOnRectangleIcon,
   Bars4Icon,
+  ClockIcon,
   EnvelopeIcon,
   EyeIcon,
   EyeSlashIcon,
@@ -39,4 +40,5 @@ export const Icons = {
   Filter: FunnelIcon,
   Teams: Teams,
   Users: Users,
+  Clock: ClockIcon,
 };

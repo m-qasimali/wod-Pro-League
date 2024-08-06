@@ -36,6 +36,7 @@ export const userWorkoutsLoader = async (params) => {
 
   videos.map((video) => {
     let temp = { ...video };
+    
     temp.workout = workouts.find(
       (workout) => workout.docId === video.workoutId
     );

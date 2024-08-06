@@ -9,15 +9,18 @@ import { useDispatch, useSelector } from "react-redux";
 import Spinner from "../../../components/global/Spinner";
 import { addWorkout, updateWorkout } from "../../../redux/workoutSlice";
 import toast from "react-hot-toast";
+import ResultChoose from "../../../components/global/ResultChoose";
 
 const initialState = {
   id: "",
   description: "",
   startDate: "",
   endDate: "",
+  maxDuration: "",
   exercises: [],
   status: "active",
   wodNumber: 1,
+  resultType: "time",
 };
 
 const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
@@ -106,7 +109,9 @@ const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
       !data.description ||
       data.exercises.length === 0 ||
       !data.status ||
-      !data.wodNumber
+      !data.wodNumber ||
+      !data.resultType ||
+      !data.maxDuration
     ) {
       toast.error("Please fill all the fields");
       return;
@@ -135,6 +140,10 @@ const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
 
   const changeStatus = (value) => {
     setData({ ...data, status: value });
+  };
+
+  const changeResultType = (value) => {
+    setData({ ...data, resultType: value });
   };
 
   return (
@@ -192,6 +201,18 @@ const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
             disabled={loading}
           />
 
+          <Input
+            labelValue="Max Duration"
+            placeholder="In minutes"
+            type="number"
+            name="maxDuration"
+            value={data.maxDuration}
+            onChange={handleChange}
+            disabled={loading}
+            min={0}
+            max={1200}
+          />
+
           <TextArea
             labelValue="Description"
             name="description"
@@ -211,6 +232,13 @@ const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
             labelValue="Status"
             state={data.status}
             onChange={changeStatus}
+            disabled={loading}
+          />
+
+          <ResultChoose
+            labelValue="Result Type"
+            state={data.resultType}
+            onChange={changeResultType}
             disabled={loading}
           />
         </div>

@@ -91,8 +91,8 @@ const WorkoutCard = ({ workout }) => {
           </div>
         </div>
 
-        <div className="flex flex-row justify-between">
-          <div>
+        <div className="grid grid-cols-5">
+          <div className="col-span-4">
             <p className="font-semibold mb-2">Duration</p>
             <div className="flex flex-col gap-4">
               <div className="flex flex-row gap-1">
@@ -134,6 +134,30 @@ const WorkoutCard = ({ workout }) => {
             </div>
           </div>
         </div>
+
+        <div className="grid grid-cols-5">
+          <div className="col-span-4">
+            <p className="font-semibold mb-2">Max Workout Duration</p>
+            <div className="flex flex-row gap-1">
+              <Icons.Clock className="w-5 text-primary" />
+              <p className="text-xs text-black text-opacity-65">
+                {workout?.maxDuration} mins
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <p className="font-semibold mb-2">Type</p>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-row gap-1 items-center">
+                <Icons.CheckedBox className="text-xl text-primary" />
+                <p className="text-xs text-black text-opacity-65">
+                  {workout?.resultType}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {showEditForm && (
@@ -145,10 +169,7 @@ const WorkoutCard = ({ workout }) => {
       )}
 
       {showViewWorkout && (
-        <ViewWorkout
-          close={handleCloseViewWorkout}
-          workout={existingWorkout}
-        />
+        <ViewWorkout close={handleCloseViewWorkout} workout={existingWorkout} />
       )}
 
       {showDeleteWorkout && (

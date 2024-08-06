@@ -10,8 +10,6 @@ const colors = {
 };
 
 const WorkoutCard = ({ userWorkout }) => {
-
-
   return (
     <div className="w-full border bg-secondary border-secondary shadow-md rounded-b-xl">
       <div className="bg-white p-2 flex flex-row items-center justify-between">
@@ -55,7 +53,7 @@ const WorkoutCard = ({ userWorkout }) => {
           </div>
 
           <Link
-            to={"/users/userId/workId/videos"}
+            to={`/users/${userWorkout.userId}/${userWorkout.workoutId}/videos`}
             state={{ videos: userWorkout }}
             className="text-primary underline font-semibold"
           >

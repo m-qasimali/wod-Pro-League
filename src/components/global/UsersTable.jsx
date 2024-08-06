@@ -102,7 +102,7 @@ const UsersTable = ({ handleUpdate }) => {
                   <td className="px-6 py-2 text-nowrap">{user?.email}</td>
                   <td className="px-6 py-2 text-nowrap">{user?.weight}</td>
                   <td className="px-6 py-2 text-nowrap">{user?.teamName}</td>
-                  <td className="px-6 py-2 text-nowrap flex flex-col gap-2">
+                  <td className="px-6 py-2 text-nowrap flex flex-col gap-2 items-center">
                     <button
                       onClick={() => handleUpdate(user)}
                       className="whitespace-nowrap text-xs underline text-green-400"

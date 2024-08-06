@@ -3,6 +3,8 @@ import WorkoutCard from "./components/WorkoutCard";
 
 const UserWorkouts = () => {
   const { userWorkoutVideos } = useLoaderData();
+  console.log(userWorkoutVideos);
+
   const location = useLocation();
   const userName = location.state.userName;
   return (
@@ -11,7 +13,7 @@ const UserWorkouts = () => {
         <p className="font-bold text-2xl">{`${userName}'s Workouts`}</p>
       </div>
 
-      <div className="flex-grow overflow-y-auto scrollbar-hide custom-scrollbar mt-5">
+      <div className="flex-grow overflow-y-auto scrollbar-hide custom-scrollbar my-5">
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 lg:gap-7 xl:gap-10">
           {userWorkoutVideos.map((userWorkoutVideo) => (
             <WorkoutCard

@@ -22,13 +22,22 @@ export const getUserVideos = createAsyncThunk(
 export const upateVideoStatus = createAsyncThunk(
   "video/updateStatus",
   async (
-    { videoId, userId, status, judgeName, videoMinutes, videoSeconds },
+    {
+      videoId,
+      userId,
+      workoutId,
+      status,
+      judgeName,
+      videoMinutes,
+      videoSeconds,
+    },
     { rejectWithValue }
   ) => {
     try {
       const response = await updateVideoStatusInDB(
         videoId,
         userId,
+        workoutId,
         status,
         judgeName,
         videoMinutes,
@@ -36,6 +45,8 @@ export const upateVideoStatus = createAsyncThunk(
       );
       return response;
     } catch (error) {
+      console.log(error);
+
       return rejectWithValue(error.message);
     }
   }

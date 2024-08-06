@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { upateVideoStatus } from "../../redux/videoSlice";
 import toast from "react-hot-toast";
 import Input from "../../components/global/Input";
@@ -13,6 +13,7 @@ const WorkoutVideos = () => {
   const { loading } = useSelector((state) => state.video);
   const [data, setData] = useState(initialState);
   const dispatch = useDispatch();
+  const { workoutId } = useParams();
 
   const handleApprove = async () => {
     if (data.judgeName === "") {
@@ -24,6 +25,7 @@ const WorkoutVideos = () => {
         upateVideoStatus({
           videoId: videos?.id,
           userId: videos?.userId,
+          workoutId: workoutId,
           status: "approved",
           judgeName: data.judgeName,
           videoMinutes: data.videoMinutes,
@@ -66,7 +68,7 @@ const WorkoutVideos = () => {
     <>
       <div className="flex flex-col gap-5">
         <div className="grid grid-cols-2 gap-5">
-          <div className="flex flex-col gap-2 border rounded-lg p-2">
+          <div className="flex flex-col gap-2 border rounded-lg p-2 col-span-2 md:col-span-1">
             <div className="flex flex-row items-center justify-between">
               <p className="font-bold text-xl">Weights</p>
             </div>
@@ -81,7 +83,7 @@ const WorkoutVideos = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 border rounded-lg p-2">
+          <div className="flex flex-col gap-2 border rounded-lg p-2  col-span-2 md:col-span-1">
             <div className="flex flex-row items-center justify-between">
               <p className="font-bold text-xl">
                 Exercise
@@ -102,7 +104,7 @@ const WorkoutVideos = () => {
           </div>
         </div>
 
-        <div className="w-1/3 space-y-5">
+        <div className="w-full lg:w-1/3 space-y-5 mb-5">
           <Input
             labelValue="Judge Name"
             type="text"

@@ -14,7 +14,7 @@ const MainLayout = () => {
       <Navbar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <Sidebar isSidebarOpen={isSidebarOpen} />
 
-      <div className="p-6 sm:ml-72 pt-20">
+      <div className="sm:ml-72 pt-20 px-3 sm:px-6">
         <Outlet />
       </div>
     </div>

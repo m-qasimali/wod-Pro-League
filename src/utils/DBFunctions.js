@@ -6,6 +6,7 @@ import {
   query,
   where,
   getDoc,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { formatDate } from "./functions";
@@ -20,6 +21,8 @@ export const addWorkoutToDB = async (data) => {
     exercises: data.exercises,
     status: data.status,
     isActive: true,
+    resultType: data.resultType,
+    maxDuration: data.maxDuration,
     docId: docRef.id,
     description: data.description,
     createdAt: new Date().toISOString(),
@@ -33,19 +36,25 @@ export const addWorkoutToDB = async (data) => {
 
 export const getWorkoutsFromDB = async () => {
   const querySnapshot = await getDocs(
-    query(collection(db, "Work_outs"), where("isActive", "==", true))
+    query(collection(db, "Work_outs"), orderBy("createdAt", "desc"))
   );
+
   const data = [];
   querySnapshot.forEach((doc) => {
     const workout = doc.data();
-    const startDate = new Date(workout.startDate);
-    const endDate = new Date(workout.endDate);
-    const wodNumber = +workout.wodNumber.split("WOD")[1];
 
-    workout.startDate = startDate.toISOString().split("T")[0];
-    workout.endDate = endDate.toISOString().split("T")[0];
-    workout.wodNumber = wodNumber;
-    data.push(workout);
+    if (workout.isActive === true) {
+      const startDate = new Date(workout.startDate);
+      const endDate = new Date(workout.endDate);
+      const wodNumber = +workout.wodNumber.split("WOD")[1];
+      const maxDuration = +workout.maxDuration;
+
+      workout.startDate = startDate.toISOString().split("T")[0];
+      workout.endDate = endDate.toISOString().split("T")[0];
+      workout.wodNumber = wodNumber;
+      workout.maxDuration = maxDuration;
+      data.push(workout);
+    }
   });
   return data;
 };
@@ -65,6 +74,8 @@ export const updateWorkoutInDB = async (data) => {
     exercises: data.exercises,
     status: data.status,
     isActive: true,
+    resultType: data.resultType,
+    maxDuration: data.maxDuration,
     docId: data.docId,
     description: data.description,
     createdAt: new Date().toISOString(),
@@ -153,7 +164,7 @@ export const userWorkOutsVideosFromDB = async (userId) => {
       athleteTime: res.athleteTime,
       userId: res.userId,
       videos: res.videos,
-      workoutId: res.workoutId,
+      workoutId: res.wodId,
       uploadTime: formatDate(res.uploadTime),
       status: res.status,
     });
@@ -189,7 +200,7 @@ export const getActiveWorkoutsFromDB = async () => {
         }
       }
     } else {
-      console.log(`Workout with id ${docSnapshot.id} does not exist`);
+      throw new Error(`Workout with id ${docSnapshot.id} does not exist`);
     }
   }
 
@@ -199,24 +210,39 @@ export const getActiveWorkoutsFromDB = async () => {
 export const updateVideoStatusInDB = async (
   videoId,
   userId,
+  workoutId,
   status,
   judgeName,
   videoMinutes,
   videoSeconds
 ) => {
   const docRef = doc(db, "Videos", videoId);
-  if (videoMinutes === 0 || videoSeconds === 0) {
+
+  if (videoMinutes === 0 && videoSeconds === 0) {
     await setDoc(docRef, { status, judgeName }, { merge: true });
   } else {
+    const athleteTime = `${videoMinutes} min ${videoSeconds} sec`;
+
     await setDoc(
       docRef,
       {
         status,
         judgeName,
-        athleteTime: `${videoMinutes} min ${videoSeconds} sec`,
+        athleteTime,
       },
       { merge: true }
     );
+
+    const rankingDocRef = doc(db, "ranking", workoutId);
+    const res = await getDoc(rankingDocRef);
+
+    if (res.exists()) {
+      const ranking = res.data();
+      const user = ranking[userId];
+      user.uploadTime = `${videoMinutes} min ${videoSeconds} sec`;
+      await setDoc(rankingDocRef, { [userId]: user }, { merge: true });
+    }
   }
+
   return { videoId, userId, status };
 };
