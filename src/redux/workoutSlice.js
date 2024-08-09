@@ -4,6 +4,7 @@ import {
   deleteWorkoutFromDB,
   getActiveWorkoutsFromDB,
   getWorkoutsFromDB,
+  getWorkoutVideosFromDB,
   updateWorkoutInDB,
 } from "../utils/DBFunctions";
 
@@ -67,6 +68,18 @@ export const getActiveWorkouts = createAsyncThunk(
   }
 );
 
+export const getUserWorkouts = createAsyncThunk(
+  "workout/getUserWorkouts",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await getWorkoutVideosFromDB(userId);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const workoutSlice = createSlice({
   name: "workout",
   initialState: {
@@ -76,6 +89,9 @@ const workoutSlice = createSlice({
     activeWorkouts: [],
     loadingActiveWorkouts: false,
     activeWorkoutsError: null,
+    userWorkouts: [],
+    gettingUserWorkouts: false,
+    userWorkoutsError: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -138,6 +154,17 @@ const workoutSlice = createSlice({
       .addCase(getActiveWorkouts.rejected, (state, action) => {
         state.loadingActiveWorkouts = false;
         state.activeWorkoutsError = action.payload;
+      })
+      .addCase(getUserWorkouts.pending, (state) => {
+        state.gettingUserWorkouts = true;
+      })
+      .addCase(getUserWorkouts.fulfilled, (state, action) => {
+        state.gettingUserWorkouts = false;
+        state.userWorkouts = action.payload;
+      })
+      .addCase(getUserWorkouts.rejected, (state, action) => {
+        state.gettingUserWorkouts = false;
+        state.userWorkoutsError = action.payload;
       });
   },
 });

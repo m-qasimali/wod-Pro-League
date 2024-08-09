@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getUsers } from "../../redux/userSlice";
 
-const UsersTable = ({ handleUpdate }) => {
+const UsersTable = () => {
   const { loading, users, searchQuery, filters } = useSelector(
     (state) => state.user
   );
@@ -103,13 +103,6 @@ const UsersTable = ({ handleUpdate }) => {
                   <td className="px-6 py-2 text-nowrap">{user?.weight}</td>
                   <td className="px-6 py-2 text-nowrap">{user?.teamName}</td>
                   <td className="px-6 py-2 text-nowrap flex flex-col gap-2 items-center">
-                    <button
-                      onClick={() => handleUpdate(user)}
-                      className="whitespace-nowrap text-xs underline text-green-400"
-                    >
-                      Edit Weight
-                    </button>
-
                     <Link
                       to={`/users/${user?.id}/wods`}
                       state={{ userName: user?.name }}

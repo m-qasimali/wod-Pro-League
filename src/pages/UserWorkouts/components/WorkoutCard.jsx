@@ -15,7 +15,7 @@ const WorkoutCard = ({ userWorkout }) => {
       <div className="bg-white p-2 flex flex-row items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-800">
-            {userWorkout?.workout?.wod}
+            {userWorkout?.workout?.wodNumber}
           </h1>
           <div className="text-[10px]">
             <span>{userWorkout?.workout?.startDate}</span> -{" "}

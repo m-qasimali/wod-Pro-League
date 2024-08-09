@@ -89,18 +89,29 @@ export const updateWorkoutInDB = async (data) => {
 };
 
 export const getUsersFromDB = async () => {
+  const rankingDocsRef = await getDocs(collection(db, "rankings"));
+  let data1 = [];
+  for (const docSnapshot of rankingDocsRef.docs) {
+    const res = docSnapshot.data();
+    data1.push([...Object.keys(res)]);
+  }
+  data1 = data1.flat();
+
   const querySnapshot = await getDocs(collection(db, "test_users"));
   const data = [];
+
   querySnapshot.forEach((doc) => {
     const res = doc.data();
-    data.push({
-      id: doc.id,
-      profileImage: res.profilePicture,
-      email: res.email,
-      name: res.firstName + " " + res.lastName,
-      teamName: res.teamName,
-      weight: res.weight,
-    });
+    if (data1.includes(doc.id)) {
+      data.push({
+        id: doc.id,
+        profileImage: res.profilePicture,
+        email: res.email,
+        name: res.firstName + " " + res.lastName,
+        teamName: res.teamName,
+        weight: res.weight,
+      });
+    }
   });
   return data;
 };
@@ -149,29 +160,6 @@ export const getTeamMembersFromDB = async (teamId) => {
   return data;
 };
 
-export const userWorkOutsVideosFromDB = async (userId) => {
-  const q = query(
-    collection(db, "Videos"),
-    where("userId", "==", userId.trim())
-  );
-  const querySnapshot = await getDocs(q);
-
-  const data = [];
-  querySnapshot.forEach((doc) => {
-    let res = doc.data();
-    data.push({
-      id: doc.id,
-      athleteTime: res.athleteTime,
-      userId: res.userId,
-      videos: res.videos,
-      workoutId: res.wodId,
-      uploadTime: formatDate(res.uploadTime),
-      status: res.status,
-    });
-  });
-
-  return data;
-};
 
 export const updateUserWeightInDB = async ({ userId, weight }) => {
   const docRef = doc(db, "test_users", userId);
@@ -180,7 +168,7 @@ export const updateUserWeightInDB = async ({ userId, weight }) => {
 };
 
 export const getActiveWorkoutsFromDB = async () => {
-  const docsRef = await getDocs(collection(db, "ranking"));
+  const docsRef = await getDocs(collection(db, "rankings"));
   const data = {};
 
   for (const docSnapshot of docsRef.docs) {
@@ -214,35 +202,110 @@ export const updateVideoStatusInDB = async (
   status,
   judgeName,
   videoMinutes,
-  videoSeconds
+  videoSeconds,
+  repetitions,
+  liftedWeight
 ) => {
   const docRef = doc(db, "Videos", videoId);
 
-  if (videoMinutes === 0 && videoSeconds === 0) {
-    await setDoc(docRef, { status, judgeName }, { merge: true });
-  } else {
-    const athleteTime = `${videoMinutes} min ${videoSeconds} sec`;
+  await setDoc(
+    docRef,
+    {
+      status,
+      judgeName,
+    },
+    { merge: true }
+  );
 
-    await setDoc(
-      docRef,
-      {
-        status,
-        judgeName,
-        athleteTime,
-      },
-      { merge: true }
-    );
+  const rankingDocRef = doc(db, "rankings", workoutId);
+  const res = await getDoc(rankingDocRef);
 
-    const rankingDocRef = doc(db, "ranking", workoutId);
-    const res = await getDoc(rankingDocRef);
-
-    if (res.exists()) {
-      const ranking = res.data();
-      const user = ranking[userId];
+  if (res.exists()) {
+    const ranking = res.data();
+    const user = ranking[userId];
+    if (videoMinutes !== 0 || videoSeconds !== 0) {
       user.uploadTime = `${videoMinutes} min ${videoSeconds} sec`;
-      await setDoc(rankingDocRef, { [userId]: user }, { merge: true });
     }
+    if (liftedWeight !== 0) {
+      user.liftedWeight = liftedWeight;
+    }
+    if (repetitions !== 0) {
+      user.repetitions = repetitions;
+    }
+    console.log("user: ", user);
+    await setDoc(rankingDocRef, { [userId]: user }, { merge: true });
   }
 
   return { videoId, userId, status };
+};
+
+export const getRankingDataFromDB = async ({ userId, workoutId }) => {
+  const rankingDocRef = doc(db, "rankings", workoutId);
+  const res = await getDoc(rankingDocRef);
+
+  if (res.exists()) {
+    const ranking = res.data();
+    const user = ranking[userId];
+    const data = {
+      liftedWeight: user.liftedWeight,
+      repetitions: user.repetitions,
+      uploadTime: user.uploadTime,
+    };
+
+    return data;
+  }
+  return null;
+};
+
+export const getWorkoutVideosFromDB = async (userId) => {
+  const rankingsCollection = collection(db, "rankings");
+  const rankingsSnapshot = await getDocs(rankingsCollection);
+
+  const workoutIds = rankingsSnapshot.docs.map((doc) => doc.id);
+
+  const data = [];
+
+  for (const workoutId of workoutIds) {
+    const rankingDocRef = doc(db, "rankings", workoutId);
+    const rankingSnapshot = await getDoc(rankingDocRef);
+    const ranking = rankingSnapshot.data();
+
+    if (ranking && ranking[userId]) {
+      const videoQuery = query(
+        collection(db, "Videos"),
+        where("userId", "==", userId),
+        where("wodId", "==", workoutId)
+      );
+
+      const videoSnapshot = await getDocs(videoQuery);
+
+      // Check if there are any documents in the videoSnapshot
+      if (!videoSnapshot.empty) {
+        const videoDoc = videoSnapshot.docs[0]; // Get the first document
+        const video = videoDoc.data();
+
+        const workoutRef = await getDoc(doc(db, "Work_outs", workoutId));
+        const workout = workoutRef.data();
+
+        data.push({
+          id: videoDoc.id, // Document ID
+          status: video.status,
+          userId: video.userId,
+          videos: video.videos,
+          workoutId: video.wodId,
+          uploadTime: formatDate(video.uploadTime),
+          workout: {
+            wodNumber: workout.wodNumber,
+            startDate: formatDate(workout.startDate),
+            endDate: formatDate(workout.endDate),
+            exercises: workout.exercises,
+            maxDuration: workout.maxDuration,
+            description: workout.description,
+          },
+        });
+      }
+    }
+  }
+
+  return data;
 };

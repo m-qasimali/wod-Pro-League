@@ -1,18 +1,15 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
+  getRankingDataFromDB,
   updateVideoStatusInDB,
-  userWorkOutsVideosFromDB,
 } from "../utils/DBFunctions";
 
-export const getUserVideos = createAsyncThunk(
-  "user/videos",
-  async (userId, { rejectWithValue }) => {
+export const getRankingData = createAsyncThunk(
+  "ranking/data",
+  async ({ userId, workoutId }, { rejectWithValue }) => {
     try {
-      const response = await userWorkOutsVideosFromDB(userId);
-      return {
-        userId,
-        videos: response,
-      };
+      const response = await getRankingDataFromDB({ userId, workoutId });
+      return response;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -30,6 +27,8 @@ export const upateVideoStatus = createAsyncThunk(
       judgeName,
       videoMinutes,
       videoSeconds,
+      repetitions,
+      liftedWeight,
     },
     { rejectWithValue }
   ) => {
@@ -41,7 +40,9 @@ export const upateVideoStatus = createAsyncThunk(
         status,
         judgeName,
         videoMinutes,
-        videoSeconds
+        videoSeconds,
+        repetitions,
+        liftedWeight
       );
       return response;
     } catch (error) {
@@ -55,46 +56,36 @@ export const upateVideoStatus = createAsyncThunk(
 const videoSlice = createSlice({
   name: "videos",
   initialState: {
-    videos: {},
-    loading: false,
-    error: null,
+    loadingRanking: false,
+    loadingRankingsError: null,
+    rankingData: {},
   },
 
   extraReducers: (builder) => {
-    builder.addCase(getUserVideos.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    });
-    builder.addCase(getUserVideos.fulfilled, (state, action) => {
-      state.loading = false;
-      state.videos = {
-        ...state.videos,
-        [action.payload.userId]: action.payload.videos,
-      };
-    });
-    builder.addCase(getUserVideos.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    });
     builder.addCase(upateVideoStatus.pending, (state) => {
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(upateVideoStatus.fulfilled, (state, action) => {
+    builder.addCase(upateVideoStatus.fulfilled, (state) => {
       state.loading = false;
-      state.videos = {
-        ...state.videos,
-        [action.payload.userId]: state.videos[action.payload.userId].map(
-          (video) =>
-            video.id === action.payload.videoId
-              ? { ...video, status: action.payload.status }
-              : video
-        ),
-      };
     });
     builder.addCase(upateVideoStatus.rejected, (state, action) => {
       state.loading = false;
       state.error = action.payload;
+    });
+    builder.addCase(getRankingData.pending, (state) => {
+      state.loadingRanking = true;
+      state.loadingRankingsError = null;
+    });
+    builder.addCase(getRankingData.fulfilled, (state, action) => {
+      state.loadingRanking = false;
+      state.rankingData = action.payload;
+    });
+    builder.addCase(getRankingData.rejected, (state, action) => {
+      state.loadingRanking = false;
+      state.loadingRankingsError = action.payload
+        ? action.payload
+        : "Error fetching ranking data";
     });
   },
 });

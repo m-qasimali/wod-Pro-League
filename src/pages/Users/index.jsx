@@ -4,11 +4,9 @@ import { useDispatch } from "react-redux";
 import { setUserFilters, setUserSearchQuery } from "../../redux/userSlice";
 import UsersTable from "../../components/global/UsersTable";
 import UserFilter from "../../components/global/UserFilter";
-import UpdateWeightPopup from "../../components/global/EditWeightPopup";
 
 const Users = () => {
   const [searchValue, setSearchValue] = useState("");
-  const [showEditWeightPopup, setShowEditWeightPopup] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -27,14 +25,6 @@ const Users = () => {
     };
   }, [dispatch]);
 
-  const handleCloseEditWeightPopup = () => {
-    setShowEditWeightPopup(null);
-  };
-
-  const handleUpdate = (user) => {
-    setShowEditWeightPopup(user);
-  };
-
   return (
     <div className="flex flex-col h-screen">
       <div className="sticky z-10 ">
@@ -48,15 +38,8 @@ const Users = () => {
       </div>
 
       <div className="flex-grow overflow-y-auto scrollbar-hide custom-scrollbar z-0">
-        <UsersTable handleUpdate={handleUpdate} />
+        <UsersTable />
       </div>
-
-      {showEditWeightPopup && (
-        <UpdateWeightPopup
-          item={showEditWeightPopup}
-          close={handleCloseEditWeightPopup}
-        />
-      )}
     </div>
   );
 };

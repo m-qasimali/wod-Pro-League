@@ -1,11 +1,18 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
-import { upateVideoStatus } from "../../redux/videoSlice";
+import { getRankingData, upateVideoStatus } from "../../redux/videoSlice";
 import toast from "react-hot-toast";
 import Input from "../../components/global/Input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Spinner from "../../components/global/Spinner";
 
-const initialState = { judgeName: "", videoMinutes: 0, videoSeconds: 0 };
+const initialState = {
+  judgeName: "",
+  videoMinutes: 0,
+  videoSeconds: 0,
+  liftedWeight: 0,
+  repetitions: 0,
+};
 
 const WorkoutVideos = () => {
   const location = useLocation();
@@ -13,9 +20,41 @@ const WorkoutVideos = () => {
   const { loading } = useSelector((state) => state.video);
   const [data, setData] = useState(initialState);
   const dispatch = useDispatch();
-  const { workoutId } = useParams();
+  const { workoutId, userId } = useParams();
+  const { rankingData } = useSelector((state) => state.video);
+  const [click, setClick] = useState("");
+
+  useEffect(() => {
+    dispatch(getRankingData({ userId, workoutId }));
+  }, [dispatch, userId, workoutId]);
+
+  useEffect(() => {
+    if (rankingData?.uploadTime) {
+      const [minutes, _, seconds] = rankingData.uploadTime.split(" ");
+
+      setData((prevData) => ({
+        ...prevData,
+        videoMinutes: +minutes,
+        videoSeconds: +seconds,
+      }));
+    }
+    if (rankingData?.liftedWeight) {
+      setData((prevData) => ({
+        ...prevData,
+        liftedWeight: +rankingData.liftedWeight,
+      }));
+    }
+
+    if (rankingData?.repetitions) {
+      setData((prevData) => ({
+        ...prevData,
+        repetitions: +rankingData.repetitions,
+      }));
+    }
+  }, [rankingData]);
 
   const handleApprove = async () => {
+    setClick("approve");
     if (data.judgeName === "") {
       toast.error("Judge name required");
       return;
@@ -24,21 +63,26 @@ const WorkoutVideos = () => {
       await dispatch(
         upateVideoStatus({
           videoId: videos?.id,
-          userId: videos?.userId,
+          userId: userId,
           workoutId: workoutId,
           status: "approved",
           judgeName: data.judgeName,
           videoMinutes: data.videoMinutes,
           videoSeconds: data.videoSeconds,
+          repetitions: data.repetitions,
+          liftedWeight: data.liftedWeight,
         })
       ).unwrap();
       toast.success("Video approved successfully");
     } catch (error) {
+      console.log(error);
+
       toast.error("Error approving video");
     }
   };
 
   const handleChange = (e) => {
+    setClick("decline");
     const { name, value } = e.target;
     setData((prevData) => ({
       ...prevData,
@@ -51,11 +95,14 @@ const WorkoutVideos = () => {
       await dispatch(
         upateVideoStatus({
           videoId: videos?.id,
-          userId: videos?.userId,
+          userId: userId,
+          workoutId: workoutId,
           status: "declined",
           judgeName: data.judgeName,
           videoMinutes: data.videoMinutes,
           videoSeconds: data.videoSeconds,
+          repetitions: data.repetitions,
+          liftedWeight: data.liftedWeight,
         })
       ).unwrap();
       toast.success("Video declined successfully");
@@ -85,12 +132,7 @@ const WorkoutVideos = () => {
 
           <div className="flex flex-col gap-2 border rounded-lg p-2  col-span-2 md:col-span-1">
             <div className="flex flex-row items-center justify-between">
-              <p className="font-bold text-xl">
-                Exercise
-                <span className="text-sm font-semibold">
-                  ({videos?.athleteTime})
-                </span>
-              </p>
+              <p className="font-bold text-xl">Exercise</p>
             </div>
 
             <div className="w-full flex flex-row items-center justify-center">
@@ -111,32 +153,54 @@ const WorkoutVideos = () => {
             value={data?.judgeName}
             onChange={handleChange}
           />
-          <Input
-            labelValue="Video Minutes"
-            type="number"
-            value={data?.videoMinutes}
-            onChange={handleChange}
-          />
-          <Input
-            labelValue="Video Seconds"
-            type="number"
-            value={data?.videoSeconds}
-            onChange={handleChange}
-          />
+          {rankingData?.uploadTime && rankingData?.uploadTime !== "" && (
+            <>
+              <Input
+                labelValue="Video Minutes"
+                type="number"
+                value={data?.videoMinutes}
+                onChange={handleChange}
+              />
+              <Input
+                labelValue="Video Seconds"
+                type="number"
+                value={data?.videoSeconds}
+                onChange={handleChange}
+              />
+            </>
+          )}
+
+          {rankingData?.liftedWeight && rankingData?.liftedWeight !== "" && (
+            <Input
+              labelValue="Lifted Weight"
+              type="number"
+              value={data?.liftedWeight}
+              onChange={handleChange}
+            />
+          )}
+
+          {rankingData?.repetitions && rankingData?.repetitions !== "" && (
+            <Input
+              labelValue="Repetitions"
+              type="number"
+              value={data?.repetitions}
+              onChange={handleChange}
+            />
+          )}
           <div className="flex flex-row gap-2">
             <button
               onClick={handleApprove}
               disabled={loading}
-              className="bg-primary text-white hover:bg-opacity-80 cursor-pointer py-1 rounded-md text-lg w-full"
+              className="bg-primary text-white hover:bg-opacity-80 cursor-pointer py-1 rounded-md text-lg w-full flex flex-row items-center justify-center"
             >
-              Approve
+              {click === "approve" && loading ? <Spinner /> : "Approve"}
             </button>
             <button
               onClick={handleDecline}
               disabled={loading}
-              className="bg-gray-400 text-textSecondary hover:bg-opacity-80 cursor-pointer py-1 rounded-md text-lg w-full"
+              className="bg-gray-400 text-textSecondary hover:bg-opacity-80 cursor-pointer py-1 rounded-md text-lg w-full flex flex-row items-center justify-center"
             >
-              Decline
+              {click === "decline" && loading ? <Spinner /> : "Decline"}
             </button>
           </div>
         </div>

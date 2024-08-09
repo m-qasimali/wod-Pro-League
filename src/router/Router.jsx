@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainLayout from "../Layouts/MainLayout";
 import PublicRoute from "../components/PublicRoute";
 import PrivateRoute from "../components/PrivateRoute";
-import { userWorkoutsLoader, workoutLoader } from "../redux/loaders";
+import { workoutLoader } from "../redux/loaders";
 import { Suspense } from "react";
 import Loader from "../components/global/Loader";
 import { Login } from "../pages/Auth/Login";
@@ -67,7 +67,6 @@ const router = createBrowserRouter([
             <UserWorkouts />{" "}
           </Suspense>
         ),
-        loader: userWorkoutsLoader,
       },
       {
         path: "/users/:userId/:workoutId/videos",
