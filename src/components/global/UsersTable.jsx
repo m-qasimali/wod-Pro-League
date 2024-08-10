@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import Loader from "./Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { getUsers } from "../../redux/userSlice";
+import { getUsers, setSelectedUsers } from "../../redux/userSlice";
+import Checkbox from "./Checkbox";
 
 const UsersTable = () => {
   const { loading, users, searchQuery, filters } = useSelector(
@@ -13,7 +14,7 @@ const UsersTable = () => {
     (state) => state.workout
   );
   const [usersToDisplay, setUsersToDisplay] = useState([]);
-
+  const { selectedUsers } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -51,6 +52,26 @@ const UsersTable = () => {
     setUsersToDisplay(filteredUsers);
   }, [searchQuery, users, filters, activeWorkouts, dispatch]);
 
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const allUserIds = usersToDisplay.map((user) => user.id);
+      dispatch(setSelectedUsers(allUserIds));
+    } else {
+      dispatch(setSelectedUsers([]));
+    }
+  };
+
+  const handleCheckboxChange = (userId) => {
+    const newUsers = selectedUsers.includes(userId)
+      ? selectedUsers.filter((id) => id !== userId)
+      : [...selectedUsers, userId];
+
+    dispatch(setSelectedUsers(newUsers));
+  };
+
+  const isAllSelected =
+    usersToDisplay.length > 0 && selectedUsers.length === usersToDisplay.length;
+
   if (loading || loadingActiveWorkouts) {
     return <Loader />;
   }
@@ -61,6 +82,13 @@ const UsersTable = () => {
         <table className="w-full text-sm text-left relative">
           <thead className="text-lg uppercase text-textSecondary bg-white sticky top-0 z-10">
             <tr>
+              <th scope="col" className="px-6 py-3">
+                <Checkbox
+                  checked={isAllSelected}
+                  onChange={handleSelectAll}
+                  id={"selectAll"}
+                />
+              </th>
               <th scope="col" className="px-6 py-3 text-nowrap">
                 User Name
               </th>
@@ -85,6 +113,13 @@ const UsersTable = () => {
                   key={user?.id}
                   className="bg-white border-b hover:bg-primary hover:bg-opacity-15"
                 >
+                  <td className="px-6 py-2">
+                    <Checkbox
+                      checked={selectedUsers.includes(user.id)}
+                      onChange={() => handleCheckboxChange(user.id)}
+                      id={user.id}
+                    />
+                  </td>
                   <td className="px-6 py-2">
                     <div className="flex items-center gap-2">
                       <div className="flex-shrink-0 h-10 w-10">

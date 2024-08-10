@@ -38,6 +38,7 @@ const userSlice = createSlice({
       workout: "",
     },
     updatingUserWeight: false,
+    selectedUsers: [],
   },
   reducers: {
     setUserSearchQuery: (state, action) => {
@@ -45,6 +46,9 @@ const userSlice = createSlice({
     },
     setUserFilters: (state, action) => {
       state.filters = action.payload;
+    },
+    setSelectedUsers: (state, action) => {
+      state.selectedUsers = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -77,6 +81,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUserSearchQuery, setUserFilters } = userSlice.actions;
+export const { setUserSearchQuery, setUserFilters, setSelectedUsers } =
+  userSlice.actions;
 
 export default userSlice.reducer;

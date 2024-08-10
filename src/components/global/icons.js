@@ -1,6 +1,8 @@
 import {
   ArrowRightStartOnRectangleIcon,
   Bars4Icon,
+  BellAlertIcon,
+  CheckIcon,
   ClockIcon,
   EnvelopeIcon,
   EyeIcon,
@@ -19,6 +21,7 @@ import { BiCheckboxSquare } from "react-icons/bi";
 import { BiCheckbox } from "react-icons/bi";
 import Teams from "../../assets/icons/teams.svg";
 import Users from "../../assets/icons/users.svg";
+import NotificationIcon from "../../assets/icons/Notifications.png";
 
 export const Icons = {
   OpenSidebarIcon: Bars4Icon,
@@ -41,4 +44,6 @@ export const Icons = {
   Teams: Teams,
   Users: Users,
   Clock: ClockIcon,
+  Notification: NotificationIcon,
+  Check: CheckIcon,
 };

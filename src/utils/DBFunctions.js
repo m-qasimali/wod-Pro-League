@@ -110,6 +110,7 @@ export const getUsersFromDB = async () => {
         name: res.firstName + " " + res.lastName,
         teamName: res.teamName,
         weight: res.weight,
+        token: res?.FCMToken,
       });
     }
   });
@@ -159,7 +160,6 @@ export const getTeamMembersFromDB = async (teamId) => {
   });
   return data;
 };
-
 
 export const updateUserWeightInDB = async ({ userId, weight }) => {
   const docRef = doc(db, "test_users", userId);
