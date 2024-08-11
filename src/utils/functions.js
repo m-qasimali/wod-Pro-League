@@ -30,7 +30,6 @@ export const unlockScroll = () => {
 export const formatDate = (timestamp) => {
   const date = new Date(timestamp);
 
-  // Convert to a human-readable string format
   const formattedDate = date.toLocaleString("en-US", {
     year: "numeric",
     month: "numeric",
