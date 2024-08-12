@@ -12,7 +12,6 @@ import Teams from "../pages/Teams";
 import Users from "../pages/Users";
 import UserWorkouts from "../pages/UserWorkouts";
 import WorkoutVideos from "../pages/WorkoutVideos";
-import Notifications from "../pages/Notifications";
 
 // Lazy load your components
 
@@ -75,15 +74,6 @@ const router = createBrowserRouter([
           <Suspense fallback={<Loader />}>
             {" "}
             <WorkoutVideos />{" "}
-          </Suspense>
-        ),
-      },
-      {
-        path: "/notifications",
-        element: (
-          <Suspense fallback={<Loader />}>
-            {" "}
-            <Notifications />{" "}
           </Suspense>
         ),
       },

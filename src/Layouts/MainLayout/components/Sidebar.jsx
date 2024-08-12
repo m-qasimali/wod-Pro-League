@@ -49,11 +49,6 @@ const Sidebar = ({ isSidebarOpen }) => {
             activeMenu={activeMenu}
           />
 
-          <MenuItem
-            icon={Icons.Notification}
-            menuName={"Notifications"}
-            activeMenu={activeMenu}
-          />
           <div className="mt-auto w-full">
             <button
               onClick={handleLogout}
