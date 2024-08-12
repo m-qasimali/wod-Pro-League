@@ -227,12 +227,11 @@ export const updateVideoStatusInDB = async (
       user.uploadTime = `${videoMinutes} min ${videoSeconds} sec`;
     }
     if (liftedWeight !== 0) {
-      user.liftedWeight = liftedWeight;
+      user.liftedWeight = `${liftedWeight}`;
     }
     if (repetitions !== 0) {
-      user.repetitions = repetitions;
+      user.repetitions = `${repetitions}`;
     }
-    console.log("user: ", user);
     await setDoc(rankingDocRef, { [userId]: user }, { merge: true });
   }
 
@@ -299,7 +298,7 @@ export const getWorkoutVideosFromDB = async (userId) => {
             startDate: formatDate(workout.startDate),
             endDate: formatDate(workout.endDate),
             exercises: workout.exercises,
-            maxDuration: workout.maxDuration,
+            maxDuration: `${workout.maxDuration}`,
             description: workout.description,
           },
         });
