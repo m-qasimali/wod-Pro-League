@@ -29,9 +29,10 @@ const ManageNotification = ({ close }) => {
     const filteredUsers = [];
     selectedUsers.forEach((user) => {
       users.forEach((u) => {
+        console.log(u);
         if (u.id === user) {
           if (u?.token?.trim()) {
-            filteredUsers.push(u.FCMToken.trim());
+            filteredUsers.push(u?.token.trim());
           }
         }
       });
