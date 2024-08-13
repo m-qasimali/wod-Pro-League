@@ -25,11 +25,12 @@ const ManageNotification = ({ close }) => {
       toast.error("Please fill all fields");
       return;
     }
+
     const filteredUsers = [];
     selectedUsers.forEach((user) => {
       users.forEach((u) => {
         if (u.id === user) {
-          if (u?.FCMToken?.trim()) {
+          if (u?.token?.trim()) {
             filteredUsers.push(u.FCMToken.trim());
           }
         }
