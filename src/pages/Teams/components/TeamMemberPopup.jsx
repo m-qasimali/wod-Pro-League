@@ -41,7 +41,7 @@ const TeamMemberPopup = ({ close, team }) => {
             <HashLoader color="#B6B5FF" size={50} loading={true} />
           </div>
         ) : (
-          <div className="p-4 overflow-auto scrollbar-hide">
+          <div className="p-4">
             <div className="flex flex-col gap-4">
               {teamMembers[team.id]?.map((member) => (
                 <div
@@ -49,19 +49,19 @@ const TeamMemberPopup = ({ close, team }) => {
                   className="flex flex-row items-center gap-4"
                 >
                   {member?.profileImage ? (
-                    <div className="w-16 h-16 rounded-full overflow-hidden">
+                    <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                       <img
                         src={member?.profileImage}
-                        className="w-full h-full"
+                        className="w-full h-full object-cover"
                         alt="member profile"
                       />
                     </div>
                   ) : (
-                    <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
+                    <div className="w-16 h-16 bg-gray-200 rounded-full flex-shrink-0"></div>
                   )}
-                  <div>
+                  <div className="flex flex-col">
                     <h1 className="text-lg font-bold">{member?.name}</h1>
-                    <p className="text-sm text-textSecondary">
+                    <p className="text-sm text-textSecondary truncate max-w-xs">
                       {member?.email}
                     </p>
                   </div>

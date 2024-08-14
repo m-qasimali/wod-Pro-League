@@ -101,7 +101,7 @@ export const getUsersFromDB = async () => {
   }
   data1 = data1.flat();
 
-  const querySnapshot = await getDocs(collection(db, "test_users"));
+  const querySnapshot = await getDocs(collection(db, "users"));
   const data = [];
 
   querySnapshot.forEach((doc) => {
@@ -122,14 +122,14 @@ export const getUsersFromDB = async () => {
 };
 
 export const getTeamsFromDB = async () => {
-  const querySnapshot = await getDocs(collection(db, "test_Teams"));
+  const querySnapshot = await getDocs(collection(db, "teams"));
   const data = [];
 
   for (const docSnapshot of querySnapshot.docs) {
     const res = docSnapshot.data();
 
     // Create a document reference and get the document
-    const teamsOwnerDocRef = doc(db, "test_users", res.teamCreatorId);
+    const teamsOwnerDocRef = doc(db, "users", res.teamCreatorId);
     const teamsOwnerSnapShot = await getDoc(teamsOwnerDocRef);
     const teamOwnerData = teamsOwnerSnapShot.exists()
       ? teamsOwnerSnapShot.data()
@@ -149,7 +149,7 @@ export const getTeamsFromDB = async () => {
 
 export const getTeamMembersFromDB = async (teamId) => {
   const querySnapshot = await getDocs(
-    query(collection(db, "test_users"), where("teamId", "==", teamId))
+    query(collection(db, "users"), where("teamId", "==", teamId))
   );
   const data = [];
   querySnapshot.forEach((doc) => {
@@ -166,7 +166,7 @@ export const getTeamMembersFromDB = async (teamId) => {
 };
 
 export const updateUserWeightInDB = async ({ userId, weight }) => {
-  const docRef = doc(db, "test_users", userId);
+  const docRef = doc(db, "users", userId);
   await setDoc(docRef, { weight }, { merge: true });
   return { userId, weight };
 };
@@ -388,7 +388,7 @@ export const deleteAdminFromDB = async (id) => {
   return id;
 };
 
-export const signInAdminInDB = async (email, password) => {
+export const signInAdminInDB = async ({ email, password }) => {
   try {
     await signInWithEmailAndPassword(auth, email, password);
 
