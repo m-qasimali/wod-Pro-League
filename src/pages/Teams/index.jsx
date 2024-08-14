@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
 import SearchField from "../../components/global/SearchField";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setTeamSearchQuery } from "../../redux/teamSlice";
 import TeamsTable from "../../components/global/TeamsTable";
+import { useNavigate } from "react-router-dom";
 
 const Teams = () => {
   const [searchValue, setSearchValue] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { admin } = useSelector((state) => state.admin);
 
   useEffect(() => {
     dispatch(setTeamSearchQuery(searchValue));
   }, [dispatch, searchValue]);
+
+  if (admin.role !== "primary") {
+    navigate("*");
+  }
 
   return (
     <div className="flex flex-col h-screen">

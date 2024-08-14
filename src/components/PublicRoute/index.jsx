@@ -5,7 +5,7 @@ import { Navigate } from "react-router-dom";
 const PublicRoute = ({ children }) => {
   const { admin } = useSelector((state) => state.admin);
 
-  if (admin.uid) {
+  if (admin.id) {
     return <Navigate to="/workouts" />;
   } else {
     return children;

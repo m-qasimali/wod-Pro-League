@@ -6,10 +6,13 @@ import { useLocation } from "react-router-dom";
 import MenuItem from "./MenuItem";
 import { signOut } from "firebase/auth";
 import { auth } from "../../../../firebase";
+import { clearRole } from "../../../utils/functions";
+import { useSelector } from "react-redux";
 
 const Sidebar = ({ isSidebarOpen }) => {
   const [activeMenu, setActiveMenu] = useState(null);
   const location = useLocation();
+  const { role } = useSelector((state) => state.admin.admin);
 
   useEffect(() => {
     setActiveMenu(location.pathname);
@@ -17,6 +20,7 @@ const Sidebar = ({ isSidebarOpen }) => {
 
   const handleLogout = async () => {
     await signOut(auth);
+    clearRole();
     window.location.replace("/login");
   };
 
@@ -33,26 +37,35 @@ const Sidebar = ({ isSidebarOpen }) => {
         </div>
 
         <div className="w-full flex flex-col gap-2 mt-10 flex-1">
-          <MenuItem
-            icon={Icons.WorkoutIcon}
-            menuName={"Workouts"}
-            activeMenu={activeMenu}
-          />
+          {role === "primary" && (
+            <MenuItem
+              icon={Icons.WorkoutIcon}
+              menuName={"Workouts"}
+              activeMenu={activeMenu}
+            />
+          )}
+
           <MenuItem
             icon={Icons.Users}
             menuName={"Users"}
             activeMenu={activeMenu}
           />
-          <MenuItem
-            icon={Icons.Teams}
-            menuName={"Teams"}
-            activeMenu={activeMenu}
-          />
-          <MenuItem
-            icon={Icons.Users}
-            menuName={"Admins"}
-            activeMenu={activeMenu}
-          />
+
+          {role === "primary" && (
+            <>
+              <MenuItem
+                icon={Icons.Teams}
+                menuName={"Teams"}
+                activeMenu={activeMenu}
+              />
+
+              <MenuItem
+                icon={Icons.Users}
+                menuName={"Admins"}
+                activeMenu={activeMenu}
+              />
+            </>
+          )}
 
           <div className="mt-auto w-full">
             <button

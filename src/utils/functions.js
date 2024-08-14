@@ -1,3 +1,6 @@
+import CryptoJS from "crypto-js";
+const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
+
 export const capitalize = (str) => {
   return str?.charAt(0).toUpperCase() + str?.slice(1);
 };
@@ -42,4 +45,27 @@ export const formatDate = (timestamp) => {
 export function isValidEmail(email) {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailPattern.test(email);
+}
+
+export function encryptRole(role) {
+  const encryptedRole = CryptoJS.AES.encrypt(role, SECRET_KEY).toString();
+
+  localStorage.setItem("userRole", encryptedRole);
+}
+
+export function decryptRole() {
+  const encryptedRole = localStorage.getItem("userRole");
+
+  if (encryptedRole) {
+    const bytes = CryptoJS.AES.decrypt(encryptedRole, SECRET_KEY);
+    const decryptedRole = bytes.toString(CryptoJS.enc.Utf8);
+
+    return decryptedRole;
+  }
+
+  return null;
+}
+
+export function clearRole() {
+  localStorage.removeItem("userRole");
 }

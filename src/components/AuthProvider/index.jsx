@@ -5,6 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebase";
 import { clearAdmin, setAdmin } from "../../redux/adminSlice";
 import Loader from "../global/Loader";
+import { decryptRole } from "../../utils/functions";
 
 const AuthProvider = ({ children }) => {
   const dispatch = useDispatch();
@@ -13,9 +14,11 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        const role = decryptRole();
         const userValidData = {
-          uid: user.uid,
+          id: user.uid,
           email: user.email,
+          role: role,
         };
 
         dispatch(setAdmin(userValidData));

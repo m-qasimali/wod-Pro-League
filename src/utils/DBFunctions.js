@@ -9,7 +9,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { auth, db } from "../../firebase";
-import { formatDate } from "./functions";
+import { encryptRole, formatDate } from "./functions";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -396,16 +396,18 @@ export const signInAdminInDB = async ({ email, password }) => {
 
     const adminQuery = query(
       collection(db, "Admins"),
-      where("id", "==", uid),
+      where("uid", "==", uid),
       where("isActive", "==", true)
     );
+
     const querySnapshot = await getDocs(adminQuery);
 
     if (!querySnapshot.empty) {
       const userDoc = querySnapshot.docs[0];
       const userData = userDoc.data();
+      encryptRole(userData.role);
       return {
-        id: userData.id,
+        id: userData.uid,
         fullName: userData.fullName,
         email: userData.email,
         role: userData.role,

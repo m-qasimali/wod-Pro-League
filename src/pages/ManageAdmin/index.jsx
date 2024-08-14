@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import SearchField from "../../components/global/SearchField";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAdminSearchQuery } from "../../redux/adminsSlice";
 import AdminsTable from "../../components/global/AdminsTable";
 import AddAdmin from "./components/AddAdmin";
 import AddButton from "../../components/global/AddButton";
+import { useNavigate } from "react-router-dom";
 // import { setTeamSearchQuery } from "../../redux/teamSlice";
 
 const ManageAdmin = () => {
   const [searchValue, setSearchValue] = useState("");
   const dispatch = useDispatch();
   const [addAdmin, setAddAdmin] = useState(false);
+  const navigate = useNavigate();
+  const { admin } = useSelector((state) => state.admin);
 
   useEffect(() => {
     dispatch(setAdminSearchQuery(searchValue));
@@ -24,6 +27,10 @@ const ManageAdmin = () => {
     setAddAdmin(false);
   };
 
+  if (admin.role !== "primary") {
+    navigate("*");
+  }
+
   return (
     <div className="flex flex-col h-screen">
       <div className="sticky z-10 ">
@@ -34,9 +41,7 @@ const ManageAdmin = () => {
               <SearchField state={searchValue} setState={setSearchValue} />
             </div>
           </div>
-          <button
-            onClick={openAddAdmin}
-          >
+          <button onClick={openAddAdmin}>
             <AddButton />
           </button>
         </div>

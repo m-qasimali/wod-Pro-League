@@ -13,8 +13,7 @@ import Users from "../pages/Users";
 import UserWorkouts from "../pages/UserWorkouts";
 import WorkoutVideos from "../pages/WorkoutVideos";
 import ManageAdmin from "../pages/ManageAdmin";
-
-// Lazy load your components
+import PageNotFound from "../pages/PageNotFound.jsx";
 
 const router = createBrowserRouter([
   {
@@ -87,6 +86,10 @@ const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "*",
+    element: <PageNotFound />,
   },
 ]);
 

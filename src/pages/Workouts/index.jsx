@@ -5,10 +5,17 @@ import ManageWorkout from "./components/ManageWorkout";
 import { lockScroll, unlockScroll } from "../../utils/functions";
 import { useSelector } from "react-redux";
 import Loader from "../../components/global/Loader";
+import { useNavigate } from "react-router-dom";
 
 const Workouts = () => {
   const [addWorkout, setAddWorkout] = useState(false);
   const { loading, workouts } = useSelector((state) => state.workout);
+  const navigate = useNavigate();
+  const { admin } = useSelector((state) => state.admin);
+
+  if (admin.role !== "primary") {
+    navigate("*");
+  }
 
   const openAddWorkout = () => {
     setAddWorkout(true);

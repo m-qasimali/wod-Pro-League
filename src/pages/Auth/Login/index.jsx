@@ -2,12 +2,12 @@ import { useState } from "react";
 import Logo from "../../../assets/images/Logo.png";
 import { Icons } from "../../../components/global/icons";
 import toast from "react-hot-toast";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../../../firebase";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../../../components/global/Spinner";
 import PasswordInput from "../../../components/global/PasswordInput";
 import { isValidEmail } from "../../../utils/functions";
+import { useDispatch, useSelector } from "react-redux";
+import { signInAdmin } from "../../../redux/adminSlice";
 
 const initialState = {
   email: "",
@@ -16,8 +16,11 @@ const initialState = {
 
 export const Login = () => {
   const [data, setData] = useState(initialState);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { loadingAdmin, loadingAdminError } = useSelector(
+    (state) => state.admin
+  );
 
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
@@ -33,18 +36,18 @@ export const Login = () => {
       return toast.error("Invalid email address!");
     }
 
-    setLoading(true);
-
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
-      navigate("/workouts", { replace: true });
+      await dispatch(signInAdmin(data)).unwrap();
+      navigate("/", { replace: true });
     } catch (error) {
       const errorMessage = error.message;
       toast.error(errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
+
+  if (loadingAdminError) {
+    toast.error(loadingAdminError);
+  }
 
   return (
     <div className="h-screen w-screen flex flex-col items-center justify-center bg-background">
@@ -71,9 +74,10 @@ export const Login = () => {
                 value={data.email}
                 onChange={handleChange}
                 name="email"
-                disabled={loading}
+                disabled={loadingAdmin}
                 className="w-full pr-10 border border-black border-opacity-10 rounded-md p-2 outline-none focus-within:border-primary"
                 required
+                placeholder="Email"
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400">
                 <Icons.Email className="w-5 h-5" />
@@ -84,15 +88,15 @@ export const Login = () => {
           <PasswordInput
             state={data.password}
             handleChange={handleChange}
-            loading={loading}
+            loading={loadingAdmin}
           />
 
           <button
             onClick={handleLogin}
-            disabled={loading}
+            disabled={loadingAdmin}
             className="w-full h-10 bg-primary text-white font-semibold text-lg py-1 hover:bg-opacity-80 rounded-md flex flex-row items-center justify-center"
           >
-            {loading ? <Spinner /> : "LOGIN"}
+            {loadingAdmin ? <Spinner /> : "LOGIN"}
           </button>
         </form>
       </div>

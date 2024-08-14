@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const PrivateRoute = ({ children }) => {
   const { admin } = useSelector((state) => state.admin);
-  if (!admin.uid) {
+  if (!admin.id) {
     return <Navigate to="/login" />;
   } else {
     return children;
