@@ -12,6 +12,7 @@ import Teams from "../pages/Teams";
 import Users from "../pages/Users";
 import UserWorkouts from "../pages/UserWorkouts";
 import WorkoutVideos from "../pages/WorkoutVideos";
+import ManageAdmin from "../pages/ManageAdmin";
 
 // Lazy load your components
 
@@ -48,6 +49,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loader />}>
             <Teams />
+          </Suspense>
+        ),
+      },
+      {
+        path: "admins",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <ManageAdmin />
           </Suspense>
         ),
       },

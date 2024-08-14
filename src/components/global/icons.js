@@ -1,7 +1,6 @@
 import {
   ArrowRightStartOnRectangleIcon,
   Bars4Icon,
-  BellAlertIcon,
   CheckIcon,
   ClockIcon,
   EnvelopeIcon,
@@ -10,6 +9,7 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
   TrashIcon,
+  UserPlusIcon,
   XMarkIcon,
 } from "@heroicons/react/16/solid";
 import Workout from "../../assets/icons/workout.svg";
@@ -46,4 +46,5 @@ export const Icons = {
   Clock: ClockIcon,
   Notification: NotificationIcon,
   Check: CheckIcon,
+  UserPlus: UserPlusIcon,
 };

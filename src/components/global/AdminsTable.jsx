@@ -1,44 +1,51 @@
 import Loader from "./Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { getTeams } from "../../redux/teamSlice";
-import TeamMemberPopup from "../../pages/Teams/components/TeamMemberPopup";
+import { getAdmins } from "../../redux/adminsSlice";
+import DeleteAdminPopup from "./DeleteAdminPopup";
 
-const TeamsTable = () => {
-  const { loading, teams, searchQuery } = useSelector((state) => state.team);
-  const [teamsToDisplay, setTeamsToDisplay] = useState([]);
-  const [showTeam, setShowTeam] = useState(false);
-  const [selectedTeam, setSelectedTeam] = useState(null);
+const AdminsTable = () => {
+  const { admins, loadingAdmins, loadingAdminsError, searchQuery } =
+    useSelector((state) => state.admins);
+  const [adminsToDisplay, setAdminsToDisplay] = useState([]);
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [selectedAdmin, setSelectedAdmin] = useState(null);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getTeams());
+    dispatch(getAdmins());
   }, [dispatch]);
 
   useEffect(() => {
     if (searchQuery) {
-      const filteredUsers = teams.filter(
-        (team) =>
-          team?.category?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
-          team?.teamName?.toLowerCase().includes(searchQuery?.toLowerCase())
+      const filteredAdmins = admins.filter(
+        (admin) =>
+          admin?.fullName?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+          admin?.email?.toLowerCase().includes(searchQuery?.toLowerCase())
       );
-      setTeamsToDisplay(filteredUsers);
+      setAdminsToDisplay(filteredAdmins);
     } else {
-      setTeamsToDisplay(teams);
+      setAdminsToDisplay(admins);
     }
-  }, [searchQuery, teams]);
+  }, [admins, searchQuery]);
 
-  const handleShowTeam = (team) => {
-    setSelectedTeam(team);
-    setShowTeam(true);
+  const handleDeleteAdmin = (admin) => {
+    setSelectedAdmin(admin);
+    setShowDeletePopup(true);
   };
 
-  const closeShowTeam = () => {
-    setShowTeam(false);
+  const closeDeleteAdmin = () => {
+    setShowDeletePopup(false);
   };
 
-  if (loading) {
+  if (loadingAdmins) {
     return <Loader />;
+  }
+
+  if (loadingAdminsError) {
+    console.log(loadingAdminsError);
+
+    return <div>Error loading admins</div>;
   }
 
   return (
@@ -51,13 +58,10 @@ const TeamsTable = () => {
                 Name
               </th>
               <th scope="col" className="px-6 py-3">
-                Category
+                Email
               </th>
               <th scope="col" className="px-6 py-3">
-                Creator Name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Creator Email
+                Created At
               </th>
               <th scope="col" className="px-6 py-3">
                 Action
@@ -65,30 +69,26 @@ const TeamsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {teamsToDisplay?.map((team) => {
+            {adminsToDisplay?.map((admin) => {
               return (
                 <tr
-                  key={team?.id}
+                  key={admin?.id}
                   className="bg-white border-b hover:bg-primary hover:bg-opacity-15"
                 >
                   <td className="px-6 py-2 text-nowrap">
                     <div className="text-sm font-medium whitespace-nowrap">
-                      {team?.teamName}
+                      {admin?.fullName}
                     </div>
                   </td>
-                  <td className="px-6 py-2 text-nowrap">
-                    {team?.teamCategory}
-                  </td>
-                  <td className="px-6 py-2 text-nowrap">{team?.teamOwner}</td>
-                  <td className="px-6 py-2 text-nowrap">
-                    {team?.teamOwnerEmail}
-                  </td>
+                  <td className="px-6 py-2 text-nowrap">{admin?.email}</td>
+                  <td className="px-6 py-2 text-nowrap">{admin?.createdAt}</td>
+
                   <td className="px-6 py-2">
                     <button
-                      onClick={() => handleShowTeam(team)}
+                      onClick={() => handleDeleteAdmin(admin)}
                       className="whitespace-nowrap text-xs underline text-red-400"
                     >
-                      View Members
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -97,11 +97,16 @@ const TeamsTable = () => {
           </tbody>
         </table>
       </div>
-      {showTeam && (
-        <TeamMemberPopup close={closeShowTeam} team={selectedTeam} />
+      {showDeletePopup && (
+        <DeleteAdminPopup
+          close={closeDeleteAdmin}
+          title="Admin"
+          item={selectedAdmin.fullName}
+          id={selectedAdmin?.id}
+        />
       )}
     </div>
   );
 };
 
-export default TeamsTable;
+export default AdminsTable;

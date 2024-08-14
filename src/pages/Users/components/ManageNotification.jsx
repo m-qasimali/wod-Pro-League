@@ -27,38 +27,59 @@ const ManageNotification = ({ close }) => {
     }
 
     const filteredUsers = [];
-    selectedUsers.forEach((user) => {
-      users.forEach((u) => {
-        console.log(u);
-        if (u.id === user) {
-          if (u?.token?.trim()) {
-            filteredUsers.push(u?.token.trim());
+    if (selectedUsers.length !== users.length) {
+      selectedUsers.forEach((user) => {
+        users.forEach((u) => {
+          console.log(u);
+          if (u.id === user) {
+            if (u?.token?.trim()) {
+              filteredUsers.push(u?.token.trim());
+            }
           }
-        }
+        });
       });
-    });
 
-    if (filteredUsers.length === 0) {
-      toast.error("No notification token found");
-      return;
+      if (filteredUsers.length === 0) {
+        toast.error("No notification token found");
+        return;
+      }
     }
 
     try {
       setLoading(true);
-      const res = await fetch(
-        `${import.meta.env.VITE_NODE_SERVER_URL}/user/sendNotification`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            to: filteredUsers,
-            title: data.title,
-            body: data.body,
-          }),
-        }
-      );
+      let res = null;
+      if (selectedUsers.length === users.length) {
+        res = await fetch(
+          `${
+            import.meta.env.VITE_NODE_SERVER_URL
+          }/user/send-topic-notification`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: data.title,
+              body: data.body,
+            }),
+          }
+        );
+      } else {
+        res = await fetch(
+          `${import.meta.env.VITE_NODE_SERVER_URL}/user/sendNotification`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              to: filteredUsers,
+              title: data.title,
+              body: data.body,
+            }),
+          }
+        );
+      }
 
       if (res.status === 200) {
         toast.success("Notification sent successfully");

@@ -1,15 +1,47 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { signInAdminInDB } from "../utils/DBFunctions";
+
+export const signInAdmin = createAsyncThunk(
+  "admin/signInAdmin",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await signInAdminInDB(data);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 const adminSlice = createSlice({
   name: "admin",
-  initialState: {},
+  initialState: {
+    admin: {},
+    loadingAdmin: false,
+    loadingAdminError: null,
+  },
   reducers: {
-    setAdmin(state, action) {
-      return action.payload;
+    setAdmin: (state, action) => {
+      state.admin = action.payload;
     },
-    clearAdmin() {
-      return {};
+    clearAdmin: (state) => {
+      state.admin = {};
     },
+  },
+
+  extraReducers: (builder) => {
+    builder.addCase(signInAdmin.pending, (state) => {
+      state.loadingAdmin = true;
+      state.loadingAdminError = null;
+    });
+    builder.addCase(signInAdmin.fulfilled, (state, action) => {
+      state.admin = action.payload;
+      state.loadingAdmin = false;
+    });
+    builder.addCase(signInAdmin.rejected, (state, action) => {
+      state.loadingAdmin = false;
+      state.loadingAdminError = action.payload;
+    });
   },
 });
 

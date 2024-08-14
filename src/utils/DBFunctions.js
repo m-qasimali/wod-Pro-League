@@ -8,8 +8,12 @@ import {
   getDoc,
   orderBy,
 } from "firebase/firestore";
-import { db } from "../../firebase";
+import { auth, db } from "../../firebase";
 import { formatDate } from "./functions";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 export const addWorkoutToDB = async (data) => {
   const docRef = doc(collection(db, "Work_outs"));
@@ -307,4 +311,111 @@ export const getWorkoutVideosFromDB = async (userId) => {
   }
 
   return data;
+};
+
+export const sendMail = async ({ email, subject, body }) => {
+  try {
+    await fetch(
+      `${import.meta.env.VITE_NODE_SERVER_URL}/user/sendEmail-nodemailer`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          senderEmail: "muhammad.saad@webrangesolutions.com",
+          to: [email],
+          subject: subject,
+          text: body,
+          body: body,
+        }),
+      }
+    );
+  } catch (error) {
+    throw new Error("Error sending email");
+  }
+};
+
+export const addNewAdminToDB = async (data) => {
+  const email = data.email;
+  const user = await createUserWithEmailAndPassword(auth, email, data.password);
+  const docRef = doc(db, "Admins", user.user.uid);
+  const validData = {
+    fullName: data.fullName,
+    email: data.email,
+    createdAt: new Date().toISOString(),
+    uid: user.user.uid,
+    role: "secondary",
+  };
+  await setDoc(docRef, { ...validData, isActive: true });
+
+  await sendMail({
+    email: data.email,
+    subject: "Welcome to the Admin Panel",
+    body: `Hello ${data.fullName},\n\nYou have been added as an admin to the admin panel. Your credientials are followings: \n Email: ${data.email}\n Password: ${data.password} \n\nRegards,\nAdmin Panel`,
+  });
+
+  return validData;
+};
+
+export const getAdminsFromDB = async () => {
+  const querySnapshot = await getDocs(
+    query(
+      collection(db, "Admins"),
+      where("isActive", "==", true),
+      where("role", "==", "secondary")
+    )
+  );
+  const data = [];
+
+  querySnapshot.forEach((doc) => {
+    const res = doc.data();
+    data.push({
+      id: doc.id,
+      fullName: res.fullName,
+      email: res.email,
+      role: res.role,
+      createdAt: res.createdAt.split("T")[0],
+    });
+  });
+
+  return data;
+};
+
+export const deleteAdminFromDB = async (id) => {
+  const docRef = doc(db, "Admins", id);
+  await setDoc(docRef, { isActive: false }, { merge: true });
+  return id;
+};
+
+export const signInAdminInDB = async (email, password) => {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+
+    const uid = auth.currentUser.uid;
+
+    const adminQuery = query(
+      collection(db, "Admins"),
+      where("id", "==", uid),
+      where("isActive", "==", true)
+    );
+    const querySnapshot = await getDocs(adminQuery);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
+      const userData = userDoc.data();
+      return {
+        id: userData.id,
+        fullName: userData.fullName,
+        email: userData.email,
+        role: userData.role,
+      };
+    } else {
+      await auth.signOut();
+      return false;
+    }
+  } catch (error) {
+    console.error("Error signing in admin:", error);
+    return false;
+  }
 };

@@ -48,6 +48,11 @@ const Sidebar = ({ isSidebarOpen }) => {
             menuName={"Teams"}
             activeMenu={activeMenu}
           />
+          <MenuItem
+            icon={Icons.Users}
+            menuName={"Admins"}
+            activeMenu={activeMenu}
+          />
 
           <div className="mt-auto w-full">
             <button

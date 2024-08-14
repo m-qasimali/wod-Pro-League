@@ -38,3 +38,8 @@ export const formatDate = (timestamp) => {
 
   return formattedDate;
 };
+
+export function isValidEmail(email) {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailPattern.test(email);
+}

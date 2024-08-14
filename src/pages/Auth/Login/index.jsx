@@ -6,6 +6,8 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../../../firebase";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../../../components/global/Spinner";
+import PasswordInput from "../../../components/global/PasswordInput";
+import { isValidEmail } from "../../../utils/functions";
 
 const initialState = {
   email: "",
@@ -14,16 +16,11 @@ const initialState = {
 
 export const Login = () => {
   const [data, setData] = useState(initialState);
-  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setData({ ...data, [e.target.name]: e.target.value });
-  };
-
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
   };
 
   const handleLogin = async (e) => {
@@ -32,7 +29,7 @@ export const Login = () => {
       return toast.error("Please fill all the fields!");
     }
 
-    if (data.email !== "admin@gmail.com") {
+    if (!isValidEmail(data.email)) {
       return toast.error("Invalid email address!");
     }
 
@@ -84,33 +81,11 @@ export const Login = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label className="font-semibold" htmlFor="password">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                value={data.password}
-                onChange={handleChange}
-                name="password"
-                disabled={loading}
-                className="w-full border border-black border-opacity-10 rounded-md p-2 outline-none focus-within:border-primary"
-                required
-              />
-              <span
-                onClick={toggleShowPassword}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer"
-              >
-                {showPassword ? (
-                  <Icons.Hide className="w-5 h-5" />
-                ) : (
-                  <Icons.View className="w-5 h-5" />
-                )}
-              </span>
-            </div>
-          </div>
+          <PasswordInput
+            state={data.password}
+            handleChange={handleChange}
+            loading={loading}
+          />
 
           <button
             onClick={handleLogin}
