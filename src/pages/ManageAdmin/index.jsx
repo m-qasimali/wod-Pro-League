@@ -6,6 +6,7 @@ import AdminsTable from "../../components/global/AdminsTable";
 import AddAdmin from "./components/AddAdmin";
 import AddButton from "../../components/global/AddButton";
 import { useNavigate } from "react-router-dom";
+import Loader from "../../components/global/Loader";
 // import { setTeamSearchQuery } from "../../redux/teamSlice";
 
 const ManageAdmin = () => {
@@ -14,10 +15,23 @@ const ManageAdmin = () => {
   const [addAdmin, setAddAdmin] = useState(false);
   const navigate = useNavigate();
   const { admin } = useSelector((state) => state.admin);
+  const [pageLoading, setPageLoading] = useState(true);
+
+  useEffect(() => {
+    if (!admin || admin.role !== "primary") {
+      navigate("*", { replace: true });
+    } else {
+      setPageLoading(false);
+    }
+  }, [navigate, admin]);
 
   useEffect(() => {
     dispatch(setAdminSearchQuery(searchValue));
   }, [dispatch, searchValue]);
+
+  if (pageLoading) {
+    return <Loader />;
+  }
 
   const openAddAdmin = () => {
     setAddAdmin(true);

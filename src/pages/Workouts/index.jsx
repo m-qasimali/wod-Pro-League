@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddButton from "../../components/global/AddButton";
 import WorkoutCard from "./components/WorkoutCard";
 import ManageWorkout from "./components/ManageWorkout";
@@ -12,9 +12,18 @@ const Workouts = () => {
   const { loading, workouts } = useSelector((state) => state.workout);
   const navigate = useNavigate();
   const { admin } = useSelector((state) => state.admin);
+  const [pageLoading, setPageLoading] = useState(true);
 
-  if (admin.role !== "primary") {
-    navigate("*");
+  useEffect(() => {
+    if (!admin || admin.role !== "primary") {
+      navigate("*", { replace: true });
+    } else {
+      setPageLoading(false);
+    }
+  }, [navigate, admin]);
+
+  if (pageLoading || loading) {
+    return <Loader />;
   }
 
   const openAddWorkout = () => {

@@ -4,19 +4,29 @@ import { useDispatch, useSelector } from "react-redux";
 import { setTeamSearchQuery } from "../../redux/teamSlice";
 import TeamsTable from "../../components/global/TeamsTable";
 import { useNavigate } from "react-router-dom";
+import Loader from "../../components/global/Loader";
 
 const Teams = () => {
   const [searchValue, setSearchValue] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { admin } = useSelector((state) => state.admin);
+  const [pageLoading, setPageLoading] = useState(true);
+
+  useEffect(() => {
+    if (!admin || admin.role !== "primary") {
+      navigate("*", { replace: true });
+    } else {
+      setPageLoading(false);
+    }
+  }, [navigate, admin]);
 
   useEffect(() => {
     dispatch(setTeamSearchQuery(searchValue));
   }, [dispatch, searchValue]);
 
-  if (admin.role !== "primary") {
-    navigate("*");
+  if (pageLoading) {
+    return <Loader />;
   }
 
   return (
