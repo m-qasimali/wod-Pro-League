@@ -22,6 +22,8 @@ import { BiCheckbox } from "react-icons/bi";
 import Teams from "../../assets/icons/teams.svg";
 import Users from "../../assets/icons/users.svg";
 import NotificationIcon from "../../assets/icons/Notifications.png";
+import CouponIcon from "../../assets/icons/coupons.svg";
+import AdminIcon from "../../assets/icons/Admin.svg";
 
 export const Icons = {
   OpenSidebarIcon: Bars4Icon,
@@ -47,4 +49,6 @@ export const Icons = {
   Notification: NotificationIcon,
   Check: CheckIcon,
   UserPlus: UserPlusIcon,
+  Coupon: CouponIcon,
+  Admins: AdminIcon,
 };

@@ -421,3 +421,62 @@ export const signInAdminInDB = async ({ email, password }) => {
     return false;
   }
 };
+
+export const getCouponUsersFromDB = async ({ couponName }) => {
+  const querySnapshot = await getDocs(
+    collection(db, "coupons", couponName, "users")
+  );
+
+  const data = [];
+  if (!querySnapshot.empty) {
+    for (const userDoc of querySnapshot.docs) {
+      const userId = userDoc.data()?.userId;
+      if (userId) {
+        const userDocRef = doc(db, "users", userId);
+        const userDocSnapshot = await getDoc(userDocRef);
+        const user = userDocSnapshot.data();
+        if (user) {
+          data.push({
+            userId: user?.userId,
+            fullName: user?.firstName + " " + user?.lastName,
+            email: user?.email,
+            profileImage: user?.profilePicture,
+          });
+        }
+      }
+    }
+  }
+
+  return {
+    couponName,
+    users: data,
+  };
+};
+
+export const getFreeCouponUsersFromDB = async () => {
+  const querySnapshot = await getDocs(
+    query(collection(db, "freeCoupons"), where("isUsed", "==", true))
+  );
+
+  const data = [];
+  if (querySnapshot.exists()) {
+    for (const userDoc of querySnapshot.docs) {
+      const userId = userDoc.data()?.userId;
+      if (userId) {
+        const userDocRef = doc(db, "users", userId);
+        const userDocSnapshot = await getDoc(userDocRef);
+        const user = userDocSnapshot.data();
+        if (user) {
+          data.push({
+            userId: user?.userId,
+            fullName: user?.firstName + " " + user?.lastName,
+            email: user?.email,
+            profileImage: user?.profilePicture,
+          });
+        }
+      }
+    }
+  }
+
+  return data;
+};

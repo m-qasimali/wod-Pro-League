@@ -5,6 +5,7 @@ import userReducer from "./userSlice";
 import videoReducer from "./videoSlice";
 import teamReducer from "./teamSlice";
 import adminsReducer from "./adminsSlice";
+import userCouponReducer from "./couponSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     video: videoReducer,
     team: teamReducer,
     admins: adminsReducer,
+    couponUsers: userCouponReducer,
   },
 });

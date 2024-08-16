@@ -14,6 +14,7 @@ import UserWorkouts from "../pages/UserWorkouts";
 import WorkoutVideos from "../pages/WorkoutVideos";
 import ManageAdmin from "../pages/ManageAdmin";
 import PageNotFound from "../pages/PageNotFound.jsx";
+import Coupons from "../pages/Coupons/index.jsx";
 
 const router = createBrowserRouter([
   {
@@ -64,6 +65,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loader />}>
             <Users />
+          </Suspense>
+        ),
+      },
+      {
+        path: "coupons",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Coupons />
           </Suspense>
         ),
       },

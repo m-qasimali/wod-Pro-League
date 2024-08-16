@@ -60,8 +60,14 @@ const Sidebar = ({ isSidebarOpen }) => {
               />
 
               <MenuItem
-                icon={Icons.Users}
+                icon={Icons.Admins}
                 menuName={"Admins"}
+                activeMenu={activeMenu}
+              />
+
+              <MenuItem
+                icon={Icons.Coupon}
+                menuName={"Coupons"}
                 activeMenu={activeMenu}
               />
             </>
