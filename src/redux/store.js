@@ -6,6 +6,7 @@ import videoReducer from "./videoSlice";
 import teamReducer from "./teamSlice";
 import adminsReducer from "./adminsSlice";
 import userCouponReducer from "./couponSlice";
+import dashboardSliceReducer from "./dashboardSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +17,6 @@ export const store = configureStore({
     team: teamReducer,
     admins: adminsReducer,
     couponUsers: userCouponReducer,
+    dashboard: dashboardSliceReducer,
   },
 });

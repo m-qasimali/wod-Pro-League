@@ -15,6 +15,7 @@ import WorkoutVideos from "../pages/WorkoutVideos";
 import ManageAdmin from "../pages/ManageAdmin";
 import PageNotFound from "../pages/PageNotFound.jsx";
 import Coupons from "../pages/Coupons/index.jsx";
+import Dashboard from "../pages/Dashboard/index.jsx";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,14 @@ const router = createBrowserRouter([
       </PrivateRoute>
     ),
     children: [
+      {
+        path: "/dashboard",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Dashboard />
+          </Suspense>
+        ),
+      },
       {
         path: "workouts",
         element: (

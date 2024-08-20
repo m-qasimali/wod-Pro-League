@@ -31,47 +31,57 @@ const Sidebar = ({ isSidebarOpen }) => {
       } bg-white sm:translate-x-0 shadow-custom-lg`}
       aria-label="Sidebar"
     >
-      <div className="h-full mx-6 pb-4 overflow-y-auto flex flex-col items-center">
+      <div className="h-full mx-6 pb-4 flex flex-col items-center">
         <div className="flex flex-row items-center justify-center w-52">
           <img src={Logo} alt="Logo" />
         </div>
 
-        <div className="w-full flex flex-col gap-2 mt-10 flex-1">
-          {role === "primary" && (
+        <div className="w-full flex flex-col gap-2 mt-5 mb-5 flex-1">
+          <div className="flex flex-col max-h-96 gap-2 overflow-auto custom-scrollbar scrollbar-hide">
+            {role === "primary" && (
+              <>
+                <MenuItem
+                  Icon={Icons.Dashboard}
+                  menuName={"Dashboard"}
+                  activeMenu={activeMenu}
+                />
+
+                <MenuItem
+                  Icon={Icons.WorkoutIcon}
+                  menuName={"Workouts"}
+                  activeMenu={activeMenu}
+                />
+              </>
+            )}
+
             <MenuItem
-              icon={Icons.WorkoutIcon}
-              menuName={"Workouts"}
+              Icon={Icons.Users}
+              menuName={"Users"}
               activeMenu={activeMenu}
             />
-          )}
 
-          <MenuItem
-            icon={Icons.Users}
-            menuName={"Users"}
-            activeMenu={activeMenu}
-          />
+            {role === "primary" && (
+              <>
+                <MenuItem
+                  Icon={Icons.Teams}
+                  menuName={"Teams"}
+                  activeMenu={activeMenu}
+                />
 
-          {role === "primary" && (
-            <>
-              <MenuItem
-                icon={Icons.Teams}
-                menuName={"Teams"}
-                activeMenu={activeMenu}
-              />
+                <MenuItem
+                  Icon={Icons.Admins}
+                  menuName={"Admins"}
+                  activeMenu={activeMenu}
+                />
 
-              <MenuItem
-                icon={Icons.Admins}
-                menuName={"Admins"}
-                activeMenu={activeMenu}
-              />
-
-              <MenuItem
-                icon={Icons.Coupon}
-                menuName={"Coupons"}
-                activeMenu={activeMenu}
-              />
-            </>
-          )}
+                <MenuItem
+                  Icon={Icons.Coupon}
+                  menuName={"Coupons"}
+                  activeMenu={activeMenu}
+                />
+              </>
+            )}
+          </div>
 
           <div className="mt-auto w-full">
             <button

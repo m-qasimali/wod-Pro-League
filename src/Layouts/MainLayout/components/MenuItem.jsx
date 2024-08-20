@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
-const MenuItem = ({ activeMenu, icon, menuName }) => {
-
+const MenuItem = ({ activeMenu, Icon, menuName }) => {
   return (
     <Link
       to={`/${menuName?.toLowerCase()}`}
@@ -14,8 +13,8 @@ const MenuItem = ({ activeMenu, icon, menuName }) => {
           : ""
       }`}
     >
-      <div className="h-7">
-        <img src={icon} alt={`${menuName} icon`} className="w-full h-full" />
+      <div>
+        <Icon className="w-6 h-6" />
       </div>
       <p
         className={`text-xl ${

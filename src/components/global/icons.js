@@ -14,18 +14,21 @@ import {
   PencilSquareIcon,
   ChevronDownIcon,
 } from "@heroicons/react/16/solid";
-import Workout from "../../assets/icons/workout.svg";
 import Edit from "../../assets/icons/Edit.svg";
 import { CheckCircleIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { FaCalendarCheck } from "react-icons/fa";
 import { FaCalendarTimes } from "react-icons/fa";
 import { BiCheckboxSquare } from "react-icons/bi";
 import { BiCheckbox } from "react-icons/bi";
-import Teams from "../../assets/icons/teams.svg";
-import Users from "../../assets/icons/users.svg";
 import NotificationIcon from "../../assets/icons/Notifications.png";
-import CouponIcon from "../../assets/icons/coupons.svg";
-import AdminIcon from "../../assets/icons/Admin.svg";
+
+import { LuLayoutDashboard as DashboardIcon } from "react-icons/lu";
+import { CgGym as Workout } from "react-icons/cg";
+import { HiOutlineUsers as Users } from "react-icons/hi2";
+import { SiMicrosoftteams as Teams } from "react-icons/si";
+import { MdOutlineAdminPanelSettings as Admin } from "react-icons/md";
+import { RiPassPendingLine as CouponIcon } from "react-icons/ri";
+
 
 export const Icons = {
   OpenSidebarIcon: Bars4Icon,
@@ -52,7 +55,8 @@ export const Icons = {
   Check: CheckIcon,
   UserPlus: UserPlusIcon,
   Coupon: CouponIcon,
-  Admins: AdminIcon,
+  Admins: Admin,
   Edit: PencilSquareIcon,
   ArrowDown: ChevronDownIcon,
+  Dashboard: DashboardIcon,
 };
