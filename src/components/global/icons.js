@@ -11,6 +11,8 @@ import {
   TrashIcon,
   UserPlusIcon,
   XMarkIcon,
+  PencilSquareIcon,
+  ChevronDownIcon,
 } from "@heroicons/react/16/solid";
 import Workout from "../../assets/icons/workout.svg";
 import Edit from "../../assets/icons/Edit.svg";
@@ -51,4 +53,6 @@ export const Icons = {
   UserPlus: UserPlusIcon,
   Coupon: CouponIcon,
   Admins: AdminIcon,
+  Edit: PencilSquareIcon,
+  ArrowDown: ChevronDownIcon,
 };

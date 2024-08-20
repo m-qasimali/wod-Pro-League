@@ -69,3 +69,15 @@ export function decryptRole() {
 export function clearRole() {
   localStorage.removeItem("userRole");
 }
+
+export const splitCategoryNameAndPrice = (categories) => {
+  return categories.map((category) => {
+    const parts = category.split(" ");
+    const price = `${parts[parts.length - 2]} ${parts[parts.length - 1]}`;
+    const name = parts.slice(0, parts.length - 2).join(" ");
+
+    return { name, price };
+  });
+};
+
+

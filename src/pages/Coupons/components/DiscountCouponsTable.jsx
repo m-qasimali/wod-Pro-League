@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { coupons } from "../../utils/coupons";
-import UsersPopup from "../../pages/Coupons/components/UsersPopup";
+import { DiscountCoupons } from "../../../utils/coupons";
+import DiscountUsersPopup from "./DiscountUsersPopup";
 
-const CouponsTable = () => {
+const DiscountCouponsTable = () => {
   const [showUsers, setShowUsers] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
 
@@ -30,7 +30,7 @@ const CouponsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {coupons?.map((coupon) => {
+            {DiscountCoupons?.map((coupon) => {
               return (
                 <tr
                   key={coupon}
@@ -56,9 +56,11 @@ const CouponsTable = () => {
           </tbody>
         </table>
       </div>
-      {showUsers && <UsersPopup close={closeShowUsers} coupon={selectedCoupon} />}
+      {showUsers && (
+        <DiscountUsersPopup close={closeShowUsers} coupon={selectedCoupon} />
+      )}
     </div>
   );
 };
 
-export default CouponsTable;
+export default DiscountCouponsTable;

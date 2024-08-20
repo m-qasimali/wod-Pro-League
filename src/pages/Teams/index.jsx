@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import SearchField from "../../components/global/SearchField";
 import { useDispatch, useSelector } from "react-redux";
 import { setTeamSearchQuery } from "../../redux/teamSlice";
-import TeamsTable from "../../components/global/TeamsTable";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../components/global/Loader";
+import TeamsTable from "./components/TeamsTable";
 
 const Teams = () => {
   const [searchValue, setSearchValue] = useState("");

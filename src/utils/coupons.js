@@ -1,4 +1,4 @@
-export const coupons = [
+export const DiscountCoupons = [
   "Saralicia",
   "Babybeast",
   "ElenaCarratala",
@@ -13,4 +13,12 @@ export const coupons = [
   "Paumt",
   "Baby",
   "Terra",
+];
+
+export const FreeCoupons = [
+  "BrowLeCsk0sGLkNWPL",
+  "R49DTipz6Y4tKvDWPL",
+  "aKGRTGG5FPGwwyhWPL",
+  "btzQcmJB93MSsr0WPL",
+  "gK4Ucnc4EArLlnsWPL",
 ];

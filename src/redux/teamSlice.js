@@ -1,5 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getTeamMembersFromDB, getTeamsFromDB } from "../utils/DBFunctions";
+import {
+  changeTeamCategoryInDB,
+  getTeamMembersFromDB,
+  getTeamsFromDB,
+} from "../utils/DBFunctions";
 
 export const getTeams = createAsyncThunk(
   "teams/getTeams",
@@ -28,6 +32,20 @@ export const getTeamMembers = createAsyncThunk(
   }
 );
 
+export const changeTeamCategory = createAsyncThunk(
+  "teams/changeTeamCategory",
+  async ({ teamId, category }, { rejectWithValue }) => {
+    try {
+      const response = await changeTeamCategoryInDB({ teamId, category });
+      return response;
+    } catch (error) {
+      console.log(error);
+
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const teamSlice = createSlice({
   name: "teams",
   initialState: {
@@ -38,6 +56,8 @@ const teamSlice = createSlice({
     loadingMembers: false,
     teamMembers: {},
     teamMembersError: null,
+    loadingCategoryChange: false,
+    categoryChangeError: null,
   },
   reducers: {
     setTeamSearchQuery: (state, action) => {
@@ -68,6 +88,23 @@ const teamSlice = createSlice({
     builder.addCase(getTeamMembers.rejected, (state, action) => {
       state.loadingMembers = false;
       state.teamMembersError = action.payload;
+    });
+    builder.addCase(changeTeamCategory.pending, (state) => {
+      state.loadingCategoryChange = true;
+      state.categoryChangeError = null;
+    });
+    builder.addCase(changeTeamCategory.fulfilled, (state, action) => {
+      state.loadingCategoryChange = false;
+      state.teams = state.teams.map((team) => {
+        if (team?.id === action.payload.teamId) {
+          team.teamCategory = action.payload.category;
+        }
+        return team;
+      });
+    });
+    builder.addCase(changeTeamCategory.rejected, (state, action) => {
+      state.loadingCategoryChange = false;
+      state.categoryChangeError = action.payload;
     });
   },
 });

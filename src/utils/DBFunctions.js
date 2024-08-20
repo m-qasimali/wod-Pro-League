@@ -141,6 +141,7 @@ export const getTeamsFromDB = async () => {
       teamCategory: res.teamCategory,
       teamOwner: teamOwnerData?.firstName + teamOwnerData?.lastName,
       teamOwnerEmail: teamOwnerData?.email,
+      platform: res?.platform,
     });
   }
 
@@ -313,9 +314,9 @@ export const getWorkoutVideosFromDB = async (userId) => {
   return data;
 };
 
-export const sendMail = async ({ email, subject, body }) => {
+export const sendMails = async ({ emails, subject, body }) => {
   try {
-    await fetch(
+    const res = await fetch(
       `${import.meta.env.VITE_NODE_SERVER_URL}/user/sendEmail-nodemailer`,
       {
         method: "POST",
@@ -323,14 +324,15 @@ export const sendMail = async ({ email, subject, body }) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          senderEmail: "muhammad.saad@webrangesolutions.com",
-          to: [email],
+          to: emails,
           subject: subject,
           text: body,
           body: body,
         }),
       }
     );
+
+    return res;
   } catch (error) {
     throw new Error("Error sending email");
   }
@@ -349,8 +351,8 @@ export const addNewAdminToDB = async (data) => {
   };
   await setDoc(docRef, { ...validData, isActive: true });
 
-  await sendMail({
-    email: data.email,
+  await sendMails({
+    email: [data.email],
     subject: "Welcome to the Admin Panel",
     body: `Hello ${data.fullName},\n\nYou have been added as an admin to the admin panel. Your credientials are followings: \n Email: ${data.email}\n Password: ${data.password} \n\nRegards,\nAdmin Panel`,
   });
@@ -417,7 +419,6 @@ export const signInAdminInDB = async ({ email, password }) => {
       return false;
     }
   } catch (error) {
-    console.error("Error signing in admin:", error);
     return false;
   }
 };
@@ -453,15 +454,20 @@ export const getCouponUsersFromDB = async ({ couponName }) => {
   };
 };
 
-export const getFreeCouponUsersFromDB = async () => {
+export const getFreeCouponUsersFromDB = async ({ couponName }) => {
   const querySnapshot = await getDocs(
-    query(collection(db, "freeCoupons"), where("isUsed", "==", true))
+    query(
+      collection(db, "freeCoupons"),
+      where("code", "==", couponName),
+      where("isUsed", "==", true)
+    )
   );
 
   const data = [];
-  if (querySnapshot.exists()) {
+
+  if (!querySnapshot.empty) {
     for (const userDoc of querySnapshot.docs) {
-      const userId = userDoc.data()?.userId;
+      const userId = userDoc.data()?.usedBy;
       if (userId) {
         const userDocRef = doc(db, "users", userId);
         const userDocSnapshot = await getDoc(userDocRef);
@@ -469,7 +475,7 @@ export const getFreeCouponUsersFromDB = async () => {
         if (user) {
           data.push({
             userId: user?.userId,
-            fullName: user?.firstName + " " + user?.lastName,
+            fullName: `${user?.firstName} ${user?.lastName}`,
             email: user?.email,
             profileImage: user?.profilePicture,
           });
@@ -478,5 +484,39 @@ export const getFreeCouponUsersFromDB = async () => {
     }
   }
 
-  return data;
+  return {
+    couponName,
+    users: data,
+  };
+};
+
+export const changeTeamCategoryInDB = async ({ teamId, category }) => {
+  const teamRef = doc(db, "teams", teamId);
+  await setDoc(
+    teamRef,
+    { teamCategory: category, platform: "app" },
+    { merge: true }
+  );
+
+  const querySnapshot = await getDocs(
+    query(collection(db, "users"), where("teamId", "==", teamId))
+  );
+
+  for (const docRef of querySnapshot.docs) {
+    const userDocRef = doc(db, "users", docRef.id);
+    await setDoc(userDocRef, { categoryName: category }, { merge: true });
+  }
+
+  let teamEmails = [];
+  const team = (await getDoc(teamRef)).data();
+  teamEmails.push(team.creatorEmail);
+  teamEmails.push(...team.teammateEmails);
+
+  await sendMails({
+    emails: teamEmails,
+    subject: "Team Category Change",
+    body: `Hello Team, your category has been changed to ${category}.`,
+  });
+
+  return { teamId, category };
 };

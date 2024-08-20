@@ -4,25 +4,27 @@ import { Icons } from "../../../components/global/icons";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { HashLoader } from "react-spinners";
-import { getCouponUsers } from "../../../redux/couponSlice";
+import { getFreeCouponsUsers } from "../../../redux/couponSlice";
 
-const UsersPopup = ({ close, coupon }) => {
-  const { discountUsers, loading, error } = useSelector(
+const FreeUsersPopup = ({ close, coupon }) => {
+  const { freeUsers, loading, error } = useSelector(
     (state) => state.couponUsers
   );
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (coupon) {
-      if (discountUsers[coupon]) return;
-      dispatch(getCouponUsers({ couponName: coupon }));
+      if (freeUsers[coupon]) return;
+      dispatch(getFreeCouponsUsers({ couponName: coupon }));
     }
-  }, [dispatch, coupon, discountUsers]);
+  }, [dispatch, coupon, freeUsers]);
 
-  if (error) {
-    toast.error(error);
-    return;
-  }
+  // Use useEffect to trigger the toast on error after render
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   return (
     <>
@@ -30,12 +32,12 @@ const UsersPopup = ({ close, coupon }) => {
         onClick={close}
         className="fixed inset-0 z-40 bg-black opacity-50"
       ></div>
-      <div className="w-full sm:w-96 h-1/2 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white drop-shadow-2xl border-primary border-s flex flex-col">
+      <div className="w-full h-1/2 overflow-auto sm:w-96 rounded-lg fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white drop-shadow-2xl border-primary border-s flex flex-col">
         <div className="flex flex-row items-center justify-between border-b-2 p-4 pb-2">
           <div className="flex flex-row items-center">
             <h1 className="text-xl font-bold text-gray-800">{coupon}</h1>
             <span className="text-sm">
-              ({discountUsers[coupon] && discountUsers[coupon]?.length})
+              ({freeUsers[coupon] && freeUsers[coupon]?.length})
             </span>
           </div>
           <button onClick={close} className="hover:bg-gray-100 rounded-md p-1">
@@ -47,9 +49,9 @@ const UsersPopup = ({ close, coupon }) => {
             <HashLoader color="#B6B5FF" size={50} loading={true} />
           </div>
         ) : (
-          <div className="p-4">
+          <div className="p-4 overflow-auto">
             <div className="flex flex-col gap-4">
-              {discountUsers[coupon]?.map((user) => (
+              {freeUsers[coupon]?.map((user) => (
                 <div
                   key={user?.userId}
                   className="flex flex-row items-center gap-4"
@@ -81,4 +83,4 @@ const UsersPopup = ({ close, coupon }) => {
   );
 };
 
-export default UsersPopup;
+export default FreeUsersPopup;

@@ -1,13 +1,16 @@
-import Loader from "./Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { getTeams } from "../../redux/teamSlice";
-import TeamMemberPopup from "../../pages/Teams/components/TeamMemberPopup";
+import { getTeams } from "../../../redux/teamSlice";
+import { Icons } from "../../../components/global/icons";
+import TeamMemberPopup from "./TeamMemberPopup";
+import Loader from "../../../components/global/Loader";
+import CategoryEditPopup from "./CategoryEditPopup";
 
 const TeamsTable = () => {
   const { loading, teams, searchQuery } = useSelector((state) => state.team);
   const [teamsToDisplay, setTeamsToDisplay] = useState([]);
   const [showTeam, setShowTeam] = useState(false);
+  const [showEditCategory, setShowEditCategory] = useState(false);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const dispatch = useDispatch();
 
@@ -31,6 +34,15 @@ const TeamsTable = () => {
   const handleShowTeam = (team) => {
     setSelectedTeam(team);
     setShowTeam(true);
+  };
+
+  const handleShowEditCategory = (team) => {
+    setSelectedTeam(team);
+    setShowEditCategory(true);
+  };
+
+  const closeShowEditCategory = () => {
+    setShowEditCategory(false);
   };
 
   const closeShowTeam = () => {
@@ -76,8 +88,16 @@ const TeamsTable = () => {
                       {team?.teamName}
                     </div>
                   </td>
-                  <td className="px-6 py-2 text-nowrap">
-                    {team?.teamCategory}
+                  <td className="px-6 py-2">
+                    <div className="flex flex-row gap-2">
+                      <img
+                        src={Icons.EditIcon}
+                        className="w-6 h-6 bg-primary p-1 rounded-full cursor-pointer"
+                        alt="edit category"
+                        onClick={() => handleShowEditCategory(team)}
+                      />
+                      <p className="text-nowrap">{team?.teamCategory}</p>
+                    </div>
                   </td>
                   <td className="px-6 py-2 text-nowrap">{team?.teamOwner}</td>
                   <td className="px-6 py-2 text-nowrap">
@@ -99,6 +119,10 @@ const TeamsTable = () => {
       </div>
       {showTeam && (
         <TeamMemberPopup close={closeShowTeam} team={selectedTeam} />
+      )}
+
+      {showEditCategory && (
+        <CategoryEditPopup close={closeShowEditCategory} team={selectedTeam} />
       )}
     </div>
   );

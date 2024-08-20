@@ -5,6 +5,7 @@ import Spinner from "../../../components/global/Spinner";
 import { useSelector } from "react-redux";
 import Input from "../../../components/global/Input";
 import toast from "react-hot-toast";
+import { sendMails } from "../../../utils/DBFunctions";
 
 const initialState = {
   subject: "",
@@ -38,22 +39,11 @@ const ManageEmail = ({ close }) => {
 
     try {
       setLoading(true);
-      const res = await fetch(
-        `${import.meta.env.VITE_NODE_SERVER_URL}/user/sendEmail-nodemailer`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            senderEmail: "muhammad.saad@webrangesolutions.com",
-            to: filteredUsers,
-            subject: data.subject,
-            text: data.body,
-            body: data.body,
-          }),
-        }
-      );
+      const res = await sendMails({
+        emails: filteredUsers,
+        subject: data.subject,
+        body: data.body,
+      });
 
       if (res.status === 200) {
         toast.success("Email sent successfully");
