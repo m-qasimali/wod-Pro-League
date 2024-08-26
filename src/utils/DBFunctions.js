@@ -106,17 +106,20 @@ export const getUsersFromDB = async () => {
 
   querySnapshot.forEach((doc) => {
     const res = doc.data();
+    const validData = {
+      id: doc.id,
+      profileImage: res.profilePicture,
+      email: res.email,
+      name: res.firstName + " " + res.lastName,
+      teamName: res.teamName,
+      weight: res.weight,
+      token: res?.FCMToken,
+    };
+
     if (data1.includes(doc.id)) {
-      data.push({
-        id: doc.id,
-        profileImage: res.profilePicture,
-        email: res.email,
-        name: res.firstName + " " + res.lastName,
-        teamName: res.teamName,
-        weight: res.weight,
-        token: res?.FCMToken,
-      });
+      validData.isRegistered = true;
     }
+    data.push(validData);
   });
   return data;
 };
