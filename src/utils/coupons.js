@@ -14,7 +14,8 @@ export const DiscountCoupons = [
   "Baby",
   "Terra",
   "Dami",
-  "Ramonfitness",
+  "Romanfitness",
+  "Carla10",
 ];
 
 export const FreeCoupons = [
