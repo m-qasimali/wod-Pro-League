@@ -128,44 +128,89 @@ export const getTeamsFromDB = async () => {
   const querySnapshot = await getDocs(collection(db, "teams"));
   const data = [];
 
-  for (const docSnapshot of querySnapshot.docs) {
-    const res = docSnapshot.data();
+  if (querySnapshot.empty) {
+    return data;
+  }
 
-    // Create a document reference and get the document
-    const teamsOwnerDocRef = doc(db, "users", res.teamCreatorId);
-    const teamsOwnerSnapShot = await getDoc(teamsOwnerDocRef);
-    const teamOwnerData = teamsOwnerSnapShot.exists()
-      ? teamsOwnerSnapShot.data()
-      : null;
+  const teamDocs = querySnapshot.docs.map((docSnapshot) => ({
+    id: docSnapshot.id,
+    ...docSnapshot.data(),
+  }));
+
+  const teamCreatorIds = teamDocs.map((team) => team.teamCreatorId);
+
+  const usersQuery = query(
+    collection(db, "users"),
+    where("__name__", "in", teamCreatorIds)
+  );
+  const usersSnapshot = await getDocs(usersQuery);
+
+  const userMap = new Map();
+  usersSnapshot.forEach((userDoc) => {
+    const userData = userDoc.data();
+    userMap.set(userDoc.id, userData);
+  });
+
+  teamDocs.forEach((team) => {
+    const teamOwnerData = userMap.get(team.teamCreatorId) || {};
 
     data.push({
-      id: res.teamId,
-      teamName: res.teamName,
-      teamCategory: res.teamCategory,
-      teamOwner: teamOwnerData?.firstName + teamOwnerData?.lastName,
-      teamOwnerEmail: teamOwnerData?.email,
-      platform: res?.platform,
+      id: team.teamId,
+      teamName: team.teamName,
+      teamCategory: team.teamCategory,
+      teamOwner: `${teamOwnerData.firstName || ""} ${
+        teamOwnerData.lastName || ""
+      }`,
+      teamOwnerEmail: teamOwnerData.email || "",
+      platform: team.platform || "",
     });
-  }
+  });
 
   return data;
 };
 
 export const getTeamMembersFromDB = async (teamId) => {
-  const querySnapshot = await getDocs(
-    query(collection(db, "users"), where("teamId", "==", teamId))
+  const querySnapshot = await getDoc(doc(collection(db, "teams"), teamId));
+  const teamMembers = querySnapshot.data().teammateEmails;
+  const captain = querySnapshot.data().creatorEmail;
+  teamMembers.push(captain);
+
+  if (!teamMembers || teamMembers.length === 0) {
+    return [];
+  }
+
+  const usersRef = await getDocs(
+    query(collection(db, "users"), where("email", "in", teamMembers))
   );
-  const data = [];
-  querySnapshot.forEach((doc) => {
-    const res = doc.data();
-    data.push({
+
+  const userMap = new Map();
+  usersRef.forEach((doc) => {
+    const user = doc.data();
+    userMap.set(user.email, {
       id: doc.id,
-      profileImage: res.profilePicture,
-      email: res.email,
-      name: res.firstName + " " + res.lastName,
-      teamName: res.teamName,
+      profileImage: user.profilePicture || "",
+      email: user.email,
+      name: `${user.firstName || ""} ${user.lastName || ""}`,
+      teamName: user.teamName || "",
+      isCaptain: user.email === captain,
+      gender: user.gender,
     });
   });
+
+  const data = teamMembers.map((email) => {
+    return (
+      userMap.get(email) || {
+        id: "",
+        profileImage: "",
+        email: email,
+        name: "",
+        teamName: "",
+        isCaptain: email === captain,
+        gender: "",
+      }
+    );
+  });
+
   return data;
 };
 
@@ -286,16 +331,15 @@ export const getWorkoutVideosFromDB = async (userId) => {
 
       const videoSnapshot = await getDocs(videoQuery);
 
-      // Check if there are any documents in the videoSnapshot
       if (!videoSnapshot.empty) {
-        const videoDoc = videoSnapshot.docs[0]; // Get the first document
+        const videoDoc = videoSnapshot.docs[0];
         const video = videoDoc.data();
 
         const workoutRef = await getDoc(doc(db, "Work_outs", workoutId));
         const workout = workoutRef.data();
 
         data.push({
-          id: videoDoc.id, // Document ID
+          id: videoDoc.id,
           status: video.status,
           userId: video.userId,
           videos: video.videos,

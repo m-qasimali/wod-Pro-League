@@ -4,6 +4,10 @@ import {
   getTeamMembersFromDB,
   getTeamsFromDB,
 } from "../utils/DBFunctions";
+import {
+  createTeamInDB,
+  createTeamMemberAccountInDB,
+} from "@/utils/DBFunctions2";
 
 export const getTeams = createAsyncThunk(
   "teams/getTeams",
@@ -46,6 +50,30 @@ export const changeTeamCategory = createAsyncThunk(
   }
 );
 
+export const addNewTeam = createAsyncThunk(
+  "teams/addNewTeam",
+  async (teamData, { rejectWithValue }) => {
+    try {
+      const response = await createTeamInDB(teamData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const addNewMember = createAsyncThunk(
+  "teams/addNewMember",
+  async (memberData, { rejectWithValue }) => {
+    try {
+      const response = await createTeamMemberAccountInDB(memberData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const teamSlice = createSlice({
   name: "teams",
   initialState: {
@@ -58,6 +86,10 @@ const teamSlice = createSlice({
     teamMembersError: null,
     loadingCategoryChange: false,
     categoryChangeError: null,
+    creatingNewTeam: false,
+    newTeamError: null,
+    creatingNewTeamMember: false,
+    newTeamMemberError: null,
   },
   reducers: {
     setTeamSearchQuery: (state, action) => {
@@ -105,6 +137,29 @@ const teamSlice = createSlice({
     builder.addCase(changeTeamCategory.rejected, (state, action) => {
       state.loadingCategoryChange = false;
       state.categoryChangeError = action.payload;
+    });
+    builder.addCase(addNewTeam.pending, (state) => {
+      state.creatingNewTeam = true;
+      state.newTeamError = null;
+    });
+    builder.addCase(addNewTeam.fulfilled, (state, action) => {
+      state.creatingNewTeam = false;
+      state.teams.push(action.payload);
+    });
+    builder.addCase(addNewTeam.rejected, (state, action) => {
+      state.creatingNewTeam = false;
+      state.newTeamError = action.payload;
+    });
+    builder.addCase(addNewMember.pending, (state) => {
+      state.creatingNewTeamMember = true;
+      state.newTeamMemberError = null;
+    });
+    builder.addCase(addNewMember.fulfilled, (state) => {
+      state.creatingNewTeamMember = false;
+    });
+    builder.addCase(addNewMember.rejected, (state, action) => {
+      state.creatingNewTeamMember = false;
+      state.newTeamMemberError = action.payload;
     });
   },
 });

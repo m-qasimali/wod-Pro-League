@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getUsersFromDB, updateUserWeightInDB } from "../utils/DBFunctions";
+import { createUserInDB } from "@/utils/DBFunctions2";
 
 export const getUsers = createAsyncThunk(
   "users/getUsers",
@@ -25,6 +26,18 @@ export const updateUserWeight = createAsyncThunk(
   }
 );
 
+export const createUser = createAsyncThunk(
+  "users/createUser",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await createUserInDB(data);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "users",
   initialState: {
@@ -39,6 +52,8 @@ const userSlice = createSlice({
     },
     updatingUserWeight: false,
     selectedUsers: [],
+    creatingUser: false,
+    creatingUserError: null,
   },
   reducers: {
     setUserSearchQuery: (state, action) => {
@@ -77,6 +92,18 @@ const userSlice = createSlice({
     });
     builder.addCase(updateUserWeight.rejected, (state) => {
       state.updatingUserWeight = false;
+    });
+    builder.addCase(createUser.pending, (state) => {
+      state.creatingUser = true;
+      state.creatingUserError = null;
+    });
+    builder.addCase(createUser.fulfilled, (state, action) => {
+      state.creatingUser = false;
+      state.users = [...state.users, action.payload];
+    });
+    builder.addCase(createUser.rejected, (state, action) => {
+      state.creatingUser = false;
+      state.creatingUserError = action.payload;
     });
   },
 });

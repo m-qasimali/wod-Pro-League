@@ -1,5 +1,17 @@
+import { spain_cities } from "@/constant/provinces";
 import CryptoJS from "crypto-js";
 const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
+
+export const generatePassword = (length = 8) => {
+  const charset =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+~`|}{[]:;?><,./-=";
+  let password = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    password += charset[randomIndex];
+  }
+  return password;
+};
 
 export const capitalize = (str) => {
   return str?.charAt(0).toUpperCase() + str?.slice(1);
@@ -73,11 +85,66 @@ export function clearRole() {
 export const splitCategoryNameAndPrice = (categories) => {
   return categories.map((category) => {
     const parts = category.split(" ");
-    const price = `${parts[parts.length - 2]} ${parts[parts.length - 1]}`;
+    const price = `${parts[parts.length - 2]}`;
     const name = parts.slice(0, parts.length - 2).join(" ");
 
     return { name, price };
   });
 };
 
+export function separateGender(inputStrings) {
+  const match = inputStrings.match(/\b[MF]+\b/);
+  const gender = match ? match[0] : null;
 
+  return gender;
+}
+
+export function getGenderOptions(input) {
+  const gender = separateGender(input);
+  const options = [];
+  if (gender.includes("M")) {
+    options.push("Masculino");
+  }
+  if (gender.includes("F")) {
+    options.push("Femenino");
+  }
+  return options;
+}
+
+export function getGenderOptions2(input, teammateGenders) {
+  const originalGenders = separateGender(input).split("");
+  const options = [];
+  const registeredGenders = teammateGenders.map((mate) => mate[0]);
+  if (
+    registeredGenders.filter((mate) => mate === "M").length <
+    originalGenders.filter((mate) => mate === "M").length
+  ) {
+    options.push("Masculino");
+  }
+
+  if (
+    registeredGenders.filter((mate) => mate === "F").length <
+    originalGenders.filter((mate) => mate === "F").length
+  ) {
+    options.push("Femenino");
+  }
+
+  return options;
+}
+
+export function getCities(id) {
+  return spain_cities.filter((city) => {
+    if (city.id.startsWith(id)) {
+      return city.nm;
+    }
+  });
+}
+
+export function formatDOB(dateString) {
+  const date = new Date(dateString);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}

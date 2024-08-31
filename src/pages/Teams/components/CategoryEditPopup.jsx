@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { changeTeamCategory } from "../../../redux/teamSlice";
 import toast from "react-hot-toast";
 import SelectField from "../../../components/global/SelectField";
-import { categories } from "../../../utils/categories";
 import Spinner from "../../../components/global/Spinner";
+import { categories } from "@/constant/categories";
 
 const getCategory = (value) => {
   return categories.find((category) => category.includes(value));

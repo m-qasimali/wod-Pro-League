@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import SearchField from "../../components/global/SearchField";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserFilters, setUserSearchQuery } from "../../redux/userSlice";
-import UsersTable from "../../components/global/UsersTable";
 import UserFilter from "../../components/global/UserFilter";
 import CustomButton from "../../components/global/CustomButton";
 import ManageNotification from "./components/ManageNotification";
 import ManageEmail from "./components/ManageEmail";
+import AddButton from "@/components/global/AddButton";
+import { lockScroll, unlockScroll } from "@/utils/functions";
+import ManageUser from "./components/ManageUser";
+import UsersTable from "@/components/global/UsersTable";
 
 const Users = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -14,6 +17,7 @@ const Users = () => {
   const { selectedUsers } = useSelector((state) => state.user);
   const [sendNotification, setSendNotification] = useState(false);
   const [sendEmail, setSendEmail] = useState(false);
+  const [addUser, setAddUser] = useState(false);
 
   useEffect(() => {
     dispatch(setUserSearchQuery(searchValue));
@@ -47,6 +51,16 @@ const Users = () => {
     setSendEmail(false);
   };
 
+  const openAddUser = () => {
+    setAddUser(true);
+    lockScroll();
+  };
+
+  const closeAddUser = () => {
+    setAddUser(false);
+    unlockScroll();
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <div className="sticky z-10 ">
@@ -67,6 +81,10 @@ const Users = () => {
               <CustomButton title="Send Email" onClick={handleSendEmail} />
             </div>
           )}
+
+          <div onClick={openAddUser}>
+            <AddButton />
+          </div>
         </div>
       </div>
 
@@ -76,6 +94,7 @@ const Users = () => {
 
       {sendNotification && <ManageNotification close={closeSendNotification} />}
       {sendEmail && <ManageEmail close={closeSendEmail} />}
+      {addUser && <ManageUser close={closeAddUser} toDo="add" />}
     </div>
   );
 };

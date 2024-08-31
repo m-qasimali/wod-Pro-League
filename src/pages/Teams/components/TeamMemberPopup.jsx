@@ -45,7 +45,7 @@ const TeamMemberPopup = ({ close, team }) => {
             <div className="flex flex-col gap-4">
               {teamMembers[team.id]?.map((member) => (
                 <div
-                  key={member?.id}
+                  key={member?.email}
                   className="flex flex-row items-center gap-4"
                 >
                   {member?.profileImage ? (
@@ -60,9 +60,13 @@ const TeamMemberPopup = ({ close, team }) => {
                     <div className="w-10 h-10 bg-gray-200 rounded-full flex-shrink-0"></div>
                   )}
                   <div className="flex flex-col">
-                    <h1 className="text-lg font-bold">{member?.name}</h1>
+                    <h1 className="text-lg font-bold">
+                      {member?.name} -{" "}
+                      {member?.gender && member?.gender.slice(0, 1)}
+                    </h1>
                     <p className="text-sm text-textSecondary truncate max-w-xs">
-                      {member?.email}
+                      {member?.email} -{" "}
+                      {member?.isCaptain ? "Captain" : "Member"}
                     </p>
                   </div>
                 </div>

@@ -78,7 +78,7 @@ const UsersTable = () => {
 
   return (
     <div className="relative sm:rounded-lg bg-white border-2 border-black border-opacity-20 overflow-hidden">
-      <div className="overflow-x-auto max-h-[calc(100vh-10rem)]">
+      <div className="overflow-x-auto max-h-[calc(100vh-10rem)] custom-scrollbar scrollbar-hide">
         <table className="w-full text-sm text-left relative">
           <thead className="text-lg uppercase text-textSecondary bg-white sticky top-0 z-10">
             <tr>
@@ -123,11 +123,15 @@ const UsersTable = () => {
                   <td className="px-6 py-2">
                     <div className="flex items-center gap-2">
                       <div className="flex-shrink-0 h-10 w-10">
-                        <img
-                          className="h-full w-full rounded-full"
-                          src={user?.profileImage}
-                          alt="Profile"
-                        />
+                        {user?.profileImage ? (
+                          <img
+                            className="h-full w-full rounded-full"
+                            src={user?.profileImage}
+                            alt="Profile"
+                          />
+                        ) : (
+                          <div className="w-full h-full rounded-full bg-gray-200"></div>
+                        )}
                       </div>
                       <div className="text-sm font-medium whitespace-nowrap">
                         {user?.name}

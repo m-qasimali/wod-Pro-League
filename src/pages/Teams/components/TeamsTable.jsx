@@ -55,7 +55,7 @@ const TeamsTable = () => {
 
   return (
     <div className="relative sm:rounded-lg bg-white border-2 border-black border-opacity-20 overflow-hidden">
-      <div className="overflow-x-auto max-h-[calc(100vh-10rem)]">
+      <div className="overflow-x-auto max-h-[calc(100vh-13rem)] custom-scrollbar scrollbar-hide">
         <table className="w-full text-sm text-left relative">
           <thead className="text-lg uppercase text-textSecondary bg-white sticky top-0 z-10">
             <tr>
