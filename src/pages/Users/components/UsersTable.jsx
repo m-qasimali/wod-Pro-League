@@ -1,11 +1,11 @@
 import { Icons } from "@/components/global/icons";
 import Loader from "@/components/global/Loader";
 import { getUsers, setSelectedUsers, setUserToEdit } from "@/redux/userSlice";
-import { Checkbox } from "@radix-ui/react-checkbox";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { lockScroll } from "@/utils/functions";
+import Checkbox from "@/components/global/Checkbox";
 
 const UsersTable = () => {
   const { loading, users, searchQuery, filters } = useSelector(

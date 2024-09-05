@@ -24,4 +24,5 @@ export const FreeCoupons = [
   "aKGRTGG5FPGwwyhWPL",
   "btzQcmJB93MSsr0WPL",
   "gK4Ucnc4EArLlnsWPL",
+  "50%offWPLparejasintermedio2024",
 ];

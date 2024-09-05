@@ -12,6 +12,7 @@ import { emailSubject } from "@/constant/variables";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import {
   formatDOB,
+  formatTimestamp,
   generatePassword,
   separateGender,
   splitCategoryNameAndPrice,
@@ -19,6 +20,7 @@ import {
 import { provinces, spain_cities } from "@/constant/provinces";
 import { sendMails } from "./DBFunctions";
 import { selfEmailTemplate, teamEmailTemplate } from "./EmailTemplates";
+import { DiscountCoupons, FreeCoupons } from "./coupons";
 
 export const getDashboardStatsFromDB = async () => {
   const usersRef = query(
@@ -321,4 +323,74 @@ export const createTeamMemberAccountInDB = async (user) => {
       gender: user?.gender,
     },
   };
+};
+
+export const exportUserDataFromDB = async () => {
+  const couponUsers = {};
+  const discountPromises = DiscountCoupons.map(async (coupon) => {
+    const couponsRefs = await getDocs(
+      collection(db, "coupons", coupon, "users")
+    );
+    for (const couponRef of couponsRefs.docs) {
+      const userId = couponRef.data().userId;
+      if (!couponUsers[userId]) {
+        couponUsers[userId] = {
+          discount: [],
+          free: [],
+        };
+      }
+      couponUsers[userId].discount.push(coupon);
+    }
+  });
+
+  const freeCouponPromises = FreeCoupons.map(async (coupon) => {
+    const couponRef = await getDoc(
+      doc(db, "freeCoupons", coupon),
+      where("isUsed", "==", true)
+    );
+    const userId = couponRef.data().usedBy;
+    if (userId) {
+      if (!couponUsers[userId]) {
+        couponUsers[userId] = {
+          discount: [],
+          free: [],
+        };
+      }
+      couponUsers[userId].free.push(coupon);
+    }
+  });
+
+  await Promise.all([...discountPromises, ...freeCouponPromises]);
+
+  const querySnapshot = await getDocs(collection(db, "users"));
+  const data = querySnapshot.docs.map((docRef) => {
+    const res = docRef.data();
+    const validData = {
+      id: docRef.id,
+      email: res.email,
+      firstName: res.firstName,
+      lastName: res.lastName,
+      teamName: res.teamName,
+      dob: res?.birthDate,
+      boxNumber: res.boxNumber,
+      category: res.categoryName,
+      city: res.city,
+      country: res.country,
+      province: res.province,
+      street: res.street,
+      streetNumber: res.number,
+      postalCode: res.postalCode,
+      phone:
+        res?.phoneNumber && res.phoneNumber.includes("+34")
+          ? res.phoneNumber
+          : `+34${res.phoneNumber}`,
+      gender: res.gender,
+      createdAt: res?.createdAt ? formatTimestamp(res?.createdAt) : "",
+      discountCoupons: couponUsers[res.userId]?.discount.join(",") || "",
+      freeCoupons: couponUsers[res.userId]?.free.join(",") || "",
+    };
+    return validData;
+  });
+
+  return data;
 };

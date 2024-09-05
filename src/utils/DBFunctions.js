@@ -116,18 +116,6 @@ export const getUsersFromDB = async () => {
       teamName: res.teamName,
       weight: res.weight,
       token: res?.FCMToken,
-      dob: res.bithDate,
-      boxNumber: res.boxNumber,
-      category: res.categoryName,
-      city: res.city,
-      country: res.country,
-      province: res.province,
-      street: res.street,
-      streetNumber: res.number,
-      postalCode: res.postalCode,
-      phone: res.phoneNumber,
-      gender: res.gender,
-      createdAt: res?.createdAt,
     };
 
     // if (data1.includes(docRef.id)) {

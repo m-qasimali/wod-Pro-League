@@ -1,4 +1,5 @@
 import { spain_cities } from "@/constant/provinces";
+import { data } from "autoprefixer";
 import CryptoJS from "crypto-js";
 const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
 
@@ -147,4 +148,18 @@ export function formatDOB(dateString) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+export function formatTimestamp(timestampString) {
+  const regex = /Timestamp\(seconds=(\d+),/;
+  const match = timestampString.match(regex);
+
+  if (match && match[1]) {
+    const seconds = parseInt(match[1], 10);
+    const date = new Date(seconds * 1000);
+    return date.toISOString().replace("T", " ").split(".")[0];
+  } else {
+    const date = new Date(timestampString);
+    return date.toISOString().replace("T", " ").split(".")[0];
+  }
 }
