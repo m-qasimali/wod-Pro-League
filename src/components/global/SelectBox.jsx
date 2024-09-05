@@ -6,13 +6,7 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import SelectField from "./SelectField";
 
 const SelectBox = ({
   form,
@@ -21,8 +15,8 @@ const SelectBox = ({
   placeholder,
   options,
   disabled = false,
+  toSelect,
 }) => {
-  
   return (
     <FormField
       control={form.control}
@@ -31,25 +25,14 @@ const SelectBox = ({
         <FormItem className="w-full">
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Select
+            <SelectField
+              state={field.value}
+              handleChange={field.onChange}
+              options={options}
               disabled={disabled}
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={placeholder} />
-              </SelectTrigger>
-              <SelectContent>
-                {options.map((option) => (
-                  <SelectItem
-                    key={option?.id ? option?.id : option}
-                    value={option?.id ? option?.id : option}
-                  >
-                    {option?.nm ? option?.nm : option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              placeholder={placeholder}
+              toSelect={toSelect}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>

@@ -93,34 +93,48 @@ export const updateWorkoutInDB = async (data) => {
 };
 
 export const getUsersFromDB = async () => {
-  const rankingDocsRef = await getDocs(collection(db, "rankings"));
-  let data1 = [];
-  for (const docSnapshot of rankingDocsRef.docs) {
-    const res = docSnapshot.data();
-    data1.push([...Object.keys(res)]);
-  }
-  data1 = data1.flat();
+  // const rankingDocsRef = await getDocs(collection(db, "rankings"));
+  // let data1 = [];
+  // for (const docSnapshot of rankingDocsRef.docs) {
+  //   const res = docSnapshot.data();
+  //   data1.push([...Object.keys(res)]);
+  // }
+  // data1 = data1.flat();
 
   const querySnapshot = await getDocs(collection(db, "users"));
+
   const data = [];
 
-  querySnapshot.forEach((doc) => {
-    const res = doc.data();
+  for (const docRef of querySnapshot.docs) {
+    const res = docRef.data();
     const validData = {
-      id: doc.id,
+      id: docRef.id,
       profileImage: res.profilePicture,
       email: res.email,
-      name: res.firstName + " " + res.lastName,
+      firstName: res.firstName,
+      lastName: res.lastName,
       teamName: res.teamName,
       weight: res.weight,
       token: res?.FCMToken,
+      dob: res.bithDate,
+      boxNumber: res.boxNumber,
+      category: res.categoryName,
+      city: res.city,
+      country: res.country,
+      province: res.province,
+      street: res.street,
+      streetNumber: res.number,
+      postalCode: res.postalCode,
+      phone: res.phoneNumber,
+      gender: res.gender,
+      createdAt: res?.createdAt,
     };
 
-    if (data1.includes(doc.id)) {
-      validData.isRegistered = true;
-    }
+    // if (data1.includes(docRef.id)) {
+    //   validData.isRegistered = true;
+    // }
     data.push(validData);
-  });
+  }
   return data;
 };
 
@@ -143,13 +157,15 @@ export const getTeamsFromDB = async () => {
     collection(db, "users"),
     where("__name__", "in", teamCreatorIds)
   );
+
   const usersSnapshot = await getDocs(usersQuery);
 
   const userMap = new Map();
-  usersSnapshot.forEach((userDoc) => {
+
+  for (const userDoc of usersSnapshot.docs) {
     const userData = userDoc.data();
     userMap.set(userDoc.id, userData);
-  });
+  }
 
   teamDocs.forEach((team) => {
     const teamOwnerData = userMap.get(team.teamCreatorId) || {};

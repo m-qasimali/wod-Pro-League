@@ -18,6 +18,9 @@ const dashboardSlice = createSlice({
   initialState: {
     totalUsers: 0,
     totalTeams: 0,
+    singlePersonTeams: 0,
+    twoPersonTeams: 0,
+    fourPersonTeams: 0,
     loading: false,
     error: null,
   },
@@ -32,6 +35,9 @@ const dashboardSlice = createSlice({
         state.loading = false;
         state.totalUsers = action.payload.totalUsers;
         state.totalTeams = action.payload.totalTeams;
+        state.singlePersonTeams = action.payload.singlePersonTeams;
+        state.twoPersonTeams = action.payload.twoPersonTeams;
+        state.fourPersonTeams = action.payload.fourPersonTeams;
       })
       .addCase(fetchDashboardStats.rejected, (state, action) => {
         state.loading = false;

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { z } from "zod";
@@ -9,7 +10,7 @@ import InputField from "@/components/global/InputField";
 import DatePickerField from "@/components/global/DatePickerField";
 import PhoneNumberInput from "@/components/global/PhoneNumberInput";
 import { isValidPhoneNumber } from "react-phone-number-input";
-import { provinces } from "@/constant/provinces";
+import { provinces, spain_cities } from "@/constant/provinces";
 import { singlePersonCategories } from "@/constant/categories";
 import toast from "react-hot-toast";
 import CheckBoxField from "@/components/global/CheckBoxField";
@@ -65,11 +66,15 @@ const initialFormValues = {
   isPaid: false,
 };
 
-const ManageUserForm = () => {
+const EditUserForm = ({ selectedUser }) => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      ...initialFormValues,
+      ...selectedUser,
+      province: provinces.find(
+        (province) => province.nm === selectedUser?.province
+      ).id,
+      city: spain_cities.find((city) => city.nm === selectedUser.city).id,
     },
   });
   const dispatch = useDispatch();
@@ -162,6 +167,7 @@ const ManageUserForm = () => {
               label="Province"
               placeholder={"Select Province"}
               options={provinces}
+              toSelect="province"
             />
 
             <SelectBox
@@ -170,9 +176,12 @@ const ManageUserForm = () => {
               label="City"
               placeholder={"Select City"}
               options={
-                form.watch("province") ? getCities(form.watch("province")) : []
+                form.watch("province")
+                  ? getCities(form.watch("province")?.id)
+                  : []
               }
               disabled={!form.watch("province")}
+              toSelect="city"
             />
 
             <InputField
@@ -218,4 +227,4 @@ const ManageUserForm = () => {
   );
 };
 
-export default ManageUserForm;
+export default EditUserForm;

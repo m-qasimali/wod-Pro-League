@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import SearchField from "../../components/global/SearchField";
 import { useDispatch, useSelector } from "react-redux";
-import { setUserFilters, setUserSearchQuery } from "../../redux/userSlice";
+import {
+  setUserFilters,
+  setUserSearchQuery,
+  setUserToEdit,
+} from "../../redux/userSlice";
 import UserFilter from "../../components/global/UserFilter";
 import CustomButton from "../../components/global/CustomButton";
 import ManageNotification from "./components/ManageNotification";
 import ManageEmail from "./components/ManageEmail";
 import AddButton from "@/components/global/AddButton";
 import { lockScroll, unlockScroll } from "@/utils/functions";
-import ManageUser from "./components/ManageUser";
-import UsersTable from "@/components/global/UsersTable";
+import AddUser from "./components/AddUser";
+import UsersTable from "./components/UsersTable";
+import EditUser from "./components/EditUser";
+import ExportButton from "./components/ExportButton";
 
 const Users = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -18,6 +24,7 @@ const Users = () => {
   const [sendNotification, setSendNotification] = useState(false);
   const [sendEmail, setSendEmail] = useState(false);
   const [addUser, setAddUser] = useState(false);
+  const { userToEdit } = useSelector((state) => state.user);
 
   useEffect(() => {
     dispatch(setUserSearchQuery(searchValue));
@@ -61,6 +68,10 @@ const Users = () => {
     unlockScroll();
   };
 
+  const closeEditUser = () => {
+    dispatch(setUserToEdit(null));
+  };
+
   return (
     <div className="flex flex-col h-screen">
       <div className="sticky z-10 ">
@@ -82,8 +93,12 @@ const Users = () => {
             </div>
           )}
 
-          <div onClick={openAddUser}>
-            <AddButton />
+          <div className="flex flex-row gap-2">
+            <ExportButton />
+
+            <div onClick={openAddUser}>
+              <AddButton />
+            </div>
           </div>
         </div>
       </div>
@@ -94,7 +109,10 @@ const Users = () => {
 
       {sendNotification && <ManageNotification close={closeSendNotification} />}
       {sendEmail && <ManageEmail close={closeSendEmail} />}
-      {addUser && <ManageUser close={closeAddUser} toDo="add" />}
+      {addUser && <AddUser close={closeAddUser} toDo="add" />}
+      {userToEdit && (
+        <EditUser selectedUser={userToEdit} close={closeEditUser} toDo="edit" />
+      )}
     </div>
   );
 };

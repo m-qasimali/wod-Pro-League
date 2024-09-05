@@ -54,6 +54,7 @@ const userSlice = createSlice({
     selectedUsers: [],
     creatingUser: false,
     creatingUserError: null,
+    userToEdit: null,
   },
   reducers: {
     setUserSearchQuery: (state, action) => {
@@ -64,6 +65,9 @@ const userSlice = createSlice({
     },
     setSelectedUsers: (state, action) => {
       state.selectedUsers = action.payload;
+    },
+    setUserToEdit: (state, action) => {
+      state.userToEdit = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -108,7 +112,11 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUserSearchQuery, setUserFilters, setSelectedUsers } =
-  userSlice.actions;
+export const {
+  setUserSearchQuery,
+  setUserFilters,
+  setSelectedUsers,
+  setUserToEdit,
+} = userSlice.actions;
 
 export default userSlice.reducer;

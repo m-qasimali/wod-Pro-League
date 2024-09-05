@@ -118,6 +118,7 @@ const JoinTeamMemberForm = () => {
           ...values,
           teamId: teamDetails?.teamId,
           teammateEmails: teamDetails?.teammateEmails,
+          bannerImage: teamDetails?.bannerImage,
         })
       ).unwrap();
       toast.success("Team member added successfully");
@@ -239,6 +240,7 @@ const JoinTeamMemberForm = () => {
                     label="Province"
                     placeholder={"Select Province"}
                     options={provinces}
+                    toSelect="province"
                   />
 
                   <SelectBox
@@ -252,6 +254,7 @@ const JoinTeamMemberForm = () => {
                         : []
                     }
                     disabled={!form.watch("province")}
+                    toSelect="city"
                   />
 
                   <InputField

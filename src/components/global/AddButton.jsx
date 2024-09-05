@@ -8,7 +8,7 @@ const AddButton = ({ title = "Add" }) => {
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className="border-primary hover:bg-primary hover:bg-opacity-20 cursor-pointer px-10 py-1.5 border-4 rounded-full inline-block font-bold text-lg relative"
+      className="border-primary hover:bg-primary hover:bg-opacity-20 cursor-pointer px-7 py-0.5 border-4 rounded-full inline-block font-bold text-lg relative"
     >
       {title}
       <div className="bg-gradient-to-r from-primary to-[#DFDEEE] rounded-full w-fit p-1 absolute -top-3 -right-3">
@@ -17,7 +17,7 @@ const AddButton = ({ title = "Add" }) => {
             hover ? "bg-primary bg-opacity-5" : "bg-white"
           }`}
         >
-          <div className="w-5 h-5">
+          <div className="w-4 h-4">
             <Icons.AddIcon />
           </div>
         </div>

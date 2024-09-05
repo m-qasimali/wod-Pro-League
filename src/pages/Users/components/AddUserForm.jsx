@@ -4,67 +4,52 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import SelectBox from "@/components/global/SelectBox";
-import { getCities, getGenderOptions, separateGender } from "@/utils/functions";
+import { getCities, getGenderOptions } from "@/utils/functions";
 import InputField from "@/components/global/InputField";
 import DatePickerField from "@/components/global/DatePickerField";
 import PhoneNumberInput from "@/components/global/PhoneNumberInput";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { provinces } from "@/constant/provinces";
-import { categories } from "@/constant/categories";
-import MutlitpleInputField from "@/components/global/MutlitpleInputField";
+import { singlePersonCategories } from "@/constant/categories";
 import toast from "react-hot-toast";
 import CheckBoxField from "@/components/global/CheckBoxField";
+import { createUser } from "@/redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { addNewTeam } from "@/redux/teamSlice";
 import Spinner from "@/components/global/Spinner";
 
-const formSchema = z
-  .object({
-    category: z.string().min(1, { message: "Category is required" }),
-    captainEmail: z
-      .string()
-      .min(1, { message: "Email is required" })
-      .email({ message: "Invalid email" }),
-    teamName: z.string().min(1, { message: "Team Name is required" }),
-    membersEmails: z.array(z.string().email("Invalid email")),
-    firstName: z.string().min(1, { message: "First Name is required" }),
-    lastName: z.string().min(1, { message: "Last Name is required" }),
-    gender: z.string().min(1, { message: "Gender is required" }),
-    dob: z.object({
-      startDate: z.date(),
-      endDate: z.date(),
-    }),
-    phone: z
-      .string()
-      .min(1, { message: "Phone number is required" })
-      .superRefine(isValidPhoneNumber, { message: "Invalid phone number" }),
-    country: z.string().min(1, { message: "Country is required" }),
-    province: z.string().min(1, { message: "Province is required" }),
-    city: z.string().min(1, { message: "City is required" }),
-    street: z.string().min(1, { message: "Street is required" }),
-    streetNumber: z.string().min(1, { message: "Street Number is required" }),
-    boxNumber: z.string().min(1, { message: "Box Number is required" }),
-    postalCode: z.string().min(1, { message: "Postal Code is required" }),
-    isPaid: z.boolean(),
-  })
-  .refine((data) => !data.membersEmails.includes(data.captainEmail), {
-    message: "Captain email should not be in members emails",
-    path: ["membersEmails"],
-  })
-  .refine(
-    (data) =>
-      separateGender(data.category).length - 1 === data.membersEmails.length,
-    {
-      message: "You should add all members emails",
-      path: ["membersEmails"],
-    }
-  );
+const formSchema = z.object({
+  category: z.string().min(1, { message: "Category is required" }),
+  email: z
+    .string()
+    .min(1, { message: "Email is required" })
+    .email({ message: "Invalid email" }),
+  firstName: z.string().min(1, { message: "First Name is required" }),
+  lastName: z.string().min(1, { message: "Last Name is required" }),
+  gender: z.string().min(1, {
+    message: "gender is required",
+  }),
+  dob: z.object({
+    startDate: z.date(),
+    endDate: z.date(),
+  }),
+
+  phone: z
+    .string()
+    .min(1, { message: "Phone number is required" })
+    .refine(isValidPhoneNumber, { message: "Invalid phone number" }),
+  country: z.string().min(1, { message: "Country is required" }),
+  province: z.string().min(1, { message: "Province is required" }),
+  city: z.string().min(1, { message: "City is required" }),
+  street: z.string().min(1, { message: "Street is required" }),
+  streetNumber: z.string().min(1, { message: "Street Number is required" }),
+  boxNumber: z.string().min(1, { message: "Box Number is required" }),
+  postalCode: z.string().min(1, { message: "Postal Code is required" }),
+  isPaid: z.boolean(),
+});
 
 const initialFormValues = {
   category: "",
-  teamName: "",
-  membersEmails: [],
-  captainEmail: "",
+  email: "",
   firstName: "",
   lastName: "",
   gender: "",
@@ -80,7 +65,7 @@ const initialFormValues = {
   isPaid: false,
 };
 
-const ManageTeamForm = () => {
+const AddUserForm = () => {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -88,18 +73,20 @@ const ManageTeamForm = () => {
     },
   });
   const dispatch = useDispatch();
-  const { creatingNewTeam, newTeamError } = useSelector((state) => state.team);
+  const { creatingUser, creatingUserError } = useSelector(
+    (state) => state.user
+  );
 
   async function onSubmit(values) {
     try {
-      await dispatch(addNewTeam(values)).unwrap();
-      toast.success("Team created successfully");
-      form.reset({ ...initialFormValues });
+      await dispatch(createUser(values)).unwrap();
+      toast.success("User created successfully");
     } catch (error) {
-      toast.error(newTeamError);
+      toast.error(creatingUserError);
+    } finally {
+      form.reset(initialFormValues);
     }
   }
-
   return (
     <>
       <Form {...form}>
@@ -113,14 +100,7 @@ const ManageTeamForm = () => {
               indicator="category"
               label="Category"
               placeholder={"Select Category"}
-              options={categories}
-            />
-
-            <InputField
-              form={form}
-              indicator="teamName"
-              label="Team Name"
-              placeholder={"Enter Team Name"}
+              options={singlePersonCategories}
             />
 
             <InputField
@@ -139,8 +119,8 @@ const ManageTeamForm = () => {
 
             <InputField
               form={form}
-              indicator="captainEmail"
-              label="Captain Email"
+              indicator="email"
+              label="Email"
               placeholder={"Enter Email"}
             />
 
@@ -191,9 +171,7 @@ const ManageTeamForm = () => {
               label="City"
               placeholder={"Select City"}
               options={
-                form.watch("province")
-                  ? getCities(form.watch("province")?.id)
-                  : []
+                form.watch("province") ? getCities(form.watch("province")) : []
               }
               disabled={!form.watch("province")}
               toSelect="city"
@@ -227,36 +205,19 @@ const ManageTeamForm = () => {
               placeholder={"Enter Postal Code"}
             />
 
-            <MutlitpleInputField
-              form={form}
-              indicator="membersEmails"
-              label="Team Members Emails"
-              placeholder={"Enter Team Members Emails"}
-              disabled={
-                !form.watch("category") ||
-                separateGender(form.watch("category")).length - 1 ===
-                  form.watch("membersEmails").length
-              }
-            />
-
             <CheckBoxField form={form} indicator="isPaid" label="Fee Paid" />
           </div>
-          {creatingNewTeam ? (
-            <div className="w-full flex flex-row items-center justify-center">
-              <Spinner />
-            </div>
-          ) : (
-            <Button
-              className="bg-primary hover:drop-shadow-md text-white rounded-md p-2 mt-5 flex flex-row items-center justify-center"
-              type="submit"
-            >
-              Add Team
-            </Button>
-          )}
+          <Button
+            className="bg-primary hover:drop-shadow-md text-white rounded-md p-2 mt-5 flex flex-row items-center justify-center"
+            type="submit"
+            disabled={creatingUser}
+          >
+            {creatingUser ? <Spinner /> : "Create User"}
+          </Button>
         </form>
       </Form>
     </>
   );
 };
 
-export default ManageTeamForm;
+export default AddUserForm;

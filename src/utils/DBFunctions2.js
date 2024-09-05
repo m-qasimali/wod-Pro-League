@@ -13,6 +13,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import {
   formatDOB,
   generatePassword,
+  separateGender,
   splitCategoryNameAndPrice,
 } from "./functions";
 import { provinces, spain_cities } from "@/constant/provinces";
@@ -33,10 +34,32 @@ export const getDashboardStatsFromDB = async () => {
 
   const totalUsers = usersSnapshot.size;
   const totalTeams = teamsSnapshot.size;
+  let singlePersonTeams = 0;
+  let twoPersonTeams = 0;
+  let fourPersonTeams = 0;
+
+  teamsSnapshot.docs.map((team) => {
+    const teamLength = separateGender(team.data().teamCategory).length;
+    if (teamLength === 2) {
+      twoPersonTeams = twoPersonTeams + 1;
+    } else if (teamLength === 4) {
+      fourPersonTeams = fourPersonTeams + 1;
+    }
+  });
+
+  usersSnapshot.docs.map((user) => {
+    const teamLength = separateGender(user.data().categoryName).length;
+    if (teamLength === 1) {
+      singlePersonTeams = singlePersonTeams + 1;
+    }
+  });
 
   return {
     totalUsers,
     totalTeams,
+    singlePersonTeams,
+    twoPersonTeams,
+    fourPersonTeams,
   };
 };
 
@@ -200,6 +223,9 @@ export const getTeamDetailsByEmailFromDB = async ({ creatorEmail }) => {
   const team = teamsSnapshot.docs[0].data();
   const teammateEmails = team.teammateEmails || [];
 
+  const captain = (await getDoc(doc(db, "users", team.teamCreatorId))).data();
+  team.bannerImage = captain.bannerImage;
+
   if (teammateEmails.length > 0) {
     const usersRef = query(
       collection(db, "users"),
@@ -259,6 +285,7 @@ export const createTeamMemberAccountInDB = async (user) => {
     teamId: user.teamId,
     teamBanner: "",
     weight: 0,
+    bannerImage: user?.bannerImage || "",
   };
 
   const teamRef = doc(db, "teams", user.teamId);

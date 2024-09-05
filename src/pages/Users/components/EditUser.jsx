@@ -1,8 +1,8 @@
 /* eslint-disable react/prop-types */
 import { Icons } from "@/components/global/icons";
-import ManageUserForm from "./ManageUserForm";
+import EditUserForm from "./EditUserForm";
 
-const ManageUser = ({ close, toDo }) => {
+const EditUser = ({ selectedUser, close, toDo }) => {
   return (
     <>
       <div
@@ -19,10 +19,10 @@ const ManageUser = ({ close, toDo }) => {
           </button>
         </div>
 
-        <ManageUserForm />
+        <EditUserForm selectedUser={selectedUser} />
       </div>
     </>
   );
 };
 
-export default ManageUser;
+export default EditUser;
