@@ -26,14 +26,14 @@ const Sidebar = ({ isSidebarOpen }) => {
 
   return (
     <aside
-      className={`fixed top-0 left-0 z-30 w-72 pt-16 h-screen transition-transform ${
+      className={`fixed top-0 left-0 z-30 w-72 pt-16 md:pt-5 h-screen transition-transform ${
         isSidebarOpen ? "translate-x-0" : "-translate-x-full"
       } bg-white sm:translate-x-0 shadow-custom-lg`}
       aria-label="Sidebar"
     >
       <div className="h-full mx-6 pb-4 flex flex-col items-center">
-        <div className="flex flex-row items-center justify-center w-52">
-          <img src={Logo} alt="Logo" />
+        <div className="flex flex-row items-center justify-center w-32 rounded-lg">
+          <img src={Logo} className="w-full h-full rounded-full" alt="Logo" />
         </div>
 
         <div className="w-full flex flex-col gap-2 mt-5 mb-5 flex-1">

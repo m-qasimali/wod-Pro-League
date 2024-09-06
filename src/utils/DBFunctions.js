@@ -126,6 +126,14 @@ export const getUsersFromDB = async () => {
   return data;
 };
 
+const chunkArray = (array, size) => {
+  const result = [];
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
+};
+
 export const getTeamsFromDB = async () => {
   const querySnapshot = await getDocs(collection(db, "teams"));
   const data = [];
@@ -141,18 +149,22 @@ export const getTeamsFromDB = async () => {
 
   const teamCreatorIds = teamDocs.map((team) => team.teamCreatorId);
 
-  const usersQuery = query(
-    collection(db, "users"),
-    where("__name__", "in", teamCreatorIds)
-  );
-
-  const usersSnapshot = await getDocs(usersQuery);
+  // Break down teamCreatorIds into chunks of 30
+  const teamCreatorIdsChunks = chunkArray(teamCreatorIds, 30);
 
   const userMap = new Map();
 
-  for (const userDoc of usersSnapshot.docs) {
-    const userData = userDoc.data();
-    userMap.set(userDoc.id, userData);
+  for (const chunk of teamCreatorIdsChunks) {
+    const usersQuery = query(
+      collection(db, "users"),
+      where("__name__", "in", chunk)
+    );
+
+    const usersSnapshot = await getDocs(usersQuery);
+    for (const userDoc of usersSnapshot.docs) {
+      const userData = userDoc.data();
+      userMap.set(userDoc.id, userData);
+    }
   }
 
   teamDocs.forEach((team) => {
