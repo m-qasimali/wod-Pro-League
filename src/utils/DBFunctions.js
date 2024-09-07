@@ -53,8 +53,8 @@ export const getWorkoutsFromDB = async () => {
       const wodNumber = +workout.wodNumber.split("WOD")[1];
       const maxDuration = +workout.maxDuration;
 
-      workout.startDate = startDate.toISOString().split("T")[0];
-      workout.endDate = endDate.toISOString().split("T")[0];
+      workout.startDate = startDate.toISOString().slice(0, 16);
+      workout.endDate = endDate.toISOString().slice(0, 16);
       workout.wodNumber = wodNumber;
       workout.maxDuration = maxDuration;
       data.push(workout);

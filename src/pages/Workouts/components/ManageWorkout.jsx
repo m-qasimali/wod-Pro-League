@@ -185,7 +185,7 @@ const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
 
           <Input
             labelValue="Start Date"
-            type="date"
+            type="datetime-local"
             name="startDate"
             value={data.startDate}
             onChange={handleChange}
@@ -194,7 +194,7 @@ const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
 
           <Input
             labelValue="End Date"
-            type="date"
+            type="datetime-local"
             name="endDate"
             value={data.endDate}
             onChange={handleChange}
