@@ -23,3 +23,5 @@ export const singlePersonCategories = [
   "Teens - Individual - M 129 €",
   "Teens - Individual - F 129 €",
 ];
+
+export const allCategories = [...categories, ...singlePersonCategories];

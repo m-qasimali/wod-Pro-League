@@ -14,6 +14,7 @@ import {
   formatDOB,
   formatTimestamp,
   generatePassword,
+  getCategoryNamePrice,
   separateGender,
   splitCategoryNameAndPrice,
 } from "./functions";
@@ -21,6 +22,7 @@ import { provinces, spain_cities } from "@/constant/provinces";
 import { sendMails } from "./DBFunctions";
 import { selfEmailTemplate, teamEmailTemplate } from "./EmailTemplates";
 import { DiscountCoupons, FreeCoupons } from "./coupons";
+import { allCategories } from "@/constant/categories";
 
 export const getDashboardStatsFromDB = async () => {
   const usersRef = query(
@@ -365,6 +367,7 @@ export const exportUserDataFromDB = async () => {
   const querySnapshot = await getDocs(collection(db, "users"));
   const data = querySnapshot.docs.map((docRef) => {
     const res = docRef.data();
+    const { category, price } = getCategoryNamePrice(res?.categoryName);
     const validData = {
       id: docRef.id,
       email: res.email,
@@ -373,7 +376,8 @@ export const exportUserDataFromDB = async () => {
       teamName: res.teamName,
       dob: res?.birthDate,
       boxNumber: res.boxNumber,
-      category: res.categoryName,
+      category: category,
+      price: price,
       city: res.city,
       country: res.country,
       province: res.province,

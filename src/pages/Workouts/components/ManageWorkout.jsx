@@ -65,7 +65,6 @@ const ManageWorkout = ({ close, toDo, existingWorkout = initialState }) => {
           return true;
         }
       }
-
       if (
         (startDate >= workoutStartDate && startDate <= workoutEndDate) ||
         (endDate >= workoutStartDate && endDate <= workoutEndDate) ||

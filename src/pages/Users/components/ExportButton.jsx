@@ -84,6 +84,10 @@ const ExportButton = () => {
               value: "boxNumber",
             },
             {
+              label: "Price",
+              value: "price",
+            },
+            {
               label: "Discount Code Used 1",
               value: "discountCoupons",
             },

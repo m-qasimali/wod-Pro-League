@@ -1,3 +1,4 @@
+import { allCategories } from "@/constant/categories";
 import { spain_cities } from "@/constant/provinces";
 import { data } from "autoprefixer";
 import CryptoJS from "crypto-js";
@@ -163,3 +164,13 @@ export function formatTimestamp(timestampString) {
     return date.toISOString().replace("T", " ").split(".")[0];
   }
 }
+
+export const getCategoryNamePrice = (val) => {
+  const res = allCategories.find((category) => category.includes(val));
+  const price = res.split(" ").slice(-2, -1)[0];
+
+  return {
+    category: res,
+    price: price,
+  };
+};

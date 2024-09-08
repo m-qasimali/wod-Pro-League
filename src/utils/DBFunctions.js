@@ -237,7 +237,7 @@ export const updateUserWeightInDB = async ({ userId, weight }) => {
 };
 
 export const getActiveWorkoutsFromDB = async () => {
-  const docsRef = await getDocs(collection(db, "rankings"));
+  const docsRef = await getDocs(collection(db, "ranking"));
   const data = {};
 
   for (const docSnapshot of docsRef.docs) {
@@ -286,7 +286,7 @@ export const updateVideoStatusInDB = async (
     { merge: true }
   );
 
-  const rankingDocRef = doc(db, "rankings", workoutId);
+  const rankingDocRef = doc(db, "ranking", workoutId);
   const res = await getDoc(rankingDocRef);
 
   if (res.exists()) {
@@ -308,7 +308,7 @@ export const updateVideoStatusInDB = async (
 };
 
 export const getRankingDataFromDB = async ({ userId, workoutId }) => {
-  const rankingDocRef = doc(db, "rankings", workoutId);
+  const rankingDocRef = doc(db, "ranking", workoutId);
   const res = await getDoc(rankingDocRef);
 
   if (res.exists()) {
@@ -326,7 +326,7 @@ export const getRankingDataFromDB = async ({ userId, workoutId }) => {
 };
 
 export const getWorkoutVideosFromDB = async (userId) => {
-  const rankingsCollection = collection(db, "rankings");
+  const rankingsCollection = collection(db, "ranking");
   const rankingsSnapshot = await getDocs(rankingsCollection);
 
   const workoutIds = rankingsSnapshot.docs.map((doc) => doc.id);
@@ -334,7 +334,7 @@ export const getWorkoutVideosFromDB = async (userId) => {
   const data = [];
 
   for (const workoutId of workoutIds) {
-    const rankingDocRef = doc(db, "rankings", workoutId);
+    const rankingDocRef = doc(db, "ranking", workoutId);
     const rankingSnapshot = await getDoc(rankingDocRef);
     const ranking = rankingSnapshot.data();
 
