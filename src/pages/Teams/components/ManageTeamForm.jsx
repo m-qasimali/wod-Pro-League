@@ -191,9 +191,7 @@ const ManageTeamForm = () => {
               label="City"
               placeholder={"Select City"}
               options={
-                form.watch("province")
-                  ? getCities(form.watch("province")?.id)
-                  : []
+                form.watch("province") ? getCities(form.watch("province")) : []
               }
               disabled={!form.watch("province")}
               toSelect="city"
