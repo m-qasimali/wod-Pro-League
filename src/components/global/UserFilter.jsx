@@ -3,11 +3,11 @@ import { Icons } from "./icons";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserFilters } from "../../redux/userSlice";
 import { getActiveWorkouts } from "../../redux/workoutSlice";
+import { allCategories } from "@/constant/categories";
 
 const initialState = {
-  weightSize: "=",
-  weight: "",
   workout: "",
+  category: "",
 };
 
 const UserFilter = () => {
@@ -37,11 +37,13 @@ const UserFilter = () => {
 
   const applyFilters = () => {
     setShowFilter(false);
-    if (data.weight === "" && data.workout === "") return;
+    if (data.workout === "" && data.category === "") return;
 
     dispatch(setUserFilters(data));
 
-    const count = (data.weight !== "" ? 1 : 0) + (data.workout !== "" ? 1 : 0);
+    const count =
+      (data.workout !== "" ? 1 : 0) + (data.category !== "" ? 1 : 0);
+
     setAppliedFilters(count);
   };
 
@@ -59,8 +61,8 @@ const UserFilter = () => {
     dispatch(setUserFilters(updatedData));
 
     const count =
-      (updatedData.weight !== "" ? 1 : 0) +
-      (updatedData.workout !== "" ? 1 : 0);
+      (updatedData.workout !== "" ? 1 : 0) +
+      (updatedData.category !== "" ? 1 : 0);
     setAppliedFilters(count);
   };
 
@@ -83,46 +85,38 @@ const UserFilter = () => {
       {showFilter && (
         <div
           ref={filterBoxRef}
-          className="absolute bg-white z-10 mt-1 rounded-lg shadow-xl border border-primary p-4"
+          className="absolute bg-white z-10 mt-1 w-72 rounded-lg shadow-xl border border-primary p-4"
         >
           <div className="flex flex-col gap-2">
             <div className="flex flex-col gap-1">
               <div className="flex flex-row items-end justify-between">
                 <span className="text-lg font-semibold text-black text-opacity-70">
-                  Weight
+                  Category
                 </span>
                 <button
-                  onClick={() => handleClearFilter("weight")}
+                  onClick={() => handleClearFilter("category")}
                   className="text-sm"
                 >
                   clear
                 </button>
               </div>
-              <div className="flex flex-row border border-primary p-0.5 rounded-lg gap-1">
-                <select
-                  className="w-28 text-xs rounded-none outline-none cursor-pointer"
-                  name="weightSize"
-                  id="weightSize"
-                  value={data.weightSize}
-                  onChange={handleChange}
-                >
-                  <option value="<">less than</option>
-                  <option value="=">equal to</option>
-                  <option value=">">greater than</option>
-                </select>
-
-                <input
-                  type="number"
-                  className="p-1.5 outline-none w-24 border-s-2"
-                  placeholder="50"
-                  name="weight"
-                  id="weight"
-                  value={data.weight}
-                  onChange={handleChange}
-                />
-              </div>
+              <select
+                className="w-full px-2 py-3 text-xs outline-none cursor-pointer border border-primary rounded-lg"
+                name="category"
+                id="category"
+                value={data.category}
+                onChange={handleChange}
+              >
+                <option value="" disabled>
+                  category
+                </option>
+                {allCategories.map((val) => (
+                  <option key={val} value={val}>
+                    {val}
+                  </option>
+                ))}
+              </select>
             </div>
-
             <div className="flex flex-col gap-1">
               <div className="flex flex-row items-end justify-between">
                 <span className="text-lg font-semibold text-black text-opacity-70">

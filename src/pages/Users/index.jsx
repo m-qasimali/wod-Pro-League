@@ -34,8 +34,7 @@ const Users = () => {
     return () => {
       dispatch(
         setUserFilters({
-          weightSize: "=",
-          weight: "",
+          category: "",
           workout: "",
         })
       );

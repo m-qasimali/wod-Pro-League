@@ -33,14 +33,9 @@ const UsersTable = () => {
       );
     }
 
-    if (filters.weight !== "") {
+    if (filters.category !== "") {
       filteredUsers = filteredUsers.filter((user) => {
-        if (filters.weightSize === "=") {
-          return +user.weight === +filters.weight;
-        } else if (filters.weightSize === ">") {
-          return +user.weight > +filters.weight;
-        }
-        return +user.weight < +filters.weight;
+        return filters.category.includes(user?.categoryName);
       });
     }
 
