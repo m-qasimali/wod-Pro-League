@@ -70,6 +70,7 @@ const Users = () => {
 
   const closeEditUser = () => {
     dispatch(setUserToEdit(null));
+    unlockScroll();
   };
 
   return (
