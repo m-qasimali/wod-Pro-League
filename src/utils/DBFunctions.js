@@ -116,6 +116,7 @@ export const getUsersFromDB = async () => {
       teamName: res.teamName,
       weight: res.weight,
       token: res?.FCMToken,
+      ...res,
     };
 
     // if (data1.includes(docRef.id)) {

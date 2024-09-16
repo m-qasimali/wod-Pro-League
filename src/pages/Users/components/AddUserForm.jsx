@@ -16,36 +16,53 @@ import CheckBoxField from "@/components/global/CheckBoxField";
 import { createUser } from "@/redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "@/components/global/Spinner";
+import { useEffect, useState } from "react";
+import { getBoxesFromDB } from "@/utils/DBFunctions3";
+import ComboboxField from "@/components/global/ComboboxField";
 
-const formSchema = z.object({
-  category: z.string().min(1, { message: "Category is required" }),
-  email: z
-    .string()
-    .min(1, { message: "Email is required" })
-    .email({ message: "Invalid email" }),
-  firstName: z.string().min(1, { message: "First Name is required" }),
-  lastName: z.string().min(1, { message: "Last Name is required" }),
-  gender: z.string().min(1, {
-    message: "gender is required",
-  }),
-  dob: z.object({
-    startDate: z.date(),
-    endDate: z.date(),
-  }),
+const formSchema = z
+  .object({
+    category: z.string().min(1, { message: "Category is required" }),
+    email: z
+      .string()
+      .min(1, { message: "Email is required" })
+      .email({ message: "Invalid email" }),
+    firstName: z.string().min(1, { message: "First Name is required" }),
+    lastName: z.string().min(1, { message: "Last Name is required" }),
+    gender: z.string().min(1, {
+      message: "gender is required",
+    }),
+    dob: z.object({
+      startDate: z.date(),
+      endDate: z.date(),
+    }),
 
-  phone: z
-    .string()
-    .min(1, { message: "Phone number is required" })
-    .refine(isValidPhoneNumber, { message: "Invalid phone number" }),
-  country: z.string().min(1, { message: "Country is required" }),
-  province: z.string().min(1, { message: "Province is required" }),
-  city: z.string().min(1, { message: "City is required" }),
-  street: z.string().min(1, { message: "Street is required" }),
-  streetNumber: z.string().min(1, { message: "Street Number is required" }),
-  boxNumber: z.string().min(1, { message: "Box Number is required" }),
-  postalCode: z.string().min(1, { message: "Postal Code is required" }),
-  isPaid: z.boolean(),
-});
+    phone: z
+      .string()
+      .min(1, { message: "Phone number is required" })
+      .refine(isValidPhoneNumber, { message: "Invalid phone number" }),
+    country: z.string().min(1, { message: "Country is required" }),
+    province: z.string().min(1, { message: "Province is required" }),
+    city: z.string().min(1, { message: "City is required" }),
+    street: z.string().min(1, { message: "Street is required" }),
+    streetNumber: z.string().min(1, { message: "Street Number is required" }),
+    boxNumber: z.string().min(1, { message: "Box Number is required" }),
+    postalCode: z.string().min(1, { message: "Postal Code is required" }),
+    isPaid: z.boolean(),
+    otherBoxNumber: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.boxNumber === "Other" && !data.otherBoxNumber) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Other Box Number is required",
+      path: ["otherBoxNumber"],
+    }
+  );
 
 const initialFormValues = {
   category: "",
@@ -63,6 +80,7 @@ const initialFormValues = {
   boxNumber: "",
   postalCode: "",
   isPaid: false,
+  otherBoxNumber: "",
 };
 
 const AddUserForm = () => {
@@ -76,6 +94,24 @@ const AddUserForm = () => {
   const { creatingUser, creatingUserError } = useSelector(
     (state) => state.user
   );
+  const [loadingBoxes, setLoadingBoxes] = useState(false);
+  const [boxes, setBoxes] = useState([]);
+
+  const getBoxes = async () => {
+    try {
+      setLoadingBoxes(true);
+      const res = await getBoxesFromDB();
+      setBoxes(res);
+    } catch (error) {
+      toast.error("Error getting boxes");
+    } finally {
+      setLoadingBoxes(false);
+    }
+  };
+
+  useEffect(() => {
+    getBoxes();
+  }, []);
 
   async function onSubmit(values) {
     try {
@@ -191,12 +227,23 @@ const AddUserForm = () => {
               placeholder={"Enter Street Number"}
             />
 
-            <InputField
+            <ComboboxField
               form={form}
               indicator="boxNumber"
               label="Box Number"
               placeholder={"Enter Box Number"}
+              options={boxes}
+              disabled={loadingBoxes}
             />
+
+            {form.watch("boxNumber") === "Other" && (
+              <InputField
+                form={form}
+                indicator="otherBoxNumber"
+                label="Other Box Number"
+                placeholder={"Enter Other Box Number"}
+              />
+            )}
 
             <InputField
               form={form}

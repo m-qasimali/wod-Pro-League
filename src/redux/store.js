@@ -19,4 +19,8 @@ export const store = configureStore({
     couponUsers: userCouponReducer,
     dashboard: dashboardSliceReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });

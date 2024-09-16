@@ -1,4 +1,5 @@
 import {
+  arrayUnion,
   collection,
   doc,
   getDoc,
@@ -92,7 +93,6 @@ export const createTeamInDB = async (team) => {
 
   const userData = {
     birthDate: formatDOB(team.dob.startDate),
-    boxNumber: team.boxNumber,
     categoryName: team.category,
     categoryPrice: splitCategoryNameAndPrice([team.category])[0].price,
     city: spain_cities.find((city) => city.id === team.city).nm,
@@ -119,6 +119,20 @@ export const createTeamInDB = async (team) => {
     teamBanner: "",
     weight: 0,
   };
+
+  if (team.boxNumber?.toLowerCase() === "other") {
+    userData.boxNumber = team.otherBoxNumber;
+    const boxRef = doc(db, "boxes", "boxes");
+    await setDoc(
+      boxRef,
+      {
+        boxes: arrayUnion(team.otherBoxNumber),
+      },
+      { merge: true }
+    );
+  } else {
+    userData.boxNumber = team.boxNumber;
+  }
 
   const emails = [...team.membersEmails, team.captainEmail];
   await setDoc(doc(db, "users", captainId), userData);
@@ -161,9 +175,8 @@ export const createUserInDB = async (team) => {
   );
   const userId = userRef.user.uid;
 
-  const userData = {
+  let userData = {
     birthDate: formatDOB(team.dob.startDate),
-    boxNumber: team.boxNumber,
     categoryName: team.category,
     categoryPrice: splitCategoryNameAndPrice([team.category])[0].price,
     city: spain_cities.find((city) => city.id === team.city).nm,
@@ -190,6 +203,20 @@ export const createUserInDB = async (team) => {
     teamId: "",
     teamBanner: "",
   };
+
+  if (team.boxNumber?.toLowerCase() === "other") {
+    userData.boxNumber = team.otherBoxNumber;
+    const boxRef = doc(db, "boxes", "boxes");
+    await setDoc(
+      boxRef,
+      {
+        boxes: arrayUnion(team.otherBoxNumber),
+      },
+      { merge: true }
+    );
+  } else {
+    userData.boxNumber = team.boxNumber;
+  }
 
   await setDoc(doc(db, "users", userId), userData);
 
@@ -263,7 +290,6 @@ export const createTeamMemberAccountInDB = async (user) => {
 
   const userData = {
     birthDate: formatDOB(user.dob.startDate),
-    boxNumber: user.boxNumber,
     categoryName: user.category,
     categoryPrice: splitCategoryNameAndPrice([user.category])[0].price,
     city: spain_cities.find((city) => city.id === user.city).nm,
@@ -291,6 +317,20 @@ export const createTeamMemberAccountInDB = async (user) => {
     weight: 0,
     bannerImage: user?.bannerImage || "",
   };
+
+  if (team.boxNumber?.toLowerCase() === "other") {
+    userData.boxNumber = team.otherBoxNumber;
+    const boxRef = doc(db, "boxes", "boxes");
+    await setDoc(
+      boxRef,
+      {
+        boxes: arrayUnion(team.otherBoxNumber),
+      },
+      { merge: true }
+    );
+  } else {
+    userData.boxNumber = team.boxNumber;
+  }
 
   const teamRef = doc(db, "teams", user.teamId);
   const team = await getDoc(teamRef);

@@ -7,19 +7,18 @@ import { useForm } from "react-hook-form";
 import SelectBox from "@/components/global/SelectBox";
 import { getCities, getGenderOptions } from "@/utils/functions";
 import InputField from "@/components/global/InputField";
-import DatePickerField from "@/components/global/DatePickerField";
-import PhoneNumberInput from "@/components/global/PhoneNumberInput";
-import { isValidPhoneNumber } from "react-phone-number-input";
 import { provinces, spain_cities } from "@/constant/provinces";
-import { singlePersonCategories } from "@/constant/categories";
 import toast from "react-hot-toast";
 import CheckBoxField from "@/components/global/CheckBoxField";
-import { createUser } from "@/redux/userSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "@/redux/userSlice";
+import { useDispatch } from "react-redux";
 import Spinner from "@/components/global/Spinner";
+import { useEffect, useState } from "react";
+import { getBoxesFromDB } from "@/utils/DBFunctions3";
+import ComboboxField from "@/components/global/ComboboxField";
 
 const formSchema = z.object({
-  category: z.string().min(1, { message: "Category is required" }),
+  categoryName: z.string().min(1, { message: "Category is required" }),
   email: z
     .string()
     .min(1, { message: "Email is required" })
@@ -29,41 +28,36 @@ const formSchema = z.object({
   gender: z.string().min(1, {
     message: "gender is required",
   }),
-  dob: z.object({
-    startDate: z.date(),
-    endDate: z.date(),
-  }),
-
-  phone: z
-    .string()
-    .min(1, { message: "Phone number is required" })
-    .refine(isValidPhoneNumber, { message: "Invalid phone number" }),
+  birthDate: z.string(),
+  phoneNumber: z.string(),
   country: z.string().min(1, { message: "Country is required" }),
   province: z.string().min(1, { message: "Province is required" }),
   city: z.string().min(1, { message: "City is required" }),
   street: z.string().min(1, { message: "Street is required" }),
-  streetNumber: z.string().min(1, { message: "Street Number is required" }),
+  number: z.string().min(1, { message: "Street Number is required" }),
   boxNumber: z.string().min(1, { message: "Box Number is required" }),
   postalCode: z.string().min(1, { message: "Postal Code is required" }),
   isPaid: z.boolean(),
+  otherBoxNumber: z.string().optional(),
 });
 
 const initialFormValues = {
-  category: "",
+  categoryName: "",
   email: "",
   firstName: "",
   lastName: "",
   gender: "",
-  dob: {},
-  phone: "",
+  birthDate: "",
+  phoneNumber: "",
   country: "",
   province: "",
   city: "",
   street: "",
-  streetNumber: "",
+  number: "",
   boxNumber: "",
   postalCode: "",
   isPaid: false,
+  otherBoxNumber: "",
 };
 
 const EditUserForm = ({ selectedUser }) => {
@@ -73,25 +67,51 @@ const EditUserForm = ({ selectedUser }) => {
       ...selectedUser,
       province: provinces.find(
         (province) => province.nm === selectedUser?.province
-      ).id,
-      city: spain_cities.find((city) => city.nm === selectedUser.city).id,
+      )?.id,
+      city: spain_cities.find((city) => city.nm === selectedUser.city)?.id,
     },
   });
   const dispatch = useDispatch();
-  const { creatingUser, creatingUserError } = useSelector(
-    (state) => state.user
-  );
+  const [loadingBoxes, setLoadingBoxes] = useState(false);
+  const [boxes, setBoxes] = useState([]);
+  const [updating, setUpdating] = useState(false);
+
+  const getBoxes = async () => {
+    try {
+      setLoadingBoxes(true);
+      const res = await getBoxesFromDB();
+      setBoxes(res);
+    } catch (error) {
+      toast.error("Error getting boxes");
+    } finally {
+      setLoadingBoxes(false);
+    }
+  };
+
+  useEffect(() => {
+    getBoxes();
+  }, []);
 
   async function onSubmit(values) {
     try {
-      await dispatch(createUser(values)).unwrap();
-      toast.success("User created successfully");
+      setUpdating(true);
+      const validData = {
+        ...values,
+        id: selectedUser.id,
+        city: spain_cities.find((city) => city.id === values.city).nm,
+        province: provinces.find((province) => province.id === values.province)
+          .nm,
+      };
+      await dispatch(updateUser(validData)).unwrap();
+      toast.success("User updated successfully");
     } catch (error) {
-      toast.error(creatingUserError);
+      toast.error(error);
     } finally {
       form.reset(initialFormValues);
+      setUpdating(false);
     }
   }
+
   return (
     <>
       <Form {...form}>
@@ -100,12 +120,12 @@ const EditUserForm = ({ selectedUser }) => {
           className="flex-grow overflow-auto flex flex-col"
         >
           <div className="flex-grow overflow-auto custom-scrollbar scrollbar-hide flex flex-col gap-4 px-4 pb-5">
-            <SelectBox
+            <InputField
               form={form}
-              indicator="category"
+              indicator="categoryName"
               label="Category"
               placeholder={"Select Category"}
-              options={singlePersonCategories}
+              disabled={true}
             />
 
             <InputField
@@ -127,6 +147,7 @@ const EditUserForm = ({ selectedUser }) => {
               indicator="email"
               label="Email"
               placeholder={"Enter Email"}
+              disabled={true}
             />
 
             <SelectBox
@@ -139,19 +160,21 @@ const EditUserForm = ({ selectedUser }) => {
                   ? getGenderOptions(form.watch("category"))
                   : []
               }
-              disabled={!form.watch("category")}
+              disabled={true}
             />
 
-            <DatePickerField
+            <InputField
               form={form}
               label={"Date of birth"}
-              indicator="dob"
+              indicator="birthDate"
+              disabled={true}
             />
 
-            <PhoneNumberInput
+            <InputField
               form={form}
               label={"Phone Number"}
-              indicator="phone"
+              indicator="phoneNumber"
+              disabled={true}
             />
 
             <InputField
@@ -176,9 +199,7 @@ const EditUserForm = ({ selectedUser }) => {
               label="City"
               placeholder={"Select City"}
               options={
-                form.watch("province")
-                  ? getCities(form.watch("province")?.id)
-                  : []
+                form.watch("province") ? getCities(form.watch("province")) : []
               }
               disabled={!form.watch("province")}
               toSelect="city"
@@ -193,17 +214,28 @@ const EditUserForm = ({ selectedUser }) => {
 
             <InputField
               form={form}
-              indicator="streetNumber"
+              indicator="number"
               label="Street Number"
               placeholder={"Enter Street Number"}
             />
 
-            <InputField
+            <ComboboxField
               form={form}
               indicator="boxNumber"
               label="Box Number"
               placeholder={"Enter Box Number"}
+              options={boxes}
+              disabled={loadingBoxes}
             />
+
+            {form.watch("boxNumber") === "Other" && (
+              <InputField
+                form={form}
+                indicator="otherBoxNumber"
+                label="Other Box Number"
+                placeholder={"Enter Other Box Number"}
+              />
+            )}
 
             <InputField
               form={form}
@@ -217,9 +249,9 @@ const EditUserForm = ({ selectedUser }) => {
           <Button
             className="bg-primary hover:drop-shadow-md text-white rounded-md p-2 mt-5 flex flex-row items-center justify-center"
             type="submit"
-            disabled={creatingUser}
+            disabled={updating}
           >
-            {creatingUser ? <Spinner /> : "Create User"}
+            {updating ? <Spinner /> : "Update User"}
           </Button>
         </form>
       </Form>

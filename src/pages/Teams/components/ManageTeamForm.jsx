@@ -17,6 +17,9 @@ import CheckBoxField from "@/components/global/CheckBoxField";
 import { useDispatch, useSelector } from "react-redux";
 import { addNewTeam } from "@/redux/teamSlice";
 import Spinner from "@/components/global/Spinner";
+import ComboboxField from "@/components/global/ComboboxField";
+import { useEffect, useState } from "react";
+import { getBoxesFromDB } from "@/utils/DBFunctions3";
 
 const formSchema = z
   .object({
@@ -46,6 +49,7 @@ const formSchema = z
     boxNumber: z.string().min(1, { message: "Box Number is required" }),
     postalCode: z.string().min(1, { message: "Postal Code is required" }),
     isPaid: z.boolean(),
+    otherBoxNumber: z.string().optional(),
   })
   .refine((data) => !data.membersEmails.includes(data.captainEmail), {
     message: "Captain email should not be in members emails",
@@ -57,6 +61,18 @@ const formSchema = z
     {
       message: "You should add all members emails",
       path: ["membersEmails"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.boxNumber === "Other" && !data.otherBoxNumber) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Other Box Number is required",
+      path: ["otherBoxNumber"],
     }
   );
 
@@ -78,6 +94,7 @@ const initialFormValues = {
   boxNumber: "",
   postalCode: "",
   isPaid: false,
+  otherBoxNumber: "",
 };
 
 const ManageTeamForm = () => {
@@ -89,6 +106,24 @@ const ManageTeamForm = () => {
   });
   const dispatch = useDispatch();
   const { creatingNewTeam, newTeamError } = useSelector((state) => state.team);
+  const [loadingBoxes, setLoadingBoxes] = useState(false);
+  const [boxes, setBoxes] = useState([]);
+
+  const getBoxes = async () => {
+    try {
+      setLoadingBoxes(true);
+      const res = await getBoxesFromDB();
+      setBoxes(res);
+    } catch (error) {
+      toast.error("Error getting boxes");
+    } finally {
+      setLoadingBoxes(false);
+    }
+  };
+
+  useEffect(() => {
+    getBoxes();
+  }, []);
 
   async function onSubmit(values) {
     try {
@@ -211,12 +246,23 @@ const ManageTeamForm = () => {
               placeholder={"Enter Street Number"}
             />
 
-            <InputField
+            <ComboboxField
               form={form}
               indicator="boxNumber"
               label="Box Number"
               placeholder={"Enter Box Number"}
+              options={boxes}
+              disabled={loadingBoxes}
             />
+
+            {form.watch("boxNumber") === "Other" && (
+              <InputField
+                form={form}
+                indicator="otherBoxNumber"
+                label="Other Box Number"
+                placeholder={"Enter Other Box Number"}
+              />
+            )}
 
             <InputField
               form={form}

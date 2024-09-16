@@ -150,12 +150,12 @@ const UsersTable = () => {
                     <td className="px-6 py-2 text-nowrap">{user?.teamName}</td>
                     <td className="px-6 py-2">
                       <div className="flex flex-row items-center justify-between gap-2">
-                        {/* <button
+                        <button
                           onClick={() => openEditUser(user)}
                           className="hover:bg-opacity-80 flex flex-row items-center justify-center p-1 rounded-full  hover:shadow-lg"
                         >
                           <Icons.Edit className="w-5 text-primary" />
-                        </button> */}
+                        </button>
                         <Link
                           to={`/users/${user?.id}/wods`}
                           state={{

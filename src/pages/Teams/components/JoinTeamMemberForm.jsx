@@ -12,41 +12,57 @@ import { isValidPhoneNumber } from "react-phone-number-input";
 import { provinces } from "@/constant/provinces";
 import { getTeamDetailsByEmailFromDB } from "@/utils/DBFunctions2";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNewMember } from "@/redux/teamSlice";
 import Spinner from "@/components/global/Spinner";
+import { getBoxesFromDB } from "@/utils/DBFunctions3";
+import ComboboxField from "@/components/global/ComboboxField";
 
-const formSchema = z.object({
-  captainEmail: z
-    .string()
-    .min(1, { message: "Email is required" })
-    .email({ message: "Invalid email" }),
-  category: z.string().min(1, { message: "Category is required" }),
-  teamName: z.string().min(1, { message: "Team Name is required" }),
-  memberEmail: z
-    .string()
-    .min(1, { message: "Email is required" })
-    .email({ message: "Invalid email" }),
-  firstName: z.string().min(1, { message: "First Name is required" }),
-  lastName: z.string().min(1, { message: "Last Name is required" }),
-  gender: z.string().min(1, { message: "Gender is required" }),
-  dob: z.object({
-    startDate: z.date(),
-    endDate: z.date(),
-  }),
-  phone: z
-    .string()
-    .min(1, { message: "Phone number is required" })
-    .superRefine(isValidPhoneNumber, { message: "Invalid phone number" }),
-  country: z.string().min(1, { message: "Country is required" }),
-  province: z.string().min(1, { message: "Province is required" }),
-  city: z.string().min(1, { message: "City is required" }),
-  street: z.string().min(1, { message: "Street is required" }),
-  streetNumber: z.string().min(1, { message: "Street Number is required" }),
-  boxNumber: z.string().min(1, { message: "Box Number is required" }),
-  postalCode: z.string().min(1, { message: "Postal Code is required" }),
-});
+const formSchema = z
+  .object({
+    captainEmail: z
+      .string()
+      .min(1, { message: "Email is required" })
+      .email({ message: "Invalid email" }),
+    category: z.string().min(1, { message: "Category is required" }),
+    teamName: z.string().min(1, { message: "Team Name is required" }),
+    memberEmail: z
+      .string()
+      .min(1, { message: "Email is required" })
+      .email({ message: "Invalid email" }),
+    firstName: z.string().min(1, { message: "First Name is required" }),
+    lastName: z.string().min(1, { message: "Last Name is required" }),
+    gender: z.string().min(1, { message: "Gender is required" }),
+    dob: z.object({
+      startDate: z.date(),
+      endDate: z.date(),
+    }),
+    phone: z
+      .string()
+      .min(1, { message: "Phone number is required" })
+      .superRefine(isValidPhoneNumber, { message: "Invalid phone number" }),
+    country: z.string().min(1, { message: "Country is required" }),
+    province: z.string().min(1, { message: "Province is required" }),
+    city: z.string().min(1, { message: "City is required" }),
+    street: z.string().min(1, { message: "Street is required" }),
+    streetNumber: z.string().min(1, { message: "Street Number is required" }),
+    boxNumber: z.string().min(1, { message: "Box Number is required" }),
+    postalCode: z.string().min(1, { message: "Postal Code is required" }),
+    otherBoxNumber: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.boxNumber === "Other" && !data.otherBoxNumber) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Other Box Number is required",
+      path: ["otherBoxNumber"],
+    }
+  );
 
 const initialFormValues = {
   captainEmail: "",
@@ -65,6 +81,7 @@ const initialFormValues = {
   streetNumber: "",
   boxNumber: "",
   postalCode: "",
+  otherBoxNumber: "",
 };
 
 const JoinTeamMemberForm = () => {
@@ -80,6 +97,24 @@ const JoinTeamMemberForm = () => {
   const { creatingNewTeamMember, newTeamMemberError } = useSelector(
     (state) => state.team
   );
+  const [loadingBoxes, setLoadingBoxes] = useState(false);
+  const [boxes, setBoxes] = useState([]);
+
+  const getBoxes = async () => {
+    try {
+      setLoadingBoxes(true);
+      const res = await getBoxesFromDB();
+      setBoxes(res);
+    } catch (error) {
+      toast.error("Error getting boxes");
+    } finally {
+      setLoadingBoxes(false);
+    }
+  };
+
+  useEffect(() => {
+    getBoxes();
+  }, []);
 
   const getTeamDetails = async () => {
     const team = await getTeamDetailsByEmailFromDB({
@@ -271,12 +306,23 @@ const JoinTeamMemberForm = () => {
                     placeholder={"Enter Street Number"}
                   />
 
-                  <InputField
+                  <ComboboxField
                     form={form}
                     indicator="boxNumber"
                     label="Box Number"
                     placeholder={"Enter Box Number"}
+                    options={boxes}
+                    disabled={loadingBoxes}
                   />
+
+                  {form.watch("boxNumber") === "Other" && (
+                    <InputField
+                      form={form}
+                      indicator="otherBoxNumber"
+                      label="Other Box Number"
+                      placeholder={"Enter Other Box Number"}
+                    />
+                  )}
 
                   <InputField
                     form={form}

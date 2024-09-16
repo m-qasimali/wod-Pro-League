@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getUsersFromDB, updateUserWeightInDB } from "../utils/DBFunctions";
 import { createUserInDB } from "@/utils/DBFunctions2";
+import { updateUserInDB } from "@/utils/DBFunctions3";
 
 export const getUsers = createAsyncThunk(
   "users/getUsers",
@@ -31,6 +32,18 @@ export const createUser = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await createUserInDB(data);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const updateUser = createAsyncThunk(
+  "users/updateUser",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await updateUserInDB(data);
       return response;
     } catch (error) {
       return rejectWithValue(error.message);
@@ -108,6 +121,12 @@ const userSlice = createSlice({
     builder.addCase(createUser.rejected, (state, action) => {
       state.creatingUser = false;
       state.creatingUserError = action.payload;
+    });
+
+    builder.addCase(updateUser.fulfilled, (state, action) => {
+      state.users = state.users.map((user) =>
+        user.id === action.payload?.id ? { ...user, ...action.payload } : user
+      );
     });
   },
 });
