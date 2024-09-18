@@ -311,6 +311,14 @@ export const updateVideoStatusInDB = async (
 export const getRankingDataFromDB = async ({ userId, workoutId }) => {
   const rankingDocRef = doc(db, "ranking", workoutId);
   const res = await getDoc(rankingDocRef);
+  const videoRef = query(
+    collection(db, "Videos"),
+    where("userId", "==", userId),
+    where("wodId", "==", workoutId)
+  );
+
+  const videoSnapshot = await getDocs(videoRef);
+  const video = videoSnapshot?.docs[0]?.data();
 
   if (res.exists()) {
     const ranking = res.data();
@@ -319,6 +327,7 @@ export const getRankingDataFromDB = async ({ userId, workoutId }) => {
       liftedWeight: user.liftedWeight,
       repetitions: user.repetitions,
       uploadTime: user.uploadTime,
+      judgeName: video?.judgeName || "",
     };
 
     return data;

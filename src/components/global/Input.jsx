@@ -12,7 +12,7 @@ const Input = ({
   placeholder = "",
 }) => {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 w-full">
       <label className="font-semibold" htmlFor={toCamelCase(labelValue)}>
         {labelValue}
       </label>

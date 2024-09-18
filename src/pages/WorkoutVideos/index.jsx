@@ -8,10 +8,10 @@ import Spinner from "../../components/global/Spinner";
 
 const initialState = {
   judgeName: "",
-  videoMinutes: 0,
-  videoSeconds: 0,
-  liftedWeight: 0,
-  repetitions: 0,
+  videoMinutes: "",
+  videoSeconds: "",
+  liftedWeight: "",
+  repetitions: "",
 };
 
 const WorkoutVideos = () => {
@@ -22,7 +22,7 @@ const WorkoutVideos = () => {
   const dispatch = useDispatch();
   const { workoutId, userId } = useParams();
   const { rankingData } = useSelector((state) => state.video);
-  const [click, setClick] = useState("");
+  const [judgedData, setJudgedData] = useState(initialState);
 
   useEffect(() => {
     dispatch(getRankingData({ userId, workoutId }));
@@ -51,10 +51,16 @@ const WorkoutVideos = () => {
         repetitions: +rankingData.repetitions,
       }));
     }
+
+    if (rankingData?.judgeName) {
+      setData((prevData) => ({
+        ...prevData,
+        judgeName: rankingData?.judgeName,
+      }));
+    }
   }, [rankingData]);
 
-  const handleApprove = async () => {
-    setClick("approve");
+  const handleSubmit = async () => {
     if (data.judgeName === "") {
       toast.error("Judge name required");
       return;
@@ -66,11 +72,11 @@ const WorkoutVideos = () => {
           userId: userId,
           workoutId: workoutId,
           status: "approved",
-          judgeName: data.judgeName,
-          videoMinutes: data.videoMinutes,
-          videoSeconds: data.videoSeconds,
-          repetitions: data.repetitions,
-          liftedWeight: data.liftedWeight,
+          judgeName: judgedData.judgeName,
+          videoMinutes: judgedData.videoMinutes,
+          videoSeconds: judgedData.videoSeconds,
+          repetitions: judgedData.repetitions,
+          liftedWeight: judgedData.liftedWeight,
         })
       ).unwrap();
       toast.success("Video approved successfully");
@@ -82,33 +88,11 @@ const WorkoutVideos = () => {
   };
 
   const handleChange = (e) => {
-    setClick("decline");
     const { name, value } = e.target;
-    setData((prevData) => ({
+    setJudgedData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-  };
-
-  const handleDecline = async () => {
-    try {
-      await dispatch(
-        upateVideoStatus({
-          videoId: videos?.id,
-          userId: userId,
-          workoutId: workoutId,
-          status: "declined",
-          judgeName: data.judgeName,
-          videoMinutes: data.videoMinutes,
-          videoSeconds: data.videoSeconds,
-          repetitions: data.repetitions,
-          liftedWeight: data.liftedWeight,
-        })
-      ).unwrap();
-      toast.success("Video declined successfully");
-    } catch (error) {
-      toast.error("Error declining video");
-    }
   };
 
   return (
@@ -146,7 +130,7 @@ const WorkoutVideos = () => {
           </div>
         </div>
 
-        <div className="w-full lg:w-1/3 space-y-5 mb-5">
+        <div className="w-full space-y-5 mb-5">
           <Input
             labelValue="Judge Name"
             type="text"
@@ -154,53 +138,78 @@ const WorkoutVideos = () => {
             onChange={handleChange}
           />
           {rankingData?.uploadTime && rankingData?.uploadTime !== "" && (
-            <>
-              <Input
-                labelValue="Video Minutes"
-                type="number"
-                value={data?.videoMinutes}
-                onChange={handleChange}
-              />
-              <Input
-                labelValue="Video Seconds"
-                type="number"
-                value={data?.videoSeconds}
-                onChange={handleChange}
-              />
-            </>
+            <div className="space-y-5">
+              <div className="flex flex-row justify-between items-center gap-8">
+                <Input
+                  labelValue="Video Minutes"
+                  type="number"
+                  value={data?.videoMinutes}
+                  disabled={true}
+                />
+                <Input
+                  labelValue="Video Minutes"
+                  type="number"
+                  value={judgedData?.videoMinutes}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className="flex flex-row  gap-8">
+                <Input
+                  labelValue="Video Seconds"
+                  type="number"
+                  value={data?.videoSeconds}
+                  disabled={true}
+                />
+                <Input
+                  labelValue="Video Seconds"
+                  type="number"
+                  value={judgedData?.videoSeconds}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
           )}
 
           {rankingData?.liftedWeight && rankingData?.liftedWeight !== "" && (
-            <Input
-              labelValue="Lifted Weight"
-              type="number"
-              value={data?.liftedWeight}
-              onChange={handleChange}
-            />
+            <div className="flex flex-row gap-8">
+              <Input
+                labelValue="Lifted Weight"
+                type="number"
+                value={data?.liftedWeight}
+                disabled={true}
+              />
+              <Input
+                labelValue="Lifted Weight"
+                type="number"
+                value={judgedData?.liftedWeight}
+                onChange={handleChange}
+              />
+            </div>
           )}
 
           {rankingData?.repetitions && rankingData?.repetitions !== "" && (
-            <Input
-              labelValue="Repetitions"
-              type="number"
-              value={data?.repetitions}
-              onChange={handleChange}
-            />
+            <div className="flex flex-row justify-between items-center gap-8">
+              <Input
+                labelValue="Repetitions"
+                type="number"
+                value={data?.repetitions}
+                disabled={true}
+              />
+              <Input
+                labelValue="Repetitions"
+                type="number"
+                value={judgedData?.repetitions}
+                onChange={handleChange}
+              />
+            </div>
           )}
           <div className="flex flex-row gap-2">
             <button
-              onClick={handleApprove}
+              onClick={handleSubmit}
               disabled={loading}
               className="bg-primary text-white hover:bg-opacity-80 cursor-pointer py-1 rounded-md text-lg w-full flex flex-row items-center justify-center"
             >
-              {click === "approve" && loading ? <Spinner /> : "Approve"}
-            </button>
-            <button
-              onClick={handleDecline}
-              disabled={loading}
-              className="bg-gray-400 text-textSecondary hover:bg-opacity-80 cursor-pointer py-1 rounded-md text-lg w-full flex flex-row items-center justify-center"
-            >
-              {click === "decline" && loading ? <Spinner /> : "Decline"}
+              {loading ? <Spinner /> : "Submit"}
             </button>
           </div>
         </div>
