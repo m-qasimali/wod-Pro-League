@@ -26,7 +26,7 @@ const UsersTable = () => {
     let filteredUsers = users;
 
     if (searchQuery) {
-      filteredUsers = filteredUsers.filter(
+      filteredUsers = filteredUsers?.filter(
         (user) =>
           user?.firstName?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
           user?.email?.toLowerCase().includes(searchQuery?.toLowerCase())
@@ -34,14 +34,14 @@ const UsersTable = () => {
     }
 
     if (filters.category !== "") {
-      filteredUsers = filteredUsers.filter((user) => {
+      filteredUsers = filteredUsers?.filter((user) => {
         return filters.category.includes(user?.categoryName);
       });
     }
 
     if (filters.workout !== "") {
-      filteredUsers = filteredUsers.filter((user) => {
-        return activeWorkouts[filters.workout]?.users?.includes(user?.id);
+      filteredUsers = filteredUsers?.filter((user) => {
+        return activeWorkouts[filters?.workout]?.users?.includes(user?.id);
       });
     }
 
@@ -59,7 +59,7 @@ const UsersTable = () => {
 
   const handleCheckboxChange = (userId) => {
     const newUsers = selectedUsers.includes(userId)
-      ? selectedUsers.filter((id) => id !== userId)
+      ? selectedUsers?.filter((id) => id !== userId)
       : [...selectedUsers, userId];
 
     dispatch(setSelectedUsers(newUsers));
