@@ -28,14 +28,16 @@ const UsersTable = () => {
     if (searchQuery) {
       filteredUsers = filteredUsers?.filter(
         (user) =>
-          user?.firstName?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
-          user?.email?.toLowerCase().includes(searchQuery?.toLowerCase())
+          user?.firstName
+            ?.toLowerCase()
+            ?.includes(searchQuery?.toLowerCase()) ||
+          user?.email?.toLowerCase()?.includes(searchQuery?.toLowerCase())
       );
     }
 
     if (filters.category !== "") {
       filteredUsers = filteredUsers?.filter((user) => {
-        return filters.category.includes(user?.categoryName);
+        return filters?.category?.includes(user?.categoryName);
       });
     }
 
@@ -58,7 +60,7 @@ const UsersTable = () => {
   };
 
   const handleCheckboxChange = (userId) => {
-    const newUsers = selectedUsers.includes(userId)
+    const newUsers = selectedUsers?.includes(userId)
       ? selectedUsers?.filter((id) => id !== userId)
       : [...selectedUsers, userId];
 
@@ -117,8 +119,8 @@ const UsersTable = () => {
                   >
                     <td className="px-6 py-2">
                       <Checkbox
-                        checked={selectedUsers.includes(user.id)}
-                        onChange={() => handleCheckboxChange(user.id)}
+                        checked={selectedUsers?.includes(user?.id)}
+                        onChange={() => handleCheckboxChange(user?.id)}
                         id={user.id}
                       />
                     </td>
