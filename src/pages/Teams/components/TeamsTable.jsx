@@ -111,12 +111,12 @@ const TeamsTable = () => {
                   </td>
                   <td className="px-6 py-2">
                     <div className="flex flex-row items-center gap-2">
-                      <button
+                      {/* <button
                         onClick={() => openEditTeam(team)}
                         className="hover:bg-opacity-80 flex flex-row items-center justify-center p-1 rounded-full  hover:shadow-lg"
                       >
                         <Icons.Edit className="w-5 text-primary" />
-                      </button>
+                      </button> */}
                       <button
                         onClick={() => handleShowTeam(team)}
                         className="whitespace-nowrap text-xs underline text-red-400"
