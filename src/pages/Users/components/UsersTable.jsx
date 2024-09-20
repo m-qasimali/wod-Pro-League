@@ -36,11 +36,11 @@ const UsersTable = () => {
       );
     }
 
-    if (filters.category !== "") {
-      filteredUsers = filteredUsers?.filter((user) => {
-        return filters?.category?.includes(user?.categoryName);
-      });
-    }
+    // if (filters.category !== "") {
+    //   filteredUsers = filteredUsers?.filter((user) => {
+    //     return filters?.category?.includes(user?.categoryName);
+    //   });
+    // }
 
     if (filters.workout !== "") {
       filteredUsers = filteredUsers?.filter((user) => {
