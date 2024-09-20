@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { getTeams } from "../../../redux/teamSlice";
+import { getTeams, setTeamToEdit } from "../../../redux/teamSlice";
 import { Icons } from "../../../components/global/icons";
 import TeamMemberPopup from "./TeamMemberPopup";
 import Loader from "../../../components/global/Loader";
 import CategoryEditPopup from "./CategoryEditPopup";
+import { lockScroll } from "@/utils/functions";
 
 const TeamsTable = () => {
   const { loading, teams, searchQuery } = useSelector((state) => state.team);
@@ -47,6 +48,11 @@ const TeamsTable = () => {
 
   const closeShowTeam = () => {
     setShowTeam(false);
+  };
+
+  const openEditTeam = (team) => {
+    dispatch(setTeamToEdit(team));
+    lockScroll();
   };
 
   if (loading) {
@@ -104,12 +110,20 @@ const TeamsTable = () => {
                     {team?.teamOwnerEmail}
                   </td>
                   <td className="px-6 py-2">
-                    <button
-                      onClick={() => handleShowTeam(team)}
-                      className="whitespace-nowrap text-xs underline text-red-400"
-                    >
-                      View Members
-                    </button>
+                    <div className="flex flex-row items-center gap-2">
+                      <button
+                        onClick={() => openEditTeam(team)}
+                        className="hover:bg-opacity-80 flex flex-row items-center justify-center p-1 rounded-full  hover:shadow-lg"
+                      >
+                        <Icons.Edit className="w-5 text-primary" />
+                      </button>
+                      <button
+                        onClick={() => handleShowTeam(team)}
+                        className="whitespace-nowrap text-xs underline text-red-400"
+                      >
+                        View Members
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );

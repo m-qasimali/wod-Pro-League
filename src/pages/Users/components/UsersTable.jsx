@@ -98,7 +98,7 @@ const UsersTable = () => {
                   Email
                 </th>
                 <th scope="col" className="px-6 py-3 text-nowrap">
-                  Weight
+                  Result
                 </th>
                 <th scope="col" className="px-6 py-3 text-nowrap">
                   Team Name
@@ -141,10 +141,12 @@ const UsersTable = () => {
                       </div>
                     </td>
                     <td className="px-6 py-2 text-nowrap">{user?.email}</td>
-                    <td className="px-6 py-2 text-nowrap">{user?.weight}</td>
+                    <td className="px-6 py-2 text-nowrap">
+                      {`${user?.totalApprovedWorkouts}/${user?.totalRegisteredWorkouts}`}
+                    </td>
                     <td className="px-6 py-2 text-nowrap">{user?.teamName}</td>
                     <td className="px-6 py-2">
-                      <div className="flex flex-row items-center justify-between gap-2">
+                      <div className="flex flex-row items-center gap-2">
                         <button
                           onClick={() => openEditUser(user)}
                           className="hover:bg-opacity-80 flex flex-row items-center justify-center p-1 rounded-full  hover:shadow-lg"

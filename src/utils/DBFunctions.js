@@ -93,37 +93,51 @@ export const updateWorkoutInDB = async (data) => {
 };
 
 export const getUsersFromDB = async () => {
-  // const rankingDocsRef = await getDocs(collection(db, "rankings"));
-  // let data1 = [];
-  // for (const docSnapshot of rankingDocsRef.docs) {
-  //   const res = docSnapshot.data();
-  //   data1.push([...Object.keys(res)]);
-  // }
-  // data1 = data1.flat();
+  const workoutRef = await getDocs(
+    query(collection(db, "Work_outs"), where("status", "==", "active"))
+  );
 
-  const querySnapshot = await getDocs(collection(db, "users"));
+  const activeWorkoutIds = workoutRef.docs.map((doc) => doc.id);
 
-  const data = [];
+  const usersRef = await getDocs(collection(db, "users"));
+  const users = usersRef.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-  for (const docRef of querySnapshot.docs) {
-    const res = docRef.data();
-    const validData = {
-      id: docRef.id,
-      profileImage: res.profilePicture,
-      email: res.email,
-      firstName: res.firstName,
-      lastName: res.lastName,
-      teamName: res.teamName,
-      weight: res.weight,
-      token: res?.FCMToken,
-      ...res,
+  const videosRef = await getDocs(
+    query(collection(db, "Videos"), where("wodId", "in", activeWorkoutIds))
+  );
+
+  const videosByUser = {};
+  videosRef.docs.forEach((doc) => {
+    const { userId, status } = doc.data();
+    if (!videosByUser[userId]) {
+      videosByUser[userId] = { totalRegistered: 0, totalApproved: 0 };
+    }
+    videosByUser[userId].totalRegistered += 1;
+    if (status === "approved") {
+      videosByUser[userId].totalApproved += 1;
+    }
+  });
+
+  const data = users.map((user) => {
+    const userVideos = videosByUser[user.id] || {
+      totalRegistered: 0,
+      totalApproved: 0,
     };
+    return {
+      id: user.id,
+      profileImage: user.profilePicture,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      teamName: user.teamName,
+      weight: user.weight,
+      token: user?.FCMToken,
+      totalRegisteredWorkouts: userVideos.totalRegistered,
+      totalApprovedWorkouts: userVideos.totalApproved,
+      ...user,
+    };
+  });
 
-    // if (data1.includes(docRef.id)) {
-    //   validData.isRegistered = true;
-    // }
-    data.push(validData);
-  }
   return data;
 };
 
@@ -180,6 +194,7 @@ export const getTeamsFromDB = async () => {
       }`,
       teamOwnerEmail: teamOwnerData.email || "",
       platform: team.platform || "",
+      ...team,
     });
   });
 

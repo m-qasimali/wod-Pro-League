@@ -61,7 +61,7 @@ const WorkoutVideos = () => {
   }, [rankingData]);
 
   const handleSubmit = async () => {
-    if (data.judgeName === "") {
+    if (judgedData.judgeName === "") {
       toast.error("Judge name required");
       return;
     }
@@ -134,7 +134,7 @@ const WorkoutVideos = () => {
           <Input
             labelValue="Judge Name"
             type="text"
-            value={data?.judgeName}
+            value={judgedData?.judgeName}
             onChange={handleChange}
           />
           {rankingData?.uploadTime && rankingData?.uploadTime !== "" && (

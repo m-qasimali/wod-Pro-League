@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SearchField from "../../components/global/SearchField";
 import { useDispatch, useSelector } from "react-redux";
-import { setTeamSearchQuery } from "../../redux/teamSlice";
+import { setTeamSearchQuery, setTeamToEdit } from "../../redux/teamSlice";
 import { useNavigate } from "react-router-dom";
 import Loader from "../../components/global/Loader";
 import TeamsTable from "./components/TeamsTable";
@@ -9,6 +9,7 @@ import AddButton from "@/components/global/AddButton";
 import { lockScroll, unlockScroll } from "@/utils/functions";
 import ManageTeam from "./components/ManageTeam";
 import JoinTeamMember from "./components/JoinTeamMember";
+import EditTeam from "./components/EditTeam";
 
 const Teams = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -18,6 +19,7 @@ const Teams = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [addTeam, setAddTeam] = useState(false);
   const [addTeamMember, setAddTeamMember] = useState(false);
+  const { teamToEdit } = useSelector((state) => state.team);
 
   useEffect(() => {
     if (!admin || admin.role !== "primary") {
@@ -48,6 +50,11 @@ const Teams = () => {
 
   const closeAddTeamMember = () => {
     setAddTeamMember(false);
+    unlockScroll();
+  };
+
+  const closeEditTeam = () => {
+    dispatch(setTeamToEdit(null));
     unlockScroll();
   };
 
@@ -83,6 +90,8 @@ const Teams = () => {
       {addTeamMember && (
         <JoinTeamMember close={closeAddTeamMember} toDo="add" />
       )}
+
+      {teamToEdit && <EditTeam team={teamToEdit} close={closeEditTeam} />}
     </div>
   );
 };

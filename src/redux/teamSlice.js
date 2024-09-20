@@ -90,10 +90,14 @@ const teamSlice = createSlice({
     newTeamError: null,
     creatingNewTeamMember: false,
     newTeamMemberError: null,
+    teamToEdit: null,
   },
   reducers: {
     setTeamSearchQuery: (state, action) => {
       state.searchQuery = action.payload;
+    },
+    setTeamToEdit: (state, action) => {
+      state.teamToEdit = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -164,6 +168,6 @@ const teamSlice = createSlice({
   },
 });
 
-export const { setTeamSearchQuery } = teamSlice.actions;
+export const { setTeamSearchQuery, setTeamToEdit } = teamSlice.actions;
 
 export default teamSlice.reducer;

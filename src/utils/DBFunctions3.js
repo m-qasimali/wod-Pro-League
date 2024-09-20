@@ -13,3 +13,12 @@ export const updateUserInDB = async (data) => {
   setDoc(userRef, { ...data, updatedAt: Timestamp.now() }, { merge: true });
   return data;
 };
+
+export const updateTeamInDB = async (data) => {
+  const teamRef = doc(db, "teams", data.id);
+  const team = (await getDoc(teamRef)).data();
+
+  const newTeamMembers = data.teammateEmails.filter(
+    (email) => !team.teammateEmails.includes(email)
+  );
+};
