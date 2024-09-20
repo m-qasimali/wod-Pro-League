@@ -17,7 +17,6 @@ const UsersTable = () => {
   const [usersToDisplay, setUsersToDisplay] = useState([]);
   const { selectedUsers } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  console.log("usersToDisplay: ", usersToDisplay);
 
   useEffect(() => {
     dispatch(getUsers());
@@ -36,7 +35,7 @@ const UsersTable = () => {
       );
     }
 
-    if (filters.category !== "") {
+    if (filters.category) {
       filteredUsers = filteredUsers?.filter((user) => {
         return user?.categoryName?.startsWith(filters.category);
       });
