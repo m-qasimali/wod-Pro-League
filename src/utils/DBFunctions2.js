@@ -23,7 +23,7 @@ import { provinces, spain_cities } from "@/constant/provinces";
 import { sendMails } from "./DBFunctions";
 import { selfEmailTemplate, teamEmailTemplate } from "./EmailTemplates";
 import { DiscountCoupons, FreeCoupons } from "./coupons";
-import { allCategories } from "@/constant/categories";
+import { v4 as uuidv4 } from "uuid";
 
 export const getDashboardStatsFromDB = async () => {
   const usersRef = query(
@@ -70,6 +70,7 @@ export const getDashboardStatsFromDB = async () => {
 
 export const createTeamInDB = async (team) => {
   const password = generatePassword();
+  const teamId = uuidv4();
   const captainRef = await createUserWithEmailAndPassword(
     auth,
     team.captainEmail,
@@ -77,13 +78,13 @@ export const createTeamInDB = async (team) => {
   );
   const captainId = captainRef.user.uid;
 
-  const teamRef = doc(collection(db, "teams"));
+  const teamRef = doc(collection(db, "teams"), teamId);
   const teamData = {
     creatorEmail: team.captainEmail,
     platform: "app",
     teamCategory: team.category,
     teamCreatorId: captainId,
-    teamId: teamRef.id,
+    teamId: teamId,
     teamName: team.teamName,
     teammateEmails: team.membersEmails,
     teammateGenders: [team.gender],
@@ -115,7 +116,7 @@ export const createTeamInDB = async (team) => {
     number: team.streetNumber,
     teammateEmail: team.membersEmails,
     teamName: team.teamName,
-    teamId: teamRef.id,
+    teamId: teamId,
     teamBanner: "",
     weight: 0,
   };
@@ -157,7 +158,7 @@ export const createTeamInDB = async (team) => {
   });
 
   return {
-    id: teamRef.id,
+    id: teamId,
     teamName: team.teamName,
     teamCategory: team.category,
     teamOwner: team.firstName + " " + team.lastName,
