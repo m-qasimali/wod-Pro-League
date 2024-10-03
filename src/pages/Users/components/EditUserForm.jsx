@@ -16,6 +16,7 @@ import Spinner from "@/components/global/Spinner";
 import { useEffect, useState } from "react";
 import { getBoxesFromDB } from "@/utils/DBFunctions3";
 import ComboboxField from "@/components/global/ComboboxField";
+import LocationField from "@/components/global/LocationField";
 
 const formSchema = z.object({
   categoryName: z.string().min(1, { message: "Category is required" }),
@@ -30,6 +31,12 @@ const formSchema = z.object({
   }),
   birthDate: z.string(),
   phoneNumber: z.string(),
+  location: z.object({
+    country: z.string(),
+    province: z.string(),
+    city: z.string(),
+  }),
+  isOutOfSpain: z.boolean(),
   country: z.string().min(1, { message: "Country is required" }),
   province: z.string().min(1, { message: "Province is required" }),
   city: z.string().min(1, { message: "City is required" }),
@@ -50,6 +57,12 @@ const initialFormValues = {
   birthDate: "",
   phoneNumber: "",
   country: "",
+  location: {
+    country: "",
+    province: "",
+    city: "",
+  },
+  isOutOfSpain: false,
   province: "",
   city: "",
   street: "",
@@ -65,10 +78,21 @@ const EditUserForm = ({ selectedUser }) => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       ...selectedUser,
-      province: provinces.find(
-        (province) => province.nm === selectedUser?.province
-      )?.id,
-      city: spain_cities.find((city) => city.nm === selectedUser.city)?.id,
+      province:
+        selectedUser.country?.toLowerCase() === "spain"
+          ? provinces.find((province) => province.nm === selectedUser?.province)
+              ?.id
+          : selectedUser.province,
+      city:
+        selectedUser.country?.toLowerCase() === "spain"
+          ? spain_cities.find((city) => city.nm === selectedUser.city)?.id
+          : selectedUser.city,
+      isOutOfSpain: selectedUser.country?.toLowerCase() !== "spain",
+      location: {
+        country: "",
+        province: "",
+        city: "",
+      },
     },
   });
   const dispatch = useDispatch();
@@ -92,16 +116,42 @@ const EditUserForm = ({ selectedUser }) => {
     getBoxes();
   }, []);
 
+  useEffect(() => {
+    const location = form.watch("location");
+    if (location?.country) {
+      form.setValue(
+        "country",
+        location.country || (form.watch("isOutOfSpain") ? "" : "Spain")
+      );
+      form.setValue("province", location.province || "");
+      form.setValue("city", location.city || "");
+    }
+  }, [form.watch("location")]);
+
+  useEffect(() => {
+    if (!form.watch("isOutOfSpain")) {
+      form.setValue("country", "Spain");
+    } else {
+      form.setValue("country", "");
+      form.setValue("province", "");
+      form.setValue("city", "");
+    }
+  }, [form.watch("isOutOfSpain")]);
+
   async function onSubmit(values) {
     try {
       setUpdating(true);
       const validData = {
         ...values,
-        id: selectedUser.id,
-        city: spain_cities.find((city) => city.id === values.city).nm,
-        province: provinces.find((province) => province.id === values.province)
-          .nm,
+        province: values?.isOutOfSpain
+          ? values?.province
+          : provinces.find((province) => province.id === values.province).nm,
+        city: values?.isOutOfSpain
+          ? values?.city
+          : spain_cities.find((city) => city.id === values.city).nm,
       };
+
+      delete validData.location;
       await dispatch(updateUser(validData)).unwrap();
       toast.success("User updated successfully");
     } catch (error) {
@@ -177,33 +227,72 @@ const EditUserForm = ({ selectedUser }) => {
               disabled={true}
             />
 
+            <CheckBoxField
+              form={form}
+              indicator="isOutOfSpain"
+              label="Out of Spain"
+            />
+
+            {form.watch("isOutOfSpain") && (
+              <LocationField
+                form={form}
+                label="Location"
+                indicator="location"
+              />
+            )}
+
             <InputField
               form={form}
               indicator="country"
               label="Country"
               placeholder={"Enter Country"}
+              disabled={true}
             />
 
-            <SelectBox
-              form={form}
-              indicator="province"
-              label="Province"
-              placeholder={"Select Province"}
-              options={provinces}
-              toSelect="province"
-            />
+            {form.watch("isOutOfSpain") ? (
+              <>
+                <InputField
+                  form={form}
+                  indicator="province"
+                  label="Province"
+                  placeholder={"Select Province"}
+                  disabled={true}
+                />
 
-            <SelectBox
-              form={form}
-              indicator="city"
-              label="City"
-              placeholder={"Select City"}
-              options={
-                form.watch("province") ? getCities(form.watch("province")) : []
-              }
-              disabled={!form.watch("province")}
-              toSelect="city"
-            />
+                <InputField
+                  form={form}
+                  indicator="city"
+                  label="City"
+                  placeholder={"Select City"}
+                  disabled={true}
+                />
+              </>
+            ) : (
+              <>
+                <SelectBox
+                  form={form}
+                  indicator="province"
+                  label="Province"
+                  placeholder={"Select Province"}
+                  options={provinces}
+                  toSelect="province"
+                />
+
+                <SelectBox
+                  form={form}
+                  indicator="city"
+                  label="City"
+                  placeholder={"Select City"}
+                  options={
+                    form.watch("province")
+                      ? getCities(form.watch("province"))
+                      : []
+                  }
+                  disabled={!form.watch("province")}
+                  toSelect="city"
+                />
+              </>
+            )}
 
             <InputField
               form={form}

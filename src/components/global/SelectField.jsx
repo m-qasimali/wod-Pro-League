@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Icons } from "./icons";
 import { provinces, spain_cities } from "@/constant/provinces";
 
@@ -30,9 +30,9 @@ const SelectField = ({
         <p className={`${disabled ? "text-gray-500" : ""}`}>
           {state
             ? toSelect === "city"
-              ? spain_cities.find((city) => city.id === state).nm
+              ? spain_cities.find((city) => city.id === state)?.nm
               : toSelect === "province"
-              ? provinces.find((province) => province.id === state).nm
+              ? provinces.find((province) => province.id === state)?.nm
               : state
             : placeholder}
         </p>

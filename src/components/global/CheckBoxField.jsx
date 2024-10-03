@@ -14,7 +14,7 @@ const CheckBoxField = ({ form, label, indicator, ...props }) => {
       control={form.control}
       name={indicator}
       render={({ field }) => (
-        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md py-2">
           <FormControl>
             <Checkbox
               checked={field.value}

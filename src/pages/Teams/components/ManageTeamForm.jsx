@@ -9,7 +9,7 @@ import InputField from "@/components/global/InputField";
 import DatePickerField from "@/components/global/DatePickerField";
 import PhoneNumberInput from "@/components/global/PhoneNumberInput";
 import { isValidPhoneNumber } from "react-phone-number-input";
-import { provinces } from "@/constant/provinces";
+import { provinces, spain_cities } from "@/constant/provinces";
 import { categories } from "@/constant/categories";
 import MutlitpleInputField from "@/components/global/MutlitpleInputField";
 import toast from "react-hot-toast";
@@ -20,6 +20,7 @@ import Spinner from "@/components/global/Spinner";
 import ComboboxField from "@/components/global/ComboboxField";
 import { useEffect, useState } from "react";
 import { getBoxesFromDB } from "@/utils/DBFunctions3";
+import LocationField from "@/components/global/LocationField";
 
 const formSchema = z
   .object({
@@ -42,6 +43,12 @@ const formSchema = z
       .min(1, { message: "Phone number is required" })
       .superRefine(isValidPhoneNumber, { message: "Invalid phone number" }),
     country: z.string().min(1, { message: "Country is required" }),
+    location: z.object({
+      country: z.string(),
+      province: z.string(),
+      city: z.string(),
+    }),
+    isOutOfSpain: z.boolean(),
     province: z.string().min(1, { message: "Province is required" }),
     city: z.string().min(1, { message: "City is required" }),
     street: z.string().min(1, { message: "Street is required" }),
@@ -87,6 +94,12 @@ const initialFormValues = {
   dob: {},
   phone: "",
   country: "",
+  location: {
+    country: "",
+    province: "",
+    city: "",
+  },
+  isOutOfSpain: false,
   province: "",
   city: "",
   street: "",
@@ -125,9 +138,40 @@ const ManageTeamForm = () => {
     getBoxes();
   }, []);
 
+  useEffect(() => {
+    const location = form.watch("location");
+    if (location) {
+      form.setValue(
+        "country",
+        location.country || (form.watch("isOutOfSpain") ? "" : "Spain")
+      );
+      form.setValue("province", location.province || "");
+      form.setValue("city", location.city || "");
+    }
+  }, [form.watch("location")]);
+
+  useEffect(() => {
+    if (!form.watch("isOutOfSpain")) {
+      form.setValue("country", "Spain");
+    } else {
+      form.setValue("country", "");
+      form.setValue("province", "");
+      form.setValue("city", "");
+    }
+  }, [form.watch("isOutOfSpain")]);
+
   async function onSubmit(values) {
     try {
-      await dispatch(addNewTeam(values)).unwrap();
+      const validData = {
+        ...values,
+        province: values?.isOutOfSpain
+          ? values?.province
+          : provinces.find((province) => province.id === values.province).nm,
+        city: values?.isOutOfSpain
+          ? values?.city
+          : spain_cities.find((city) => city.id === values.city).nm,
+      };
+      await dispatch(addNewTeam(validData)).unwrap();
       toast.success("Team created successfully");
       form.reset({ ...initialFormValues });
     } catch (error) {
@@ -204,33 +248,72 @@ const ManageTeamForm = () => {
               indicator="phone"
             />
 
+            <CheckBoxField
+              form={form}
+              indicator="isOutOfSpain"
+              label="Out of Spain"
+            />
+
+            {form.watch("isOutOfSpain") && (
+              <LocationField
+                form={form}
+                label="Location"
+                indicator="location"
+              />
+            )}
+
             <InputField
               form={form}
               indicator="country"
               label="Country"
               placeholder={"Enter Country"}
+              disabled={true}
             />
 
-            <SelectBox
-              form={form}
-              indicator="province"
-              label="Province"
-              placeholder={"Select Province"}
-              options={provinces}
-              toSelect="province"
-            />
+            {form.watch("isOutOfSpain") ? (
+              <>
+                <InputField
+                  form={form}
+                  indicator="province"
+                  label="Province"
+                  placeholder={"Select Province"}
+                  disabled={true}
+                />
 
-            <SelectBox
-              form={form}
-              indicator="city"
-              label="City"
-              placeholder={"Select City"}
-              options={
-                form.watch("province") ? getCities(form.watch("province")) : []
-              }
-              disabled={!form.watch("province")}
-              toSelect="city"
-            />
+                <InputField
+                  form={form}
+                  indicator="city"
+                  label="City"
+                  placeholder={"Select City"}
+                  disabled={true}
+                />
+              </>
+            ) : (
+              <>
+                <SelectBox
+                  form={form}
+                  indicator="province"
+                  label="Province"
+                  placeholder={"Select Province"}
+                  options={provinces}
+                  toSelect="province"
+                />
+
+                <SelectBox
+                  form={form}
+                  indicator="city"
+                  label="City"
+                  placeholder={"Select City"}
+                  options={
+                    form.watch("province")
+                      ? getCities(form.watch("province"))
+                      : []
+                  }
+                  disabled={!form.watch("province")}
+                  toSelect="city"
+                />
+              </>
+            )}
 
             <InputField
               form={form}
@@ -285,18 +368,12 @@ const ManageTeamForm = () => {
 
             <CheckBoxField form={form} indicator="isPaid" label="Fee Paid" />
           </div>
-          {creatingNewTeam ? (
-            <div className="w-full flex flex-row items-center justify-center">
-              <Spinner />
-            </div>
-          ) : (
-            <Button
-              className="bg-primary hover:drop-shadow-md text-white rounded-md p-2 mt-5 flex flex-row items-center justify-center"
-              type="submit"
-            >
-              Add Team
-            </Button>
-          )}
+          <Button
+            className="bg-primary hover:drop-shadow-md text-white rounded-md p-2 mt-5 flex flex-row items-center justify-center"
+            type="submit"
+          >
+            {creatingNewTeam ? <Spinner /> : "Add Team"}
+          </Button>
         </form>
       </Form>
     </>

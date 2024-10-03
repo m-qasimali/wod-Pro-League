@@ -9,15 +9,17 @@ import InputField from "@/components/global/InputField";
 import DatePickerField from "@/components/global/DatePickerField";
 import PhoneNumberInput from "@/components/global/PhoneNumberInput";
 import { isValidPhoneNumber } from "react-phone-number-input";
-import { provinces } from "@/constant/provinces";
+import { provinces, spain_cities } from "@/constant/provinces";
 import { getTeamDetailsByEmailFromDB } from "@/utils/DBFunctions2";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addNewMember } from "@/redux/teamSlice";
 import Spinner from "@/components/global/Spinner";
 import { getBoxesFromDB } from "@/utils/DBFunctions3";
 import ComboboxField from "@/components/global/ComboboxField";
+import CheckBoxField from "@/components/global/CheckBoxField";
+import LocationField from "@/components/global/LocationField";
+import { addNewMember } from "@/redux/teamSlice";
 
 const formSchema = z
   .object({
@@ -43,6 +45,12 @@ const formSchema = z
       .min(1, { message: "Phone number is required" })
       .superRefine(isValidPhoneNumber, { message: "Invalid phone number" }),
     country: z.string().min(1, { message: "Country is required" }),
+    location: z.object({
+      country: z.string(),
+      province: z.string(),
+      city: z.string(),
+    }),
+    isOutOfSpain: z.boolean(),
     province: z.string().min(1, { message: "Province is required" }),
     city: z.string().min(1, { message: "City is required" }),
     street: z.string().min(1, { message: "Street is required" }),
@@ -75,6 +83,12 @@ const initialFormValues = {
   dob: {},
   phone: "",
   country: "",
+  location: {
+    country: "",
+    province: "",
+    city: "",
+  },
+  isOutOfSpain: false,
   province: "",
   city: "",
   street: "",
@@ -116,6 +130,28 @@ const JoinTeamMemberForm = () => {
     getBoxes();
   }, []);
 
+  useEffect(() => {
+    const location = form.watch("location");
+    if (location) {
+      form.setValue(
+        "country",
+        location.country || (form.watch("isOutOfSpain") ? "" : "Spain")
+      );
+      form.setValue("province", location.province || "");
+      form.setValue("city", location.city || "");
+    }
+  }, [form.watch("location")]);
+
+  useEffect(() => {
+    if (!form.watch("isOutOfSpain")) {
+      form.setValue("country", "Spain");
+    } else {
+      form.setValue("country", "");
+      form.setValue("province", "");
+      form.setValue("city", "");
+    }
+  }, [form.watch("isOutOfSpain")]);
+
   const getTeamDetails = async () => {
     const team = await getTeamDetailsByEmailFromDB({
       creatorEmail: form.watch("captainEmail"),
@@ -148,14 +184,22 @@ const JoinTeamMemberForm = () => {
 
   async function onSubmit(values) {
     try {
-      await dispatch(
-        addNewMember({
-          ...values,
-          teamId: teamDetails?.teamId,
-          teammateEmails: teamDetails?.teammateEmails,
-          bannerImage: teamDetails?.bannerImage,
-        })
-      ).unwrap();
+      const validData = {
+        ...values,
+        province: values?.isOutOfSpain
+          ? values?.province
+          : provinces.find((province) => province.id === values.province).nm,
+        city: values?.isOutOfSpain
+          ? values?.city
+          : spain_cities.find((city) => city.id === values.city).nm,
+        teamId: teamDetails?.teamId,
+        teammateEmails: teamDetails?.teammateEmails,
+        bannerImage: teamDetails?.bannerImage,
+      };
+
+      console.log(validData);
+
+      await dispatch(addNewMember(validData)).unwrap();
       toast.success("Team member added successfully");
       form.reset({ ...initialFormValues });
     } catch (error) {
@@ -262,35 +306,72 @@ const JoinTeamMemberForm = () => {
                     indicator="phone"
                   />
 
+                  <CheckBoxField
+                    form={form}
+                    indicator="isOutOfSpain"
+                    label="Out of Spain"
+                  />
+
+                  {form.watch("isOutOfSpain") && (
+                    <LocationField
+                      form={form}
+                      label="Location"
+                      indicator="location"
+                    />
+                  )}
+
                   <InputField
                     form={form}
                     indicator="country"
                     label="Country"
                     placeholder={"Enter Country"}
+                    disabled={true}
                   />
 
-                  <SelectBox
-                    form={form}
-                    indicator="province"
-                    label="Province"
-                    placeholder={"Select Province"}
-                    options={provinces}
-                    toSelect="province"
-                  />
+                  {form.watch("isOutOfSpain") ? (
+                    <>
+                      <InputField
+                        form={form}
+                        indicator="province"
+                        label="Province"
+                        placeholder={"Select Province"}
+                        disabled={true}
+                      />
 
-                  <SelectBox
-                    form={form}
-                    indicator="city"
-                    label="City"
-                    placeholder={"Select City"}
-                    options={
-                      form.watch("province")
-                        ? getCities(form.watch("province"))
-                        : []
-                    }
-                    disabled={!form.watch("province")}
-                    toSelect="city"
-                  />
+                      <InputField
+                        form={form}
+                        indicator="city"
+                        label="City"
+                        placeholder={"Select City"}
+                        disabled={true}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <SelectBox
+                        form={form}
+                        indicator="province"
+                        label="Province"
+                        placeholder={"Select Province"}
+                        options={provinces}
+                        toSelect="province"
+                      />
+
+                      <SelectBox
+                        form={form}
+                        indicator="city"
+                        label="City"
+                        placeholder={"Select City"}
+                        options={
+                          form.watch("province")
+                            ? getCities(form.watch("province"))
+                            : []
+                        }
+                        disabled={!form.watch("province")}
+                        toSelect="city"
+                      />
+                    </>
+                  )}
 
                   <InputField
                     form={form}

@@ -137,7 +137,7 @@ export function getGenderOptions2(input, teammateGenders) {
 export function getCities(id) {
   return spain_cities.filter((city) => {
     if (city.id.startsWith(id)) {
-      return city.nm;
+      return city?.nm;
     }
   });
 }
