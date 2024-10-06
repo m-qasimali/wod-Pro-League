@@ -8,9 +8,8 @@ import {
   setDoc,
   where,
 } from "firebase/firestore";
-import { auth, db } from "../../firebase";
+import { db } from "../../firebase";
 import { emailSubject } from "@/constant/variables";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import {
   formatDOB,
   formatTimestamp,
@@ -71,12 +70,24 @@ export const getDashboardStatsFromDB = async () => {
 export const createTeamInDB = async (team) => {
   const password = generatePassword();
   const teamId = uuidv4();
-  const captainRef = await createUserWithEmailAndPassword(
-    auth,
-    team.captainEmail,
-    password
-  );
-  const captainId = captainRef.user.uid;
+  const URL = import.meta.env.VITE_NODE_SERVER_URL;
+  let res = await fetch(`${URL}/user/createUser`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: team.captainEmail,
+      password: password,
+    }),
+  });
+
+  if (res.status !== 201) {
+    throw new Error("Failed to create user");
+  }
+
+  const captainRef = await res.json();
+  const captainId = captainRef?.data?.uid;
 
   const teamRef = doc(collection(db, "teams"), teamId);
   const teamData = {
@@ -169,12 +180,25 @@ export const createTeamInDB = async (team) => {
 
 export const createUserInDB = async (team) => {
   const password = generatePassword();
-  const userRef = await createUserWithEmailAndPassword(
-    auth,
-    team.email,
-    password
-  );
-  const userId = userRef.user.uid;
+
+  const URL = import.meta.env.VITE_NODE_SERVER_URL;
+  let res = await fetch(`${URL}/user/createUser`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: team.email,
+      password: password,
+    }),
+  });
+
+  if (res.status !== 201) {
+    throw new Error("Failed to create user");
+  }
+
+  const userRef = await res.json();
+  const userId = userRef?.data?.uid;
 
   let userData = {
     birthDate: formatDOB(team.dob.startDate),
@@ -277,12 +301,26 @@ export const getTeamDetailsByEmailFromDB = async ({ creatorEmail }) => {
 
 export const createTeamMemberAccountInDB = async (user) => {
   const password = generatePassword();
-  const userRef = await createUserWithEmailAndPassword(
-    auth,
-    user.memberEmail,
-    password
-  );
-  const userId = userRef.user.uid;
+
+  const URL = import.meta.env.VITE_NODE_SERVER_URL;
+  let res = await fetch(`${URL}/user/createUser`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: user?.memberEmail,
+      password: password,
+    }),
+  });
+
+  if (res.status !== 201) {
+    throw new Error("Failed to create user");
+  }
+
+  const userRef = await res.json();
+
+  const userId = userRef?.data?.uid;
 
   const teammateEmails = [
     ...user.teammateEmails.filter((mail) => mail !== user.memberEmail),

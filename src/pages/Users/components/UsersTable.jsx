@@ -17,6 +17,7 @@ const UsersTable = () => {
   const [usersToDisplay, setUsersToDisplay] = useState([]);
   const { selectedUsers } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const { admin } = useSelector((state) => state.admin);
 
   useEffect(() => {
     dispatch(getUsers());
@@ -149,12 +150,14 @@ const UsersTable = () => {
                     <td className="px-6 py-2 text-nowrap">{user?.teamName}</td>
                     <td className="px-6 py-2">
                       <div className="flex flex-row items-center gap-2">
-                        <button
-                          onClick={() => openEditUser(user)}
-                          className="hover:bg-opacity-80 flex flex-row items-center justify-center p-1 rounded-full  hover:shadow-lg"
-                        >
-                          <Icons.Edit className="w-5 text-primary" />
-                        </button>
+                        {admin.role !== "secondary" && (
+                          <button
+                            onClick={() => openEditUser(user)}
+                            className="hover:bg-opacity-80 flex flex-row items-center justify-center p-1 rounded-full  hover:shadow-lg"
+                          >
+                            <Icons.Edit className="w-5 text-primary" />
+                          </button>
+                        )}
                         <Link
                           to={`/users/${user?.id}/wods`}
                           state={{

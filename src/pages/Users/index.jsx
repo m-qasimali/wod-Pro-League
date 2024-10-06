@@ -25,6 +25,7 @@ const Users = () => {
   const [sendEmail, setSendEmail] = useState(false);
   const [addUser, setAddUser] = useState(false);
   const { userToEdit } = useSelector((state) => state.user);
+  const { admin } = useSelector((state) => state.admin);
 
   useEffect(() => {
     dispatch(setUserSearchQuery(searchValue));
@@ -96,9 +97,11 @@ const Users = () => {
           <div className="flex flex-row gap-2">
             <ExportButton />
 
-            <div onClick={openAddUser}>
-              <AddButton />
-            </div>
+            {admin.role !== "secondary" && (
+              <div onClick={openAddUser}>
+                <AddButton />
+              </div>
+            )}
           </div>
         </div>
       </div>

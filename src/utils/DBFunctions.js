@@ -10,10 +10,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../../firebase";
 import { encryptRole, formatDate } from "./functions";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export const addWorkoutToDB = async (data) => {
   const docRef = doc(collection(db, "Work_outs"));
@@ -428,13 +425,30 @@ export const sendMails = async ({ emails, subject, body }) => {
 
 export const addNewAdminToDB = async (data) => {
   const email = data.email;
-  const user = await createUserWithEmailAndPassword(auth, email, data.password);
-  const docRef = doc(db, "Admins", user.user.uid);
+  const URL = import.meta.env.VITE_NODE_SERVER_URL;
+  let res = await fetch(`${URL}/user/createUser`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      email: email,
+      password: data?.password,
+    }),
+  });
+
+  if (res.status !== 201) {
+    throw new Error("Failed to create user");
+  }
+
+  const user = await res.json();
+
+  const docRef = doc(db, "Admins", user?.data?.uid);
   const validData = {
     fullName: data.fullName,
     email: data.email,
     createdAt: new Date().toISOString(),
-    uid: user.user.uid,
+    uid: user?.data.uid,
     role: "secondary",
   };
   await setDoc(docRef, { ...validData, isActive: true });
