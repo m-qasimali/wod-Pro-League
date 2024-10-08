@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { cn } from "@/lib/utils";
 import { toCamelCase } from "../../utils/functions";
 
 const Input = ({
@@ -10,10 +11,14 @@ const Input = ({
   min = 0,
   max = 0,
   placeholder = "",
+  smallText = false,
 }) => {
   return (
     <div className="flex flex-col gap-1 w-full">
-      <label className="font-semibold" htmlFor={toCamelCase(labelValue)}>
+      <label
+        className={cn("font-semibold", smallText ? "text-xs" : "")}
+        htmlFor={toCamelCase(labelValue)}
+      >
         {labelValue}
       </label>
       <input

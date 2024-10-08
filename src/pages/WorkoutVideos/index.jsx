@@ -141,30 +141,34 @@ const WorkoutVideos = () => {
             <div className="space-y-5">
               <div className="flex flex-row justify-between items-center gap-8">
                 <Input
-                  labelValue="Video Minutes"
+                  labelValue="Time to complete the WOD introduced by the athlete (minutes)"
                   type="number"
                   value={data?.videoMinutes}
                   disabled={true}
+                  smallText={true}
                 />
                 <Input
-                  labelValue="Video Minutes"
+                  labelValue="Judge, introduce the time of the athlete to complete the WOD after your review (minutes)"
                   type="number"
                   value={judgedData?.videoMinutes}
                   onChange={handleChange}
+                  smallText={true}
                 />
               </div>
               <div className="flex flex-row  gap-8">
                 <Input
-                  labelValue="Video Seconds"
+                  labelValue="Time to complete the WOD introduced by the athlete (seconds)"
                   type="number"
                   value={data?.videoSeconds}
                   disabled={true}
+                  smallText={true}
                 />
                 <Input
-                  labelValue="Video Seconds"
+                  labelValue="Judge, introduce the time of the athlete to complete the WOD after your review (seconds)"
                   type="number"
                   value={judgedData?.videoSeconds}
                   onChange={handleChange}
+                  smallText={true}
                 />
               </div>
             </div>
@@ -173,16 +177,18 @@ const WorkoutVideos = () => {
           {rankingData?.liftedWeight && rankingData?.liftedWeight !== "" && (
             <div className="flex flex-row gap-8">
               <Input
-                labelValue="Lifted Weight"
+                labelValue="Lifted weight introduced by the athlete (kg) "
                 type="number"
                 value={data?.liftedWeight}
                 disabled={true}
+                smallText={true}
               />
               <Input
-                labelValue="Lifted Weight"
+                labelValue="Judge, introduce the lifted weight of the athlete after your review (kg)"
                 type="number"
                 value={judgedData?.liftedWeight}
                 onChange={handleChange}
+                smallText={true}
               />
             </div>
           )}
@@ -194,12 +200,14 @@ const WorkoutVideos = () => {
                 type="number"
                 value={data?.repetitions}
                 disabled={true}
+                smallText={true}
               />
               <Input
                 labelValue="Repetitions"
                 type="number"
                 value={judgedData?.repetitions}
                 onChange={handleChange}
+                smallText={true}
               />
             </div>
           )}
