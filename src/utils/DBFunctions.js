@@ -104,22 +104,39 @@ export const getUsersFromDB = async () => {
   );
 
   const videosByUser = {};
+  const videos = [];
   videosRef.docs.forEach((doc) => {
-    const { userId, status } = doc.data();
-    if (!videosByUser[userId]) {
-      videosByUser[userId] = { totalRegistered: 0, totalApproved: 0 };
-    }
-    videosByUser[userId].totalRegistered += 1;
-    if (status === "approved") {
-      videosByUser[userId].totalApproved += 1;
-    }
+    videos.push({ ...doc.data() });
   });
 
   const data = users.map((user) => {
-    const userVideos = videosByUser[user.id] || {
-      totalRegistered: 0,
+    const userWorkouts = {};
+    videos
+      .filter((video) => video?.userId === user?.id)
+      .map((video) => {
+        if (userWorkouts[video?.wodId]) {
+          userWorkouts[video?.wodId].push(video);
+        } else {
+          userWorkouts[video?.wodId] = [video];
+        }
+      });
+
+    const userVideos = {
+      totalRegistered: Object?.keys(userWorkouts)?.length || 0,
       totalApproved: 0,
     };
+    for (const workoutId in userWorkouts) {
+      userWorkouts[workoutId] = userWorkouts[workoutId].sort(
+        (a, b) => a.uploadTime - b.uploadTime
+      );
+
+      const lastVideo = userWorkouts[workoutId][0];
+
+      if (lastVideo?.status === "approved") {
+        userVideos.totalApproved += 1;
+      }
+    }
+
     return {
       id: user.id,
       profileImage: user.profilePicture,
@@ -364,7 +381,8 @@ export const getWorkoutVideosFromDB = async (userId) => {
       const videoQuery = query(
         collection(db, "Videos"),
         where("userId", "==", userId),
-        where("wodId", "==", workoutId)
+        where("wodId", "==", workoutId),
+        orderBy("uploadTime", "desc")
       );
 
       const videoSnapshot = await getDocs(videoQuery);
