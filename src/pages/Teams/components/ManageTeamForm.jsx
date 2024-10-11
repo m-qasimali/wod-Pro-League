@@ -171,6 +171,7 @@ const ManageTeamForm = () => {
           ? values?.city
           : spain_cities.find((city) => city.id === values.city).nm,
       };
+
       await dispatch(addNewTeam(validData)).unwrap();
       toast.success("Team created successfully");
       form.reset({ ...initialFormValues });

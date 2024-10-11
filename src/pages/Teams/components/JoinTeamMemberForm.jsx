@@ -196,9 +196,6 @@ const JoinTeamMemberForm = () => {
         teammateEmails: teamDetails?.teammateEmails,
         bannerImage: teamDetails?.bannerImage,
       };
-
-      console.log(validData);
-
       await dispatch(addNewMember(validData)).unwrap();
       toast.success("Team member added successfully");
       form.reset({ ...initialFormValues });
