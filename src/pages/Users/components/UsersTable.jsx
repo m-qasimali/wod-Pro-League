@@ -38,7 +38,9 @@ const UsersTable = () => {
 
     if (filters.category) {
       filteredUsers = filteredUsers?.filter((user) => {
-        return user?.categoryName?.startsWith(filters.category);
+        return filters.category
+          ?.toLowerCase()
+          ?.includes(user?.categoryName?.toLowerCase());
       });
     }
 
