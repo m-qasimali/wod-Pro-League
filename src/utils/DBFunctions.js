@@ -89,70 +89,89 @@ export const updateWorkoutInDB = async (data) => {
   return validData;
 };
 
+// Helper function to split array into chunks of a given size
+const chunkArray2 = (arr, size) => {
+  const chunks = [];
+  for (let i = 0; i < arr.length; i += size) {
+    chunks.push(arr.slice(i, i + size));
+  }
+  return chunks;
+};
+
 export const getUsersFromDB = async () => {
-  const workoutRef = await getDocs(
-    query(collection(db, "Work_outs"), where("status", "==", "active"))
-  );
+  try {
+    // Fetch active workouts
+    const workoutRef = await getDocs(
+      query(collection(db, "Work_outs"), where("status", "==", "active"))
+    );
+    const activeWorkoutIds = workoutRef.docs.map((doc) => doc.id);
 
-  const activeWorkoutIds = workoutRef.docs.map((doc) => doc.id);
+    // Fetch users
+    const usersRef = await getDocs(collection(db, "users"));
+    const users = usersRef.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-  const usersRef = await getDocs(collection(db, "users"));
-  const users = usersRef.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    // Fetch videos in chunks if activeWorkoutIds exceeds 30
+    const videos = [];
+    const chunks = chunkArray2(activeWorkoutIds, 30);
 
-  const videosRef = await getDocs(
-    query(collection(db, "Videos"), where("wodId", "in", activeWorkoutIds))
-  );
-
-  const videosByUser = {};
-  const videos = [];
-  videosRef.docs.forEach((doc) => {
-    videos.push({ ...doc.data() });
-  });
-
-  const data = users.map((user) => {
-    const userWorkouts = {};
-    videos
-      .filter((video) => video?.userId === user?.id)
-      .map((video) => {
-        if (userWorkouts[video?.wodId]) {
-          userWorkouts[video?.wodId].push(video);
-        } else {
-          userWorkouts[video?.wodId] = [video];
-        }
-      });
-
-    const userVideos = {
-      totalRegistered: Object?.keys(userWorkouts)?.length || 0,
-      totalApproved: 0,
-    };
-    for (const workoutId in userWorkouts) {
-      userWorkouts[workoutId] = userWorkouts[workoutId].sort(
-        (a, b) => a.uploadTime - b.uploadTime
+    for (const chunk of chunks) {
+      const videosRef = await getDocs(
+        query(collection(db, "Videos"), where("wodId", "in", chunk))
       );
-
-      const lastVideo = userWorkouts[workoutId][0];
-
-      if (lastVideo?.status === "approved") {
-        userVideos.totalApproved += 1;
-      }
+      videosRef.docs.forEach((doc) => {
+        videos.push({ ...doc.data() });
+      });
     }
 
-    return {
-      id: user.id,
-      profileImage: user.profilePicture,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      teamName: user.teamName,
-      weight: user.weight,
-      token: user?.FCMToken,
-      totalRegisteredWorkouts: userVideos.totalRegistered,
-      totalApprovedWorkouts: userVideos.totalApproved,
-      ...user,
-    };
-  });
+    // Process videos by user
+    const data = users.map((user) => {
+      const userWorkouts = {};
+      videos
+        .filter((video) => video?.userId === user?.id)
+        .forEach((video) => {
+          if (userWorkouts[video?.wodId]) {
+            userWorkouts[video?.wodId].push(video);
+          } else {
+            userWorkouts[video?.wodId] = [video];
+          }
+        });
 
-  return data;
+      const userVideos = {
+        totalRegistered: Object?.keys(userWorkouts)?.length || 0,
+        totalApproved: 0,
+      };
+
+      for (const workoutId in userWorkouts) {
+        userWorkouts[workoutId] = userWorkouts[workoutId].sort(
+          (a, b) => a.uploadTime - b.uploadTime
+        );
+
+        const lastVideo = userWorkouts[workoutId][0];
+
+        if (lastVideo?.status === "approved") {
+          userVideos.totalApproved += 1;
+        }
+      }
+
+      return {
+        id: user.id,
+        profileImage: user.profilePicture,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        teamName: user.teamName,
+        weight: user.weight,
+        token: user?.FCMToken,
+        totalRegisteredWorkouts: userVideos.totalRegistered,
+        totalApprovedWorkouts: userVideos.totalApproved,
+        ...user,
+      };
+    });
+
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const chunkArray = (array, size) => {
