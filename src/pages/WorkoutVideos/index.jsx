@@ -134,6 +134,7 @@ const WorkoutVideos = () => {
           <Input
             labelValue="Judge Name"
             type="text"
+            name="judgeName"
             value={judgedData?.judgeName}
             onChange={handleChange}
           />
@@ -150,6 +151,7 @@ const WorkoutVideos = () => {
                 <Input
                   labelValue="Judge, introduce the time of the athlete to complete the WOD after your review (minutes)"
                   type="number"
+                  name="videoMinutes"
                   value={judgedData?.videoMinutes}
                   onChange={handleChange}
                   smallText={true}
@@ -166,6 +168,7 @@ const WorkoutVideos = () => {
                 <Input
                   labelValue="Judge, introduce the time of the athlete to complete the WOD after your review (seconds)"
                   type="number"
+                  name="videoSeconds"
                   value={judgedData?.videoSeconds}
                   onChange={handleChange}
                   smallText={true}
@@ -188,6 +191,7 @@ const WorkoutVideos = () => {
                 type="number"
                 value={judgedData?.liftedWeight}
                 onChange={handleChange}
+                name="liftedWeight"
                 smallText={true}
               />
             </div>
@@ -205,6 +209,7 @@ const WorkoutVideos = () => {
               <Input
                 labelValue="Repetitions"
                 type="number"
+                name="repetitions"
                 value={judgedData?.repetitions}
                 onChange={handleChange}
                 smallText={true}

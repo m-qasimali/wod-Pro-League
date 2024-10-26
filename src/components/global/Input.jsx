@@ -12,6 +12,7 @@ const Input = ({
   max = 0,
   placeholder = "",
   smallText = false,
+  name = "",
 }) => {
   return (
     <div className="flex flex-col gap-1 w-full">
@@ -26,7 +27,7 @@ const Input = ({
         id={toCamelCase(labelValue)}
         value={value}
         onChange={onChange}
-        name={toCamelCase(labelValue)}
+        name={name || toCamelCase(labelValue)}
         disabled={disabled}
         className="w-full border border-black border-opacity-10 rounded-md p-2 outline-none focus-within:border-primary"
         {...(type === "number" && { min, max })}
