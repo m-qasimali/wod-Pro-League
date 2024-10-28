@@ -290,7 +290,9 @@ export const getActiveWorkoutsFromDB = async () => {
   const data = {};
 
   for (const docSnapshot of docsRef.docs) {
-    console.log("workoutId: ", docSnapshot.id);
+    if (docSnapshot.id === "globalRanking") {
+      continue;
+    }
 
     const res = docSnapshot.data();
     const workoutDocRef = doc(db, "Work_outs", docSnapshot.id);
@@ -313,6 +315,8 @@ export const getActiveWorkoutsFromDB = async () => {
       throw new Error(`Workout with id ${docSnapshot.id} does not exist`);
     }
   }
+
+  console.log("Data: ", data);
 
   return data;
 };
@@ -345,13 +349,18 @@ export const updateVideoStatusInDB = async (
   if (res.exists()) {
     const ranking = res.data();
     const user = ranking[userId];
-    if (videoMinutes !== 0 || videoSeconds !== 0) {
+    if (
+      (videoMinutes && +videoMinutes !== 0) ||
+      (videoSeconds && +videoSeconds !== 0)
+    ) {
       user.uploadTime = `${videoMinutes} min ${videoSeconds} sec`;
     }
-    if (liftedWeight !== 0) {
+
+    if (liftedWeight && +liftedWeight !== 0) {
       user.liftedWeight = `${liftedWeight}`;
     }
-    if (repetitions !== 0) {
+
+    if (repetitions && +repetitions !== 0) {
       user.repetitions = `${repetitions}`;
     }
     await setDoc(rankingDocRef, { [userId]: user }, { merge: true });
