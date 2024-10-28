@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { getBoxesFromDB } from "@/utils/DBFunctions3";
 import ComboboxField from "@/components/global/ComboboxField";
 import LocationField from "@/components/global/LocationField";
+import { allCategories } from "@/constant/categories";
 
 const formSchema = z.object({
   categoryName: z.string().min(1, { message: "Category is required" }),
@@ -149,6 +150,7 @@ const EditUserForm = ({ selectedUser }) => {
         city: values?.isOutOfSpain
           ? values?.city
           : spain_cities.find((city) => city.id === values.city).nm,
+        id: selectedUser?.id,
       };
 
       delete validData.location;
@@ -170,12 +172,12 @@ const EditUserForm = ({ selectedUser }) => {
           className="flex-grow overflow-auto flex flex-col"
         >
           <div className="flex-grow overflow-auto custom-scrollbar scrollbar-hide flex flex-col gap-4 px-4 pb-5">
-            <InputField
+            <SelectBox
               form={form}
               indicator="categoryName"
               label="Category"
               placeholder={"Select Category"}
-              disabled={true}
+              options={allCategories}
             />
 
             <InputField

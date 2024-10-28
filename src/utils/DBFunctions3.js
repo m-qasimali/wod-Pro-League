@@ -11,6 +11,7 @@ export const getBoxesFromDB = async () => {
 export const updateUserInDB = async (data) => {
   const userRef = doc(db, "users", data.id);
   setDoc(userRef, { ...data, updatedAt: Timestamp.now() }, { merge: true });
+
   return data;
 };
 
