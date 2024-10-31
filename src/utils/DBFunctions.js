@@ -316,8 +316,6 @@ export const getActiveWorkoutsFromDB = async () => {
     }
   }
 
-  console.log("Data: ", data);
-
   return data;
 };
 
