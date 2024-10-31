@@ -366,6 +366,24 @@ export const updateVideoStatusInDB = async (
     await setDoc(rankingDocRef, { [userId]: user }, { merge: true });
   }
 
+  const workoutRef = await getDoc(doc(db, "Work_outs", workoutId));
+  if (!workoutRef.exists()) {
+    throw new Error(`Workout with id ${workoutId} does not exist`);
+  }
+  const workout = await workoutRef.data();
+  const dataChangesRef = doc(db, "dataChanges", "Rh1ZyObGAjDpPDiLoIke");
+  const dataChanges = (await getDoc(dataChangesRef)).data();
+
+  await setDoc(
+    dataChangesRef,
+    {
+      int: dataChanges.int + 1,
+      resultType: workout.resultType,
+      wodId: workoutId,
+    },
+    { merge: true }
+  );
+
   return { videoId, userId, status };
 };
 

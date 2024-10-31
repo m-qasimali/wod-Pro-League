@@ -18,7 +18,6 @@ import {
   separateGender,
   splitCategoryNameAndPrice,
 } from "./functions";
-import { provinces, spain_cities } from "@/constant/provinces";
 import { sendMails } from "./DBFunctions";
 import { selfEmailTemplate, teamEmailTemplate } from "./EmailTemplates";
 import { DiscountCoupons, FreeCoupons } from "./coupons";
