@@ -50,12 +50,12 @@ const WorkoutCard = ({ workout }) => {
       <div className="bg-white p-2 flex flex-row items-center justify-between">
         <p className="font-semibold text-2xl">{workout?.wod}</p>
         <div className="flex flex-row gap-2">
-          <button
+          {/* <button
             onClick={handleDeleteWorkout}
             className="bg-red-400 p-1.5 hover:bg-opacity-80 rounded-full hover:shadow-lg"
           >
             <Icons.Delete className="w-4 text-white" />
-          </button>
+          </button> */}
 
           <button
             onClick={handleEditForm}
