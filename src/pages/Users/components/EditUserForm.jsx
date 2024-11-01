@@ -17,7 +17,11 @@ import { useEffect, useState } from "react";
 import { getBoxesFromDB } from "@/utils/DBFunctions3";
 import ComboboxField from "@/components/global/ComboboxField";
 import LocationField from "@/components/global/LocationField";
-import { allCategories } from "@/constant/categories";
+import {
+  allCategories,
+  categories,
+  singlePersonCategories,
+} from "@/constant/categories";
 
 const formSchema = z.object({
   categoryName: z.string().min(1, { message: "Category is required" }),
@@ -177,7 +181,12 @@ const EditUserForm = ({ selectedUser }) => {
               indicator="categoryName"
               label="Category"
               placeholder={"Select Category"}
-              options={allCategories}
+              options={singlePersonCategories}
+              disabled={categories
+                .map((category) =>
+                  category?.includes(form.watch("categoryName"))
+                )
+                ?.includes(true)}
             />
 
             <InputField

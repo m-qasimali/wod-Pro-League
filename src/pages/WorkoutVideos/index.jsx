@@ -193,6 +193,7 @@ const WorkoutVideos = () => {
                 onChange={handleChange}
                 name="liftedWeight"
                 smallText={true}
+                min={1}
               />
             </div>
           )}
@@ -213,6 +214,7 @@ const WorkoutVideos = () => {
                 value={judgedData?.repetitions}
                 onChange={handleChange}
                 smallText={true}
+                min={1}
               />
             </div>
           )}
