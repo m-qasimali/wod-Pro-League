@@ -50,7 +50,7 @@ const ViewWorkout = ({ close, workout }) => {
           <div>
             <p className="text-lg font-semibold">Exercises</p>
             <div className="flex flex-col gap-1.5 ps-2 mt-2">
-              {workout?.exercises.map((_, index) => (
+              {workout?.exercises.map((exercise, index) => (
                 <div
                   key={index}
                   className="flex flex-row items-start justify-start gap-2"
@@ -58,10 +58,7 @@ const ViewWorkout = ({ close, workout }) => {
                   <div className="w-5 flex-shrink-0">
                     <Icons.CheckCircle className="w-full text-primary" />
                   </div>
-                  <p className="text-textSecondary">
-                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                    Illo, rem?
-                  </p>
+                  <p className="text-textSecondary">{exercise}</p>
                 </div>
               ))}
             </div>
