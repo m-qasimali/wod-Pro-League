@@ -244,25 +244,30 @@ export const getTeamMembersFromDB = async (teamId) => {
     return [];
   }
 
-  const usersRef = await getDocs(
-    query(collection(db, "users"), where("email", "in", teamMembers))
-  );
+  // Convert team members' emails to lowercase for case-insensitive matching
+  const lowerCaseTeamMembers = teamMembers.map((email) => email.toLowerCase());
+
+  // Get all users from the "users" collection
+  const usersRef = await getDocs(collection(db, "users"));
 
   const userMap = new Map();
   usersRef.forEach((doc) => {
     const user = doc.data();
-    userMap.set(user.email, {
-      id: doc.id,
-      profileImage: user.profilePicture || "",
-      email: user.email,
-      name: `${user.firstName || ""} ${user.lastName || ""}`,
-      teamName: user.teamName || "",
-      isCaptain: user.email === captain,
-      gender: user.gender,
-    });
+    const emailLowerCase = user.email.toLowerCase();
+    if (lowerCaseTeamMembers.includes(emailLowerCase)) {
+      userMap.set(emailLowerCase, {
+        id: doc.id,
+        profileImage: user.profilePicture || "",
+        email: user.email,
+        name: `${user.firstName || ""} ${user.lastName || ""}`,
+        teamName: user.teamName || "",
+        isCaptain: emailLowerCase === captain.toLowerCase(),
+        gender: user.gender,
+      });
+    }
   });
 
-  const data = teamMembers.map((email) => {
+  const data = lowerCaseTeamMembers.map((email) => {
     return (
       userMap.get(email) || {
         id: "",
@@ -270,7 +275,7 @@ export const getTeamMembersFromDB = async (teamId) => {
         email: email,
         name: "",
         teamName: "",
-        isCaptain: email === captain,
+        isCaptain: email === captain.toLowerCase(),
         gender: "",
       }
     );
