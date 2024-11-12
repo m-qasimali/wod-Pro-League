@@ -16,6 +16,7 @@ import ManageAdmin from "../pages/ManageAdmin";
 import PageNotFound from "../pages/PageNotFound.jsx";
 import Coupons from "../pages/Coupons/index.jsx";
 import Dashboard from "../pages/Dashboard/index.jsx";
+import Approvals from "@/pages/Approvals";
 
 const router = createBrowserRouter([
   {
@@ -100,6 +101,14 @@ const router = createBrowserRouter([
           <Suspense fallback={<Loader />}>
             {" "}
             <WorkoutVideos />{" "}
+          </Suspense>
+        ),
+      },
+      {
+        path: "/approvals",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Approvals />
           </Suspense>
         ),
       },

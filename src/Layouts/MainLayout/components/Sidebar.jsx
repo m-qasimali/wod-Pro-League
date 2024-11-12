@@ -37,7 +37,7 @@ const Sidebar = ({ isSidebarOpen }) => {
         </div>
 
         <div className="w-full flex flex-col gap-2 mt-5 mb-5 flex-1">
-          <div className="flex flex-col max-h-96 gap-2 overflow-auto custom-scrollbar scrollbar-hide">
+          <div className="flex flex-col flex-1 gap-2 overflow-auto custom-scrollbar scrollbar-hide">
             {role === "primary" && (
               <>
                 <MenuItem
@@ -77,6 +77,12 @@ const Sidebar = ({ isSidebarOpen }) => {
                 <MenuItem
                   Icon={Icons.Coupon}
                   menuName={"Coupons"}
+                  activeMenu={activeMenu}
+                />
+
+                <MenuItem
+                  Icon={Icons.Approvals}
+                  menuName={"Approvals"}
                   activeMenu={activeMenu}
                 />
               </>

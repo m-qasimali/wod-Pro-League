@@ -21,6 +21,7 @@ import { FaCalendarTimes } from "react-icons/fa";
 import { BiCheckboxSquare } from "react-icons/bi";
 import { BiCheckbox } from "react-icons/bi";
 import NotificationIcon from "../../assets/icons/Notifications.png";
+import { MdApproval } from "react-icons/md";
 
 import { LuLayoutDashboard as DashboardIcon } from "react-icons/lu";
 import { CgGym as Workout } from "react-icons/cg";
@@ -28,7 +29,6 @@ import { HiOutlineUsers as Users } from "react-icons/hi2";
 import { SiMicrosoftteams as Teams } from "react-icons/si";
 import { MdOutlineAdminPanelSettings as Admin } from "react-icons/md";
 import { RiPassPendingLine as CouponIcon } from "react-icons/ri";
-
 
 export const Icons = {
   OpenSidebarIcon: Bars4Icon,
@@ -59,4 +59,5 @@ export const Icons = {
   Edit: PencilSquareIcon,
   ArrowDown: ChevronDownIcon,
   Dashboard: DashboardIcon,
+  Approvals: MdApproval,
 };

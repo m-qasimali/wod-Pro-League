@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
-import { getRankingData, upateVideoStatus } from "../../redux/videoSlice";
+import { getRankingData } from "../../redux/videoSlice";
 import toast from "react-hot-toast";
 import Input from "../../components/global/Input";
 import { useEffect, useState } from "react";
 import Spinner from "../../components/global/Spinner";
+import Checkbox from "@/components/global/Checkbox";
 
 const initialState = {
   judgeName: "",
@@ -12,6 +13,7 @@ const initialState = {
   videoSeconds: "",
   liftedWeight: "",
   repetitions: "",
+  isWorkoutNotCompleted: false,
 };
 
 const WorkoutVideos = () => {
@@ -61,34 +63,50 @@ const WorkoutVideos = () => {
   }, [rankingData]);
 
   const handleSubmit = async () => {
+    console.log("judgedData: ", judgedData);
+
     if (judgedData.judgeName === "") {
       toast.error("Judge name required");
       return;
     }
-    try {
-      await dispatch(
-        upateVideoStatus({
-          videoId: videos?.id,
-          userId: userId,
-          workoutId: workoutId,
-          status: "approved",
-          judgeName: judgedData.judgeName,
-          videoMinutes: judgedData.videoMinutes,
-          videoSeconds: judgedData.videoSeconds,
-          repetitions: judgedData.repetitions,
-          liftedWeight: judgedData.liftedWeight,
-        })
-      ).unwrap();
-      toast.success("Video approved successfully");
-    } catch (error) {
-      console.log(error);
 
-      toast.error("Error approving video");
+    if (judgedData.isWorkoutNotCompleted && judgedData.repetitions === "") {
+      toast.error("Repetitions required");
+      return;
     }
+
+    if (judgedData.isWorkoutNotCompleted) {
+      setJudgedData((prevData) => ({
+        ...prevData,
+        videoMinutes: "",
+        videoSeconds: "",
+      }));
+    }
+    // try {
+    //   await dispatch(
+    //     upateVideoStatus({
+    //       videoId: videos?.id,
+    //       userId: userId,
+    //       workoutId: workoutId,
+    //       status: "approved",
+    //       judgeName: judgedData.judgeName,
+    //       videoMinutes: judgedData.videoMinutes,
+    //       videoSeconds: judgedData.videoSeconds,
+    //       repetitions: judgedData.repetitions,
+    //       liftedWeight: judgedData.liftedWeight,
+    //     })
+    //   ).unwrap();
+    //   toast.success("Video approved successfully");
+    // } catch (error) {
+    //   console.log(error);
+
+    //   toast.error("Error approving video");
+    // }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setJudgedData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -138,44 +156,64 @@ const WorkoutVideos = () => {
             value={judgedData?.judgeName}
             onChange={handleChange}
           />
+
           {rankingData?.uploadTime && rankingData?.uploadTime !== "" && (
-            <div className="space-y-5">
-              <div className="flex flex-row justify-between items-center gap-8">
-                <Input
-                  labelValue="Time to complete the WOD introduced by the athlete (minutes)"
-                  type="number"
-                  value={data?.videoMinutes}
-                  disabled={true}
-                  smallText={true}
-                />
-                <Input
-                  labelValue="Judge, introduce the time of the athlete to complete the WOD after your review (minutes)"
-                  type="number"
-                  name="videoMinutes"
-                  value={judgedData?.videoMinutes}
-                  onChange={handleChange}
-                  smallText={true}
-                />
-              </div>
-              <div className="flex flex-row  gap-8">
-                <Input
-                  labelValue="Time to complete the WOD introduced by the athlete (seconds)"
-                  type="number"
-                  value={data?.videoSeconds}
-                  disabled={true}
-                  smallText={true}
-                />
-                <Input
-                  labelValue="Judge, introduce the time of the athlete to complete the WOD after your review (seconds)"
-                  type="number"
-                  name="videoSeconds"
-                  value={judgedData?.videoSeconds}
-                  onChange={handleChange}
-                  smallText={true}
-                />
-              </div>
+            <div className="flex flex-row items-center gap-2">
+              <Checkbox
+                checked={judgedData.isWorkoutNotCompleted}
+                id={"isWorkoutNotCompleted"}
+                onChange={(e) => {
+                  setJudgedData((prevData) => ({
+                    ...prevData,
+                    isWorkoutNotCompleted: !prevData.isWorkoutNotCompleted,
+                  }));
+                }}
+              />
+
+              <p>Workout Not Completed</p>
             </div>
           )}
+
+          {rankingData?.uploadTime &&
+            rankingData?.uploadTime !== "" &&
+            !judgedData.isWorkoutNotCompleted && (
+              <div className="space-y-5">
+                <div className="flex flex-row justify-between items-center gap-8">
+                  <Input
+                    labelValue="Time to complete the WOD introduced by the athlete (minutes)"
+                    type="number"
+                    value={data?.videoMinutes}
+                    disabled={true}
+                    smallText={true}
+                  />
+                  <Input
+                    labelValue="Judge, introduce the time of the athlete to complete the WOD after your review (minutes)"
+                    type="number"
+                    name="videoMinutes"
+                    value={judgedData?.videoMinutes}
+                    onChange={handleChange}
+                    smallText={true}
+                  />
+                </div>
+                <div className="flex flex-row  gap-8">
+                  <Input
+                    labelValue="Time to complete the WOD introduced by the athlete (seconds)"
+                    type="number"
+                    value={data?.videoSeconds}
+                    disabled={true}
+                    smallText={true}
+                  />
+                  <Input
+                    labelValue="Judge, introduce the time of the athlete to complete the WOD after your review (seconds)"
+                    type="number"
+                    name="videoSeconds"
+                    value={judgedData?.videoSeconds}
+                    onChange={handleChange}
+                    smallText={true}
+                  />
+                </div>
+              </div>
+            )}
 
           {rankingData?.liftedWeight && rankingData?.liftedWeight !== "" && (
             <div className="flex flex-row gap-8">
@@ -218,6 +256,21 @@ const WorkoutVideos = () => {
               />
             </div>
           )}
+
+          {judgedData.isWorkoutNotCompleted && (
+            <div>
+              <Input
+                labelValue="Repetitions"
+                type="number"
+                name="repetitions"
+                value={judgedData?.repetitions}
+                onChange={handleChange}
+                smallText={true}
+                min={1}
+              />
+            </div>
+          )}
+
           <div className="flex flex-row gap-2">
             <button
               onClick={handleSubmit}

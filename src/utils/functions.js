@@ -1,8 +1,22 @@
 import { allCategories } from "@/constant/categories";
 import { spain_cities } from "@/constant/provinces";
-import { data } from "autoprefixer";
 import CryptoJS from "crypto-js";
 const SECRET_KEY = import.meta.env.VITE_SECRET_KEY;
+
+export const months = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 export const generatePassword = (length = 8) => {
   const charset =
@@ -174,3 +188,24 @@ export const getCategoryNamePrice = (val) => {
     price: price,
   };
 };
+
+export function formatTimeStamp(timeStamp) {
+  const date = new Date(timeStamp?.seconds * 1000);
+
+  const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const dayOfWeek = daysOfWeek[date.getDay()];
+
+  const dayOfMonth = date.getDate();
+
+  const month = months[date.getMonth()];
+
+  const year = date.getFullYear();
+
+  let hours = date.getHours();
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+
+  return `${dayOfWeek}, ${dayOfMonth} ${month} ${year} • ${hours}:${minutes} ${ampm}`;
+}
