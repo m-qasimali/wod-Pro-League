@@ -356,18 +356,18 @@ export const createTeamMemberAccountInDB = async (user) => {
     bannerImage: user?.bannerImage || "",
   };
 
-  if (team.boxNumber?.toLowerCase() === "other") {
-    userData.boxNumber = team.otherBoxNumber;
+  if (user.boxNumber?.toLowerCase() === "other") {
+    userData.boxNumber = user.otherBoxNumber;
     const boxRef = doc(db, "boxes", "boxes");
     await setDoc(
       boxRef,
       {
-        boxes: arrayUnion(team.otherBoxNumber),
+        boxes: arrayUnion(user.otherBoxNumber),
       },
       { merge: true }
     );
   } else {
-    userData.boxNumber = team.boxNumber;
+    userData.boxNumber = user.boxNumber;
   }
 
   const teamRef = doc(db, "teams", user.teamId);
