@@ -29,6 +29,40 @@ export const addWorkoutToDB = async (data) => {
     createdAt: new Date().toISOString(),
   };
   await setDoc(docRef, validData);
+
+  const rankingCollectionRef = doc(collection(db, "prod_ranking"), docRef.id);
+  await setDoc(
+    rankingCollectionRef,
+    {
+      kMynklzaGnTGru999xI37rteT813: {
+        category: "Teens - Individual - M 129 €",
+        country: "Spain",
+        docId: "kMynklzaGnTGru999xI37rteT813",
+        firstName: "Webrange",
+        geographicArea: "Abla",
+        isActive: true,
+        isParticipated: true,
+        lastName: "solutions",
+        liftedWeight: "",
+        number: "23",
+        points: 0,
+        profilePicture: "",
+        province: "Almería",
+        rank: 0,
+        repetitions: "",
+        teamBanner: "",
+        teamId: "",
+        teamName: "",
+        uploadTime: "",
+        time: validData.endDate,
+        wod: validData.wod,
+        wodNumber: validData?.wodNumber,
+        year: "2024-2025",
+      },
+    },
+    { merge: true }
+  );
+
   validData.startDate = validData.startDate.split("T")[0];
   validData.endDate = validData.endDate.split("T")[0];
   validData.wodNumber = +data.wodNumber;
