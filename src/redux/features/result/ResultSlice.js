@@ -6,11 +6,19 @@ const ResultSlice = createSlice({
   initialState: {
     workoutUsers: {},
     workoutTeams: {},
+    searchQuery: "",
+    filters: {
+      category: "",
+      status: "",
+    },
   },
   reducers: {
-    // setAdminSearchQuery: (state, action) => {
-    //   state.searchQuery = action.payload;
-    // },
+    setSearchQuery: (state, action) => {
+      state.searchQuery = action.payload;
+    },
+    setFilters: (state, action) => {
+      state.filters = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getWorkoutUsers.fulfilled, (state, action) => {
@@ -22,5 +30,7 @@ const ResultSlice = createSlice({
     });
   },
 });
+
+export const { setSearchQuery, setFilters } = ResultSlice.actions;
 
 export default ResultSlice.reducer;

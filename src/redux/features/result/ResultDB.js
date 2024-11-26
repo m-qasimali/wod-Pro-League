@@ -54,12 +54,30 @@ export const getWorkoutTeamsFromDB = async (workoutId) => {
       videosData[video.userId] = video;
     });
 
+    const tempParticipatedTeams = {};
+
     const participatedTeams = [];
 
     for (const [userId, user] of Object.entries(rankingData)) {
       if (user.teamId !== "") {
-        participatedTeams.push({ ...user, video: videosData[userId] });
+        if (!tempParticipatedTeams[user.teamId]) {
+          tempParticipatedTeams[user.teamId] = {
+            ...user,
+            video: videosData[userId],
+          };
+        } else {
+          if (videosData[userId]?.wodId) {
+            tempParticipatedTeams[user.teamId] = {
+              ...user,
+              video: videosData[userId],
+            };
+          }
+        }
       }
+    }
+
+    for (const [_, team] of Object.entries(tempParticipatedTeams)) {
+      participatedTeams.push(team);
     }
 
     return participatedTeams;

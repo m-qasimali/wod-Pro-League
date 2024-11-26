@@ -76,7 +76,7 @@ const Users = () => {
   return (
     <div className="flex flex-col h-screen">
       <div className="sticky z-10 ">
-        <p className="font-bold text-2xl">Manage Users</p>
+        <p className="font-bold text-2xl">Users</p>
         <div className="flex flex-col sm:flex-row justify-between my-4 gap-2">
           <div className="flex flex-row gap-2">
             <div className="w-full sm:w-auto">

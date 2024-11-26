@@ -1,14 +1,52 @@
 import Checkbox from "@/components/global/Checkbox";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 
 const TeamTable = () => {
   const { workoutId } = useParams();
-  const { workoutTeams } = useSelector((state) => state.results);
+  const { workoutTeams, searchQuery, filters } = useSelector(
+    (state) => state.results
+  );
+  const [teamsToDisplay, setTeamsToDisplay] = useState([]);
+
+  useEffect(() => {
+    let filteredTeams = workoutTeams[workoutId];
+
+    if (searchQuery) {
+      filteredTeams = filteredTeams?.filter((team) =>
+        team?.teamName?.toLowerCase().includes(searchQuery?.toLowerCase() || "")
+      );
+    }
+
+    if (filters.category) {
+      filteredTeams = filteredTeams?.filter((user) => {
+        return filters.category
+          ?.toLowerCase()
+          ?.includes(user?.category?.toLowerCase());
+      });
+    }
+
+    if (filters.status !== "") {
+      filteredTeams = filteredTeams?.filter((user) => {
+        if (filters.status === "approved") {
+          return user?.video?.status === "approved";
+        } else if (filters.status === "pending") {
+          return user?.video?.status === "pending";
+        } else if (filters.status === "not submitted") {
+          return !user?.video?.status;
+        }
+      });
+    }
+
+    setTeamsToDisplay(filteredTeams);
+  }, [searchQuery, workoutTeams, workoutId, filters]);
+
   return (
     <>
       <div className="relative sm:rounded-lg bg-white border-2 border-black border-opacity-20 overflow-hidden">
         <div className="overflow-x-auto flex-1 custom-scrollbar scrollbar-hide">
+          <p className="text-xs mx-5">Total: {teamsToDisplay.length}</p>
           <table className="w-full text-sm text-left relative">
             <thead className="text-lg uppercase text-textSecondary bg-white sticky top-0 z-10">
               <tr>
@@ -43,7 +81,7 @@ const TeamTable = () => {
               </tr>
             </thead>
             <tbody>
-              {workoutTeams[workoutId]?.map((user) => {
+              {teamsToDisplay?.map((user) => {
                 return (
                   <tr
                     key={user?.userId}
@@ -76,7 +114,9 @@ const TeamTable = () => {
                     </td>
                     <td className="px-6 py-2 text-nowrap">{user?.category}</td>
                     <td className="px-6 py-2 text-nowrap">
-                      {user?.firstName} {user?.lastName}
+                      {user?.video?.wodId
+                        ? `${user?.firstName} ${user?.lastName}`
+                        : "N/A"}
                     </td>
                     <td className="px-6 py-2 text-nowrap">{user?.points}</td>
                     <td className="px-6 py-2 text-nowrap">{user?.rank}</td>

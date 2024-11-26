@@ -5,6 +5,8 @@ export const FirebaseCollectionNames = {
   Users: "users",
   Workouts: "Work_outs",
   Teams: "teams",
-  Rankings: "test_cloned_rankings_production",
+  Rankings: "rankings_production",
   Videos: "test_clone_Videos",
 };
+
+export const statuses = ["approved", "pending", "not submitted"];
