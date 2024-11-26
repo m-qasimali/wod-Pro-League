@@ -17,6 +17,10 @@ import PageNotFound from "../pages/PageNotFound.jsx";
 import Coupons from "../pages/Coupons/index.jsx";
 import Dashboard from "../pages/Dashboard/index.jsx";
 import Approvals from "@/pages/Approvals";
+import Results from "@/pages/Results";
+import ParticipatedUsers from "@/pages/Results/components/ParticipatedUsers";
+import ParticipatedTeams from "@/pages/Results/components/ParticipatedTeams";
+import WorkoutVideo from "@/pages/Results/components/WorkoutVideo";
 
 const router = createBrowserRouter([
   {
@@ -109,6 +113,46 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loader />}>
             <Approvals />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/results",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <Results />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/results/Users/:workoutId",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <ParticipatedUsers />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/results/Users/:workoutId/:videoId",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <WorkoutVideo />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/results/Teams/:workoutId",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <ParticipatedTeams />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/results/Teams/:workoutId/:videoId",
+        element: (
+          <Suspense fallback={<Loader />}>
+            <WorkoutVideo />
           </Suspense>
         ),
       },

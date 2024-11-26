@@ -3,7 +3,6 @@ import Loader from "@/components/global/Loader";
 import { getUsers, setSelectedUsers, setUserToEdit } from "@/redux/userSlice";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { lockScroll } from "@/utils/functions";
 import Checkbox from "@/components/global/Checkbox";
 
@@ -160,15 +159,6 @@ const UsersTable = () => {
                             <Icons.Edit className="w-5 text-primary" />
                           </button>
                         )}
-                        <Link
-                          to={`/users/${user?.id}/wods`}
-                          state={{
-                            userName: `${user?.firstName} ${user?.lastName}`,
-                          }}
-                          className="whitespace-nowrap text-xs underline text-red-400"
-                        >
-                          View Workouts
-                        </Link>
                       </div>
                     </td>
                   </tr>

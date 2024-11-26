@@ -8,6 +8,7 @@ import adminsReducer from "./adminsSlice";
 import userCouponReducer from "./couponSlice";
 import dashboardSliceReducer from "./dashboardSlice";
 import approvalsSliceReducer from "./approvalSlice";
+import ResultSliceReducer from "./features/result/ResultSlice";
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ export const store = configureStore({
     couponUsers: userCouponReducer,
     dashboard: dashboardSliceReducer,
     approvals: approvalsSliceReducer,
+    results: ResultSliceReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

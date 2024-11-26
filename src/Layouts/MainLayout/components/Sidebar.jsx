@@ -60,6 +60,12 @@ const Sidebar = ({ isSidebarOpen }) => {
               activeMenu={activeMenu}
             />
 
+            <MenuItem
+              Icon={Icons.Results}
+              menuName={"Results"}
+              activeMenu={activeMenu}
+            />
+
             {role === "primary" && (
               <>
                 <MenuItem

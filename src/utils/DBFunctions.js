@@ -11,6 +11,7 @@ import {
 import { auth, db } from "../../firebase";
 import { encryptRole, formatDate } from "./functions";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { FirebaseCollectionNames } from "@/constant/variables";
 
 export const addWorkoutToDB = async (data) => {
   const docRef = doc(collection(db, "Work_outs"));
@@ -369,57 +370,54 @@ export const updateVideoStatusInDB = async (
   repetitions,
   liftedWeight
 ) => {
-  const docRef = doc(db, "Videos", videoId);
+  const docRef = doc(db, FirebaseCollectionNames.Videos, videoId);
 
-  await setDoc(
-    docRef,
-    {
-      status,
-      judgeName,
-    },
-    { merge: true }
-  );
-
-  const rankingDocRef = doc(db, "prod_ranking", workoutId);
+  const rankingDocRef = doc(db, FirebaseCollectionNames.Rankings, workoutId);
   const res = await getDoc(rankingDocRef);
 
   if (res.exists()) {
     const ranking = res.data();
     const user = ranking[userId];
+    const updatedVideoData = {};
+
     if (
       (videoMinutes && +videoMinutes !== 0) ||
       (videoSeconds && +videoSeconds !== 0)
     ) {
       user.uploadTime = `${videoMinutes} min ${videoSeconds} sec`;
+      updatedVideoData.athleteTime = `${videoMinutes} min ${videoSeconds} sec`;
+    } else {
+      user.uploadTime = "";
+      updatedVideoData.athleteTime = "";
     }
 
     if (liftedWeight && +liftedWeight !== 0) {
       user.liftedWeight = `${liftedWeight}`;
+      updatedVideoData.liftedWeight = `${liftedWeight}`;
+    } else {
+      user.liftedWeight = "";
+      updatedVideoData.liftedWeight = "";
     }
 
     if (repetitions && +repetitions !== 0) {
       user.repetitions = `${repetitions}`;
+      updatedVideoData.repetitions = `${repetitions}`;
+    } else {
+      user.repetitions = "";
+      updatedVideoData.repetitions = "";
     }
+
+    await setDoc(
+      docRef,
+      {
+        status,
+        judgeName,
+        ...updatedVideoData,
+      },
+      { merge: true }
+    );
     await setDoc(rankingDocRef, { [userId]: user }, { merge: true });
   }
-
-  const workoutRef = await getDoc(doc(db, "Work_outs", workoutId));
-  if (!workoutRef.exists()) {
-    throw new Error(`Workout with id ${workoutId} does not exist`);
-  }
-  const workout = await workoutRef.data();
-  const dataChangesRef = doc(db, "dataChanges", "Rh1ZyObGAjDpPDiLoIke");
-  const dataChanges = (await getDoc(dataChangesRef)).data();
-
-  await setDoc(
-    dataChangesRef,
-    {
-      int: dataChanges.int + 1,
-      resultType: workout.resultType,
-      wodId: workoutId,
-    },
-    { merge: true }
-  );
 
   return { videoId, userId, status };
 };

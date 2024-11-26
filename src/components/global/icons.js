@@ -29,6 +29,7 @@ import { HiOutlineUsers as Users } from "react-icons/hi2";
 import { SiMicrosoftteams as Teams } from "react-icons/si";
 import { MdOutlineAdminPanelSettings as Admin } from "react-icons/md";
 import { RiPassPendingLine as CouponIcon } from "react-icons/ri";
+import { PiRankingLight } from "react-icons/pi";
 
 export const Icons = {
   OpenSidebarIcon: Bars4Icon,
@@ -60,4 +61,5 @@ export const Icons = {
   ArrowDown: ChevronDownIcon,
   Dashboard: DashboardIcon,
   Approvals: MdApproval,
+  Results: PiRankingLight,
 };
