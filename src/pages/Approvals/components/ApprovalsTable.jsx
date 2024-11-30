@@ -51,7 +51,7 @@ const ApprovalsTable = () => {
                 <th scope="col" className="px-6 py-3 text-nowrap">
                   Workout
                 </th>
-                <th scope="col" className="px-6 py-3 text-nowrap">
+                <th scope="col" className="px-6 py-3 text-wrap">
                   Description
                 </th>
                 <th scope="col" className="px-6 py-3 text-nowrap">
@@ -100,7 +100,7 @@ const ApprovalsTable = () => {
                     <td className="px-6 py-2 text-nowrap">
                       {approval?.workout?.wodNumber}
                     </td>
-                    <td className="px-6 py-2 text-nowrap">
+                    <td className="px-6 py-2 text-wrap">
                       {approval?.description}
                     </td>
                     <td className="px-6 py-2 text-nowrap">
