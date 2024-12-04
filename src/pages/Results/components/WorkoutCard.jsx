@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 
 /* eslint-disable react/prop-types */
 const WorkoutCard = ({ workout }) => {
-  console.log("workout: ", workout);
-
   return (
     <div className="w-full border bg-secondary border-secondary shadow-md rounded-b-xl">
       <div className="bg-white p-2 flex flex-row items-center justify-between">

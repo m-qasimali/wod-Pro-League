@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import Loader from "@/components/global/Loader";
-import { getWorkoutTeams } from "@/redux/features/result/ResultThunk";
+import { subscribeToWorkoutTeamsThunk } from "@/redux/features/result/ResultThunk";
 import TeamTable from "./TeamTable";
 import SearchField from "@/components/global/SearchField";
 import TeamFilter from "./TeamFilter";
@@ -18,17 +18,11 @@ const ParticipatedTeams = () => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState("");
+  const [unsubscribe, setUnsubscribe] = useState(null);
 
-  const getData = async () => {
-    try {
-      setLoading(true);
-      await dispatch(getWorkoutTeams(workoutId)).unwrap();
-    } catch (error) {
-      toast.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    dispatch(setSearchQuery(searchValue));
+  }, [dispatch, searchValue]);
 
   useEffect(() => {
     return () => {
@@ -38,20 +32,35 @@ const ParticipatedTeams = () => {
           status: "",
         })
       );
-    };
-  }, [dispatch]);
 
-  useEffect(() => {
-    dispatch(setSearchQuery(searchValue));
-  }, [dispatch, searchValue]);
+      // Unsubscribe from real-time updates
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [dispatch, unsubscribe]);
 
   useEffect(() => {
     if (!workoutTeams[workoutId]) {
-      getData();
+      const subscribe = async () => {
+        try {
+          setLoading(true);
+          const unsub = await dispatch(
+            subscribeToWorkoutTeamsThunk(workoutId)
+          ).unwrap();
+          setUnsubscribe(() => unsub);
+        } catch (error) {
+          toast.error(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      subscribe();
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [dispatch, workoutId, workoutTeams]);
 
   if (loading) {
     return <Loader />;

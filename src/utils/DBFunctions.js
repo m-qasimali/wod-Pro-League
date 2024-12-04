@@ -338,7 +338,6 @@ export const getActiveWorkoutsFromDB = async () => {
     const workoutDocRef = doc(db, "Work_outs", docSnapshot.id);
     const workoutSnapshot = await getDoc(workoutDocRef);
     const workout = workoutSnapshot.data();
-    console.log("workout: ", workout);
 
     data[docSnapshot.id] = {
       workoutNumber: workout.wodNumber,

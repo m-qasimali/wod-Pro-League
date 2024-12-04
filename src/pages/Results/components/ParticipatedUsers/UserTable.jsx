@@ -48,7 +48,7 @@ const UserTable = () => {
     <>
       <div className="relative sm:rounded-lg bg-white border-2 border-black border-opacity-20 overflow-hidden">
         <div className="overflow-x-auto flex-1 custom-scrollbar scrollbar-hide">
-          <p className="text-xs mx-5">Total: {usersToDisplay.length}</p>
+          <p className="text-xs mx-5">Total: {usersToDisplay?.length}</p>
           <table className="w-full text-sm text-left relative">
             <thead className="text-lg uppercase text-textSecondary bg-white sticky top-0 z-10">
               <tr>

@@ -4,7 +4,7 @@ import UserTable from "./UserTable";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import Loader from "@/components/global/Loader";
-import { getWorkoutUsers } from "@/redux/features/result/ResultThunk";
+import { subscribeToWorkoutUsersThunk } from "@/redux/features/result/ResultThunk";
 import SearchField from "@/components/global/SearchField";
 import UserFilter from "./UserFilter";
 import {
@@ -18,17 +18,7 @@ const ParticipatedUsers = () => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState("");
-
-  const getData = async () => {
-    try {
-      setLoading(true);
-      await dispatch(getWorkoutUsers(workoutId)).unwrap();
-    } catch (error) {
-      toast.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [unsubscribe, setUnsubscribe] = useState(null);
 
   useEffect(() => {
     dispatch(setSearchQuery(searchValue));
@@ -42,16 +32,35 @@ const ParticipatedUsers = () => {
           status: "",
         })
       );
+
+      // Unsubscribe from real-time updates
+      if (unsubscribe) {
+        unsubscribe();
+      }
     };
-  }, [dispatch]);
+  }, [dispatch, unsubscribe]);
 
   useEffect(() => {
     if (!workoutUsers[workoutId]) {
-      getData();
+      const subscribe = async () => {
+        try {
+          setLoading(true);
+          const unsub = await dispatch(
+            subscribeToWorkoutUsersThunk(workoutId)
+          ).unwrap();
+          setUnsubscribe(() => unsub);
+        } catch (error) {
+          toast.error(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      subscribe();
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [dispatch, workoutId, workoutUsers]);
 
   if (loading) {
     return <Loader />;

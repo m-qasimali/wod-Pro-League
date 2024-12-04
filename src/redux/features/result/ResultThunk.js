@@ -1,32 +1,30 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { getWorkoutTeamsFromDB, getWorkoutUsersFromDB } from "./ResultDB";
+import { subscribeToWorkoutTeams, subscribeToWorkoutUsers } from "./ResultDB";
+import { updateWorkoutTeams, updateWorkoutUsers } from "./ResultSlice";
 
-export const getWorkoutUsers = createAsyncThunk(
-  "results/getWorkoutUsers",
-  async (workoutId, { rejectWithValue }) => {
+export const subscribeToWorkoutUsersThunk = createAsyncThunk(
+  "results/subscribeToWorkoutUsers",
+  async (workoutId, { dispatch, rejectWithValue }) => {
     try {
-      const response = await getWorkoutUsersFromDB(workoutId);
-      console.log("response: ", response);
+      const unsubscribe = subscribeToWorkoutUsers(workoutId, (data) => {
+        dispatch(updateWorkoutUsers({ id: workoutId, data }));
+      });
 
-      return {
-        id: workoutId,
-        data: response,
-      };
+      return unsubscribe; // Return the unsubscribe function for later cleanup
     } catch (error) {
       return rejectWithValue(error.message);
     }
   }
 );
 
-export const getWorkoutTeams = createAsyncThunk(
-  "results/getWorkoutTeams",
-  async (workoutId, { rejectWithValue }) => {
+export const subscribeToWorkoutTeamsThunk = createAsyncThunk(
+  "results/subscribeToWorkoutTeams",
+  async (workoutId, { dispatch, rejectWithValue }) => {
     try {
-      const response = await getWorkoutTeamsFromDB(workoutId);
-      return {
-        id: workoutId,
-        data: response,
-      };
+      const unsubscribe = subscribeToWorkoutTeams(workoutId, (data) => {
+        dispatch(updateWorkoutTeams({ id: workoutId, data }));
+      });
+      return unsubscribe; // Return unsubscribe for cleanup
     } catch (error) {
       return rejectWithValue(error.message);
     }
