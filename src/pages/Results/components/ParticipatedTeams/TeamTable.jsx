@@ -1,5 +1,8 @@
 import Checkbox from "@/components/global/Checkbox";
+import { Button } from "@/components/ui/button";
+import xlsx from "json-as-xlsx";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 
@@ -9,6 +12,81 @@ const TeamTable = () => {
     (state) => state.results
   );
   const [teamsToDisplay, setTeamsToDisplay] = useState([]);
+
+  const downloadExcelFile = async () => {
+    try {
+      const teams = teamsToDisplay;
+      const data = [
+        {
+          sheet: "Teams",
+          columns: [
+            {
+              label: "Team Name",
+              value: "teamName",
+            },
+            {
+              label: "UploadedBy[First Name]",
+              value: "firstName",
+            },
+            {
+              label: "UploadedBy[Last Name]",
+              value: "lastName",
+            },
+            {
+              label: "Category",
+              value: "category",
+            },
+
+            {
+              label: "City",
+              value: "geographicArea",
+            },
+            {
+              label: "Province",
+              value: "province",
+            },
+            {
+              label: "Country",
+              value: "country",
+            },
+            {
+              label: "Box Number",
+              value: "number",
+            },
+            {
+              label: "Rank",
+              value: "rank",
+            },
+            {
+              label: "Points",
+              value: "points",
+            },
+            {
+              label: "Time",
+              value: "uploadTime",
+            },
+            {
+              label: "Repetitions",
+              value: "repetitions",
+            },
+          ],
+          content: [...teams],
+        },
+      ];
+      let settings = {
+        fileName: "WodPro_league_teams_data",
+        extraLength: 3,
+        writeMode: "writeFile",
+        writeOptions: {},
+        RTL: false,
+      };
+      xlsx(data, settings, () => {
+        toast.success("Teams download successfully");
+      });
+    } catch (error) {
+      toast.error("Failed to export data");
+    }
+  };
 
   useEffect(() => {
     let filteredTeams = workoutTeams[workoutId];
@@ -46,7 +124,12 @@ const TeamTable = () => {
     <>
       <div className="relative sm:rounded-lg bg-white border-2 border-black border-opacity-20 overflow-hidden">
         <div className="overflow-x-auto flex-1 custom-scrollbar scrollbar-hide">
-          <p className="text-xs mx-5">Total: {teamsToDisplay?.length}</p>
+          <div className="flex flex-row gap-5 items-center p-2">
+            <p className="text-xs mx-5">Total: {teamsToDisplay?.length}</p>
+            <Button size="sm" variant="secondary" onClick={downloadExcelFile}>
+              Download Teams
+            </Button>
+          </div>
           <table className="w-full text-sm text-left relative">
             <thead className="text-lg uppercase text-textSecondary bg-white sticky top-0 z-10">
               <tr>
