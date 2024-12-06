@@ -102,9 +102,9 @@ const UsersTable = () => {
                 <th scope="col" className="px-6 py-3 text-nowrap">
                   Email
                 </th>
-                <th scope="col" className="px-6 py-3 text-nowrap">
+                {/* <th scope="col" className="px-6 py-3 text-nowrap">
                   Result
-                </th>
+                </th> */}
                 <th scope="col" className="px-6 py-3 text-nowrap">
                   Team Name
                 </th>
@@ -146,9 +146,9 @@ const UsersTable = () => {
                       </div>
                     </td>
                     <td className="px-6 py-2 text-nowrap">{user?.email}</td>
-                    <td className="px-6 py-2 text-nowrap">
+                    {/* <td className="px-6 py-2 text-nowrap">
                       {`${user?.totalApprovedWorkouts}/${user?.totalRegisteredWorkouts}`}
-                    </td>
+                    </td> */}
                     <td className="px-6 py-2 text-nowrap">{user?.teamName}</td>
                     <td className="px-6 py-2">
                       <div className="flex flex-row items-center gap-2">
