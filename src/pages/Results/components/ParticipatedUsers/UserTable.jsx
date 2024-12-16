@@ -1,4 +1,3 @@
-import Checkbox from "@/components/global/Checkbox";
 import { Button } from "@/components/ui/button";
 import xlsx from "json-as-xlsx";
 import { useEffect, useState } from "react";

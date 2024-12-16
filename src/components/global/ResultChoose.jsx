@@ -37,6 +37,27 @@ const ResultChoose = ({ labelValue, state, onChange, disabled }) => {
         </button>
 
         <button
+          onClick={() => onChange("repetitions")}
+          disabled={disabled}
+          className="flex flex-row gap-1 items-center cursor-pointer"
+        >
+          {state === "repetitions" ? (
+            <Icons.CheckedBox
+              id="repetitions"
+              className="text-3xl text-primary"
+            />
+          ) : (
+            <Icons.UnCheckedBox
+              id="repetitions"
+              className="text-3xl text-primary"
+            />
+          )}
+          <label htmlFor="repetitions" className="text-sm text-black">
+            Repetitions Only
+          </label>
+        </button>
+
+        <button
           onClick={() => onChange("both")}
           disabled={disabled}
           className="flex flex-row gap-1 items-center cursor-pointer"
