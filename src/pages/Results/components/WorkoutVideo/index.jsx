@@ -82,11 +82,18 @@ const WorkoutVideo = () => {
   }, [video]);
 
   const handleSubmit = async () => {
-    console.log("judgedData: ", judgedData);
-
     if (judgedData.judgeName === "") {
       toast.error("Judge name required");
       return;
+    }
+
+    if (judgedData.liftedWeight === "") {
+      if (judgedData.repetitions === "") {
+        if (judgedData.videoMinutes === "" || judgedData.videoSeconds === "") {
+          toast.error("Please fill all the fields");
+          return;
+        }
+      }
     }
 
     if (judgedData.isWorkoutNotCompleted && judgedData.repetitions === "") {
