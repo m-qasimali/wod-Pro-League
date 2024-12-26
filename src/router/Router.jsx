@@ -21,6 +21,7 @@ import Results from "@/pages/Results";
 import ParticipatedUsers from "@/pages/Results/components/ParticipatedUsers";
 import ParticipatedTeams from "@/pages/Results/components/ParticipatedTeams";
 import WorkoutVideo from "@/pages/Results/components/WorkoutVideo";
+import Feedback from "@/pages/Feedback";
 
 const router = createBrowserRouter([
   {
@@ -157,6 +158,10 @@ const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "/feedback",
+    element: <Feedback />,
   },
   {
     path: "*",
