@@ -62,7 +62,7 @@ const Feedback = () => {
         <div className="flex flex-row items-center justify-center mb-10">
           <img className="w-24 h-24 rounded-full" src={Logo} alt="logo" />
         </div>
-        <h1 className="font-bold text-lg">Support & Feedback </h1>
+        <h1 className="font-bold text-lg">Servició de atención a atletas </h1>
 
         <div className="flex-grow overflow-auto custom-scrollbar scrollbar-hide flex flex-col gap-4 mt-5">
           <Input
@@ -75,7 +75,7 @@ const Feedback = () => {
           />
 
           <Input
-            labelValue="Subject"
+            labelValue="Asunto"
             type="text"
             name="subject"
             value={data.subject}
@@ -84,7 +84,7 @@ const Feedback = () => {
           />
 
           <TextArea
-            labelValue="Description"
+            labelValue="Descripción"
             name="description"
             value={data.description}
             onChange={handleChange}
@@ -92,7 +92,7 @@ const Feedback = () => {
           />
 
           <Input
-            labelValue="Image or Video"
+            labelValue="Imagen o video"
             type="file"
             name="file"
             onChange={handleChange}
