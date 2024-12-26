@@ -32,14 +32,28 @@ const Feedback = () => {
   };
 
   const handleSubmit = async () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (data.email === "" || data.subject === "" || data.description === "") {
-      toast.error("Email, Subject and Description are required");
+      toast.error("Email, Subject, and Description are required");
       return;
     }
+
+    if (!emailPattern.test(data.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
     setLoading(true);
-    await addFeedbackInDB(data);
-    setLoading(false);
-    toast.success("Feedback submitted successfully");
+
+    try {
+      await addFeedbackInDB(data);
+      toast.success("Feedback submitted successfully");
+    } catch (error) {
+      toast.error("Failed to submit feedback. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
