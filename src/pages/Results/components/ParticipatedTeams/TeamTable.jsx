@@ -1,4 +1,3 @@
-import Checkbox from "@/components/global/Checkbox";
 import { Button } from "@/components/ui/button";
 import xlsx from "json-as-xlsx";
 import { useEffect, useState } from "react";
@@ -68,6 +67,10 @@ const TeamTable = () => {
             {
               label: "Repetitions",
               value: "repetitions",
+            },
+            {
+              label: "Weight",
+              value: "liftedWeight",
             },
           ],
           content: [...teams],

@@ -64,6 +64,10 @@ const UserTable = () => {
               label: "Repetitions",
               value: "repetitions",
             },
+            {
+              label: "Weight",
+              value: "liftedWeight",
+            },
           ],
           content: [...users],
         },
