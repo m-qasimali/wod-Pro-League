@@ -9,6 +9,7 @@ import userCouponReducer from "./couponSlice";
 import dashboardSliceReducer from "./dashboardSlice";
 import approvalsSliceReducer from "./approvalSlice";
 import ResultSliceReducer from "./features/result/ResultSlice";
+import ReportSliceReducer from "./features/report/reportSlice";
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     dashboard: dashboardSliceReducer,
     approvals: approvalsSliceReducer,
     results: ResultSliceReducer,
+    reports: ReportSliceReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

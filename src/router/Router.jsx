@@ -22,6 +22,7 @@ import ParticipatedUsers from "@/pages/Results/components/ParticipatedUsers";
 import ParticipatedTeams from "@/pages/Results/components/ParticipatedTeams";
 import WorkoutVideo from "@/pages/Results/components/WorkoutVideo";
 import Feedback from "@/pages/Feedback";
+import Reports from "@/pages/Reports";
 
 const router = createBrowserRouter([
   {
@@ -124,6 +125,10 @@ const router = createBrowserRouter([
             <Results />
           </Suspense>
         ),
+      },
+      {
+        path: "/reports",
+        element: <Reports />,
       },
       {
         path: "/results/Users/:workoutId",

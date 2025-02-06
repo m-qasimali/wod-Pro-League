@@ -30,6 +30,7 @@ import { SiMicrosoftteams as Teams } from "react-icons/si";
 import { MdOutlineAdminPanelSettings as Admin } from "react-icons/md";
 import { RiPassPendingLine as CouponIcon } from "react-icons/ri";
 import { PiRankingLight } from "react-icons/pi";
+import { TbFileReport } from "react-icons/tb";
 
 export const Icons = {
   OpenSidebarIcon: Bars4Icon,
@@ -62,4 +63,5 @@ export const Icons = {
   Dashboard: DashboardIcon,
   Approvals: MdApproval,
   Results: PiRankingLight,
+  Reports: TbFileReport,
 };
